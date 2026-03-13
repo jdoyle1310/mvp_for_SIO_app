@@ -1,0 +1,35 @@
+[
+  {
+    "buyer_id": "BUYER-SEW-001",
+    "buyer_name": "Solar Energy World",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver"],
+    "cpl_by_tier": { "Gold": 95, "Silver": 65, "Bronze": 40 },
+    "daily_cap": 50,
+    "states": ["MD", "VA", "DC", "PA", "NJ"],
+    "endpoint_url": "https://example.com/sew/post"
+  },
+  {
+    "buyer_id": "BUYER-SOL-002",
+    "buyer_name": "SunPower Direct",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver", "Bronze"],
+    "cpl_by_tier": { "Gold": 85, "Silver": 55, "Bronze": 35 },
+    "daily_cap": 100,
+    "states": ["AZ", "CA", "NV", "TX", "FL"],
+    "endpoint_url": "https://example.com/sunpower/post"
+  },
+  {
+    "buyer_id": "BUYER-SOL-003",
+    "buyer_name": "Green Home Solar",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold"],
+    "cpl_by_tier": { "Gold": 120 },
+    "daily_cap": 20,
+    "states": [],
+    "endpoint_url": "https://example.com/greenhome/post"
+  }
+]

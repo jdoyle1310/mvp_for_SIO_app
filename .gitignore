@@ -1,0 +1,6 @@
+node_modules/
+.env
+dry-run/sew-backtest-results.json
+dry-run/sew-backtest-results-snapshot.json
+dry-run/sew-backtest-results.csv
+.DS_Store
