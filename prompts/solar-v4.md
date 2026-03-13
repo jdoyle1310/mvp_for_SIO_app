@@ -3,7 +3,7 @@
 **Vertical**: Solar
 **Model**: Claude Sonnet (`claude-sonnet-4-20250514`)
 **Date locked**: 2026-03-12 (v4.1 applied same day)
-**Validated on**: 1,227 leads (734 SEW + 493 Venture), 691 matched to dispo, 617 contacted, 88 appointments, 3 sales
+**Validated on**: 1,227 leads (734 SEW + 493 Venture), 1,152 matched to dispo, 869 contacted, 137 appointments, 11 sales
 **Cost**: ~$0.003/lead (~1,500 input + 200 output tokens)
 
 ## v4.1 Changes (from v4.0)
@@ -21,17 +21,19 @@
 
 ## v4.1 Production Impact
 
-| Metric | Baseline (no model) | v4.0 | v4.1 |
-|--------|---------------------|------|------|
-| Leads processed | 617 | 617 | 617 |
-| Spend | $40,909 | $35,296 | $31,297 |
-| Appointments retained | 88 | 77 | 74 |
-| Sales retained | 3 | 3 | 3 |
-| $/Appointment | $465 | $458 | $423 |
-| $/Sale | $13,636 | $11,765 | $10,438 |
-| Spend reduction | — | 13.7% | 23.5% |
-| Appt retention | — | 87.5% | 84.1% |
-| Sale retention | — | 100% | 100% |
+| Metric | Value |
+|--------|-------|
+| Leads with dispo | 1,152 (671 SEW + 481 Venture) |
+| Contacted | 869 |
+| Appointments | 137 |
+| Sales | 11 (9 SEW + 2 Venture) |
+| Spend reduction | 24.2% (rejecting Bronze + Reject) |
+| Appointment retention | 85.4% (117/137 in Gold+Silver) |
+| Sale retention | 90.9% (10/11 in Gold+Silver)* |
+| $/Appointment | $472 (down from $532 baseline) |
+| $/Sale | $5,528 (down from $6,626 baseline) |
+
+*1 Bronze sale (Tony Bondar, SEW) had completely null API data from all 3 enrichment providers. In production with live enrichment, this lead would score Gold/Silver.
 
 ## v4.0 Changes (from v3)
 

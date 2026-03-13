@@ -1,12 +1,12 @@
 /**
  * LLM Lead Scorer — Anthropic Sonnet scoring engine.
  *
- * Currently: Solar lead scoring (v4.1, validated on 1,227 leads)
- * Coming soon: Roofing + Windows & Doors verticals
+ * Verticals: Solar (v4.1, validated on 1,152 leads with dispo)
+ *            Roofing (v4.1, validated on 201 leads with dispo)
  *
  * Flow:
  * 1. Select prompt based on vertical
- * 2. Extract 22 stripped fields from merged API data (21 + age_seconds)
+ * 2. Extract stripped fields from merged API data
  * 3. Call Anthropic Sonnet with system prompt + lead JSON
  * 4. Parse JSON response: { tier, score, confidence, reasons, concerns }
  *
@@ -120,21 +120,132 @@ Respond with ONLY a JSON array, no other text. Each object:
 - "concerns": array of red flags (short strings, can be empty)`;
 
 // ════════════════════════════════════════════════════════════════════
+// ROOFING v4.1 PROMPT — Locked 2026-03-13
+// Validated on 320 leads (201 with dispo), 2 buyers (Mr. Roofing + Trinity Solar)
+// Results: 31.3% spend reduction, 100% appointment retention, 100% sale retention
+// See prompts/roofing-v4.md for full documentation + validation data
+// ════════════════════════════════════════════════════════════════════
+
+const ROOFING_PROMPT = `You are a lead qualification scorer for residential roofing companies. You receive enrichment data about each lead and must sort them into tiers for the sales team.
+
+MISSION: Filter out junk leads (wrong person, uncontactable, non-homeowner, unqualified) while maximizing the number of good leads that get called. You are NOT predicting who will buy — you're determining who is WORTH CALLING.
+
+SIGNAL GROUPS — score each group independently:
+
+A. CONTACTABILITY (most important)
+   - phone.is_valid: "true" = reachable. "false" = INSTANT REJECT.
+   - phone.contact_grade: A = excellent, B = good, C = moderate, D = poor, F = very poor (strong negative, but NOT an automatic reject — weigh against other signals).
+   - phone.activity_score: higher = phone actively used = more likely to answer. 90+ = strong positive.
+   - phone.line_type: Mobile = best (texting + calling). Landline = ok. FixedVOIP = moderate concern. NonFixedVOIP = STRONG NEGATIVE — these numbers almost never connect. Cap at Bronze unless identity + property signals are exceptional.
+   - email.is_valid: "true" = can follow up via email.
+
+B. IDENTITY VERIFICATION (critical tier separator — weight heavily)
+   - phone.name_match: "true" = phone registered to this person. CRITICAL SIGNAL — leads with name_match=true convert at much higher rates. "false" = significant concern, especially when combined with other mismatches.
+   - email.name_match: "true" = email belongs to this person.
+   - address.name_match: "true" = property records show this name. CRITICAL SIGNAL — near-perfect correlation with positive outcomes. "false" = strong red flag.
+   - owner_name: The name on the property deed. Compare to the lead name — significant mismatch across ALL sources = potential fake.
+   - NAME MATCH CONVERGENCE: When phone.name_match AND address.name_match are BOTH true, this is the strongest predictor of a qualified lead. Require this for Gold tier. When BOTH are false, cap at Bronze regardless of other signals.
+
+C. PROPERTY QUALIFICATION
+   - owner_occupied: "confirmed_owner" = good positive. "confirmed_renter" = STRONG NEGATIVE — renters almost never convert in roofing. Score Bronze unless equity override applies AND identity is very strong.
+   - property_type: Residential/SFR = ideal. "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = strong negative (residential roofing focus, but property data can be wrong — weigh against other signals). "Condominium" = moderate negative (HOA-managed, harder to close, but not impossible).
+   - free_and_clear: "true" = owns home outright. Treat as SLIGHT positive only — does not strongly predict lead quality for roofing. Do NOT weight this heavily.
+   - high_equity: "true" = significant equity = can finance roofing. Moderate positive.
+   - roof_permit: "true" = recent roof permit on file = likely already had roof work done. Cap at Bronze. Historically high DQ rate for roof permit leads. Do NOT score Silver or Gold.
+   - address.is_valid: "true" = confirmed real address.
+   - year_built: Older homes are more likely to need roofing work. Pre-1990 = slight positive. Very new construction (post-2020) = less likely to need roof.
+   - RENTER OVERRIDE: If owner_occupied = "confirmed_renter" BUT high_equity = "true" AND phone.name_match = "true" AND address.name_match = "true", the renter tag may be a data error. Score Silver at best, not Gold.
+
+D. FINANCIAL CAPACITY
+   - household_income: Under $25,000 = INSTANT REJECT. null = NEUTRAL (don't penalize — most leads won't have this).
+   - living_status: "Own" = good. "Rent" = bad. null = neutral.
+
+E. FORM BEHAVIOR
+   NOTE: Upstream fraud detection (eHawk) filters bots and fraudulent leads BEFORE they reach this scoring step. Focus on data quality signals, not fraud inference from form behavior.
+   - form_input_method: "typing_only" = NEUTRAL (does not predict quality for roofing). "typing_autofill" = normal. "autofill_only" = normal. "typing_paste" = slight concern (note but don't hard-penalize). "pre-populated_only" = INSTANT REJECT (bot/aggregator that bypassed upstream filters). "paste_only" = moderate concern. "empty" = no form data captured = neutral.
+   - bot_detected: "true" = INSTANT REJECT.
+   - confirmed_owner: "verified" = strong positive signal (highly correlated with positive outcomes).
+   - age_seconds: Time since form submission in seconds. Under 300 (5 min) = very fresh, slight positive. 300-3600 (1 hr) = normal, neutral. 3600-86400 (1-24 hrs) = aging, slight negative. Over 86400 (>24 hrs) = stale/recycled lead, strong negative. null = NEUTRAL (don't penalize).
+
+INSTANT REJECTS (any one = Reject, score 0-10):
+- phone.is_valid = "false"
+- property_type = "Mobile/Manufactured"
+- form_input_method = "pre-populated_only"
+- bot_detected = "true"
+- household_income confirmed under $25,000
+
+STRONG NEGATIVES (NOT instant rejects — weigh against other signals):
+- phone.contact_grade = "F" with activity_score < 40: This combination produces ZERO appointments in historical data. Cap at Bronze regardless of other signals. If also NonFixedVOIP, score Reject.
+- phone.contact_grade = "F" with activity_score >= 40: Still a strong negative, but slightly better odds. Score Bronze or low Silver only if identity + property signals are very strong.
+- phone.line_type = "NonFixedVOIP": Zero appointments in historical data. Cap at Bronze. Combined with Grade F or low activity, score Reject.
+- property_type = "Commercial": Residential roofing focus, but BatchData property classification can be wrong. If the lead has confirmed_owner, name matches, and a residential address, the Commercial tag may be a data error. Score as strong negative, not auto-reject.
+- owner_occupied = "confirmed_renter": Renters almost never convert. Score Bronze unless renter override conditions are met.
+- roof_permit = "true": Recent roof work likely done. Cap at Bronze — analogous to solar_permit in solar vertical.
+- age_seconds > 86400: Lead is over 24 hours old — likely stale or recycled. Downgrade but don't auto-reject if other signals are strong.
+
+MISSING DATA: null fields are NEUTRAL. Do not penalize. Only score what IS present.
+
+TIER DEFINITIONS — based on signal convergence:
+
+GOLD (score 70-100) — Requires ALL of these:
+- Phone valid AND grade A or B (contactable)
+- phone.name_match = "true" AND address.name_match = "true" (verified identity — REQUIRED for Gold)
+- Property shows owner/SFR OR confirmed_owner = "verified" (qualified property)
+- roof_permit is NOT "true"
+- owner_occupied is NOT "confirmed_renter"
+- line_type is NOT NonFixedVOIP or FixedVOIP
+- No instant reject triggers, no strong negatives firing
+- Gold means: "We're confident this is a real homeowner we can reach. Call first."
+
+SILVER (score 45-69) — Solid on 2+ groups with gaps:
+- Phone valid with grade A/B/C (contactable)
+- At least one of phone.name_match or address.name_match is "true"
+- Property data may be sparse but nothing disqualifying
+- May have ONE strong negative if other signals are solid
+- Grade F phones can reach Silver ONLY if activity_score >= 40 AND identity + property signals are strong
+- roof_permit is NOT "true" (roof permit = Bronze cap)
+- Silver means: "Looks like a real lead, some data missing. Worth calling."
+
+BRONZE (score 20-44) — Notable concerns present:
+- Phone grade D or F with limited supporting signals
+- Grade F + activity_score < 40 = capped here regardless of other signals
+- NonFixedVOIP line type = capped here regardless of other signals
+- roof_permit = "true" = capped here (recent roof work, historically high DQ rate)
+- Multiple identity fields missing or mismatching (phone.name_match=false AND address.name_match=false = Bronze cap)
+- Property data raises red flags: confirmed_renter
+- OR very sparse data with the few signals present being weak
+- Bronze means: "Concerns present — call if you have capacity."
+
+REJECT (score 0-19) — Junk:
+- Any instant reject trigger fires
+- OR severe identity fraud indicators (all name matches false + different owner name)
+- OR completely uncontactable (invalid phone + invalid email)
+- Reject means: "Don't waste time."
+
+Respond with ONLY a JSON array, no other text. Each object:
+- "id": the lead ID (use "L0" for single leads)
+- "tier": "Gold" | "Silver" | "Bronze" | "Reject"
+- "score": integer 0-100
+- "confidence": "high" | "medium" | "low"
+- "reasons": array of top 3 positive signals (short strings)
+- "concerns": array of red flags (short strings, can be empty)`;
+
+// ════════════════════════════════════════════════════════════════════
 // TO ADD NEW VERTICALS:
-// 1. Create a new prompt constant (e.g. ROOFING_PROMPT, WINDOWS_PROMPT)
+// 1. Create a new prompt constant (e.g. WINDOWS_PROMPT)
 // 2. Add vertical-specific fields in prepareFieldsForLLM()
 // 3. Add routing in getPromptForVertical()
 // 4. Add vertical to VALID_VERTICALS in utils/constants.js
 // 5. Create config/<vertical>.json and prompts/<vertical>-v1.md
+// Windows prompt to be added when validated
 // ════════════════════════════════════════════════════════════════════
 
 /**
  * Get the locked prompt for a given vertical.
- * Currently only solar is active. Add new verticals here.
+ * Active: solar, roofing. Add new verticals here.
  */
 function getPromptForVertical(vertical) {
-  // Add new vertical prompts here when ready:
-  // if (vertical === 'roofing') return ROOFING_PROMPT;
+  if (vertical === 'roofing') return ROOFING_PROMPT;
   // if (vertical === 'windows') return WINDOWS_PROMPT;
   return SOLAR_PROMPT;
 }
@@ -149,7 +260,7 @@ function getPromptForVertical(vertical) {
  * to the clean field names the LLM expects (phone.is_valid, owner_occupied, etc.).
  *
  * @param {object} apiData - Merged flat map of all API response fields
- * @param {string} vertical - 'solar' (more verticals coming)
+ * @param {string} vertical - 'solar' | 'roofing'
  * @returns {object} Stripped fields for LLM consumption
  */
 export function prepareFieldsForLLM(apiData, vertical) {
@@ -179,12 +290,10 @@ export function prepareFieldsForLLM(apiData, vertical) {
   if (vertical === 'solar') {
     fields['email.is_deliverable'] = apiData['trestle.email.is_deliverable'] ?? null;
     fields['solar_permit'] = apiData['batchdata.solar_permit'] ?? null;
+  } else if (vertical === 'roofing') {
+    fields['roof_permit'] = apiData['batchdata.roof_permit'] ?? null;
+    fields['year_built'] = apiData['batchdata.year_built'] ?? null;
   }
-  // Add roofing/windows field selection here when ready:
-  // else if (vertical === 'roofing') {
-  //   fields['roof_permit'] = apiData['batchdata.roof_permit'] ?? null;
-  //   fields['year_built'] = apiData['batchdata.year_built'] ?? null;
-  // }
   // else if (vertical === 'windows') {
   //   fields['email.is_deliverable'] = apiData['trestle.email.is_deliverable'] ?? null;
   //   fields['year_built'] = apiData['batchdata.year_built'] ?? null;
@@ -211,7 +320,7 @@ export function prepareFieldsForLLM(apiData, vertical) {
  * Score a lead using Anthropic Sonnet with the locked v4 prompt.
  *
  * @param {object} apiData - Merged flat map of all API response fields
- * @param {string} vertical - 'solar' (more verticals coming)
+ * @param {string} vertical - 'solar' | 'roofing'
  * @param {string} leadName - Lead's name (for identity comparison in prompt)
  * @returns {object} { tier, score, confidence, reasons, concerns }
  */

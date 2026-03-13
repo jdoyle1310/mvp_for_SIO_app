@@ -4,8 +4,8 @@
  */
 
 // Valid verticals — reject anything not in this list with 400
-// Add 'roofing', 'windows' when those verticals are validated and ready
-export const VALID_VERTICALS = ['solar'];
+// Add 'windows' when that vertical is validated and ready
+export const VALID_VERTICALS = ['solar', 'roofing'];
 
 // Tier names (for output schema)
 export const TIERS = {

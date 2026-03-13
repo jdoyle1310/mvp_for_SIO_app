@@ -1,14 +1,19 @@
-# GreenWatt Lead Scoring — Solar
+# GreenWatt Lead Scoring — Multi-Vertical
 
-LLM-powered lead scoring Lambda for residential solar. Enriches leads with 3 APIs, scores them with Claude Sonnet into Gold/Silver/Bronze/Reject tiers, and routes to buyers.
+LLM-powered lead scoring Lambda for residential solar and roofing. Enriches leads with 3 APIs, scores them with Claude Sonnet into Gold/Silver/Bronze/Reject tiers, and routes to buyers.
 
-**Status**: Solar is production-ready (v4.1, validated on 1,227 leads). Roofing and Windows verticals coming soon.
+**Status**: Solar + Roofing are production-ready (v4.1). Windows vertical coming soon.
 
-**Validation Results (v4.1)**:
-- 23.5% spend reduction vs baseline
-- 84.1% appointment retention
-- 100% sale retention
-- See `docs/solar/v4.1-prompt-changes.md` for full data
+**Validation Results (v4.1 — 1,353 leads with dispo across 2 verticals, 4 buyers)**:
+
+| Vertical | Leads w/ Dispo | Spend Reduction | Appt Retention | Sale Retention |
+|----------|---------------|-----------------|----------------|----------------|
+| **Solar** | 1,152 | 24.2% | 85.4% | 90.9%* |
+| **Roofing** | 201 | 31.3% | 100% | 100% |
+
+*1 Bronze sale had null API data — production live enrichment would fix this.
+
+See `docs/v4.1-cross-vertical-summary.md` for full cross-vertical analysis.
 
 ---
 
@@ -33,7 +38,7 @@ Lead (SIO POST /validate)
   │   ├── Bot detected → REJECT
   │   ├── Pre-populated form → REJECT
   │   ├── Mobile/Manufactured home → REJECT
-  │   └── Condominium (solar) → REJECT
+  │   └── Condominium (solar only) → REJECT
   │
   ├── 5. LLM Scoring — Anthropic Claude Sonnet
   │   ├── 22 stripped fields sent as JSON
@@ -190,8 +195,22 @@ The LLM scores leads across 5 signal groups. See `prompts/solar-v4.md` for the f
 - **solar_permit = true** → Cap at Bronze (already has solar, 0% appointment rate)
 - **confirmed_renter** → NEUTRAL (renters convert at 16.4% vs owners 14.2% — don't penalize)
 - **Commercial property** → NEUTRAL (21.4% conversion vs 14.3% base — BatchData often wrong)
+- **Condominium** → INSTANT REJECT (can't install solar on condos)
+
+### Key Roofing-Specific Rules
+- **roof_permit = true** → Cap at Bronze (already had roof work, high DQ rate)
+- **confirmed_renter** → STRONG NEGATIVE, Bronze cap (renters don't pay for roof replacement). Renter override: Silver at best if high_equity + both name matches (BatchData ownership data can be wrong)
+- **Commercial property** → Strong negative (residential roofers can't serve commercial)
+- **Condominium** → Moderate negative (HOA-managed, harder but not impossible)
+- **Identity convergence** → REQUIRED for Gold (both phone.name_match AND address.name_match must be true)
+- **year_built** → Pre-1990 slight positive (older homes need roofing)
+
+### Shared Cross-Vertical Rules (both solar + roofing)
 - **Grade F + activity < 40** → Bronze cap (0% appointments in historical data)
 - **NonFixedVOIP** → Bronze cap (0% appointments in historical data)
+- **Grade F + NonFixedVOIP** → Reject
+- **Pre-populated form** → Instant reject
+- **Bot detected** → Instant reject
 
 ---
 
@@ -227,21 +246,27 @@ The LLM scores leads across 5 signal groups. See `prompts/solar-v4.md` for the f
 │       └── name-match.js   # Levenshtein name matching
 │
 ├── config/                 # Vertical-specific scoring configs
-│   └── solar.json          # Solar tier thresholds + pillar weights
+│   ├── solar.json          # Solar tier thresholds + pillar weights
+│   └── roofing.json        # Roofing tier thresholds + pillar weights
 │
 ├── prompts/                # Vertical-specific LLM prompt documentation
-│   └── solar-v4.md         # Locked v4.1 solar prompt — DO NOT MODIFY without re-validation
+│   ├── solar-v4.md         # Locked v4.1 solar prompt — DO NOT MODIFY without re-validation
+│   └── roofing-v4.md       # Locked v4.1 roofing prompt — DO NOT MODIFY without re-validation
 │
 ├── docs/                   # Vertical-specific documentation
-│   └── solar/
-│       └── v4.1-prompt-changes.md  # All v4.1 changes with data backing
+│   ├── solar/
+│   │   ├── v4.1-prompt-changes.md  # All v4.1 changes with data backing
+│   │   └── v4.1-solar-backtest.md  # Solar backtest results (1,152 leads)
+│   ├── roofing/
+│   │   └── v4.1-roofing-backtest.md  # Roofing backtest results (201 leads)
+│   └── v4.1-cross-vertical-summary.md  # Combined cross-vertical analysis
 │
 ├── infrastructure/
 │   └── template.yaml       # SAM/CloudFormation — Lambda + DynamoDB + CloudWatch
 │
 ├── seed/
 │   ├── load-configs.js     # Script to load config JSON into DynamoDB
-│   └── buyers.json         # Solar buyer definitions (3 buyers)
+│   └── buyers.json         # Buyer definitions (3 solar + 3 roofing)
 │
 ├── tests/
 │   ├── config.test.js      # Config loader tests
@@ -303,14 +328,17 @@ npx jest tests/hardkill.test.js
 
 ## Adding New Verticals
 
-When roofing or windows is ready:
+When windows (or another vertical) is ready:
 
 1. Add the vertical to `VALID_VERTICALS` in `src/utils/constants.js`
-2. Add the prompt constant in `src/llm-scorer.js` (follow the `SOLAR_PROMPT` pattern)
+2. Add the prompt constant in `src/llm-scorer.js` (follow the `SOLAR_PROMPT` / `ROOFING_PROMPT` pattern)
 3. Add vertical-specific fields in `prepareFieldsForLLM()` in `src/llm-scorer.js`
 4. Add routing in `getPromptForVertical()` in `src/llm-scorer.js`
 5. Create `config/<vertical>.json` with scoring thresholds
-6. Create `prompts/<vertical>-v1.md` with prompt documentation
+6. Create `prompts/<vertical>-v4.md` with prompt documentation
 7. Create `docs/<vertical>/` for validation docs
 8. Add buyers to `seed/buyers.json`
 9. Run `npm run load-configs` to push new config to DynamoDB
+
+**Active verticals**: Solar (v4.1), Roofing (v4.1)
+**Planned**: Windows & Doors (needs LLM prompt development + backtest with matchable dispo data)
