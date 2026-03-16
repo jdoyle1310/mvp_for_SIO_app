@@ -104,7 +104,7 @@ export async function handler(event) {
         processing_time_ms: Date.now() - startTime,
       });
 
-      await logScoredLead(result, apiPerformance);
+      await logScoredLead(result, apiPerformance, apiData, null);
       emitMetrics(result, apiPerformance);
       return result;
     }
@@ -129,6 +129,12 @@ export async function handler(event) {
     const { decision, routing } = await routeLead(lead.vertical, tier, score, lead);
 
     // 10. Build final result
+    const llmResponse = {
+      confidence: llmResult.confidence,
+      reasons: llmResult.reasons,
+      concerns: llmResult.concerns,
+    };
+
     const result = formatResponse(lead, {
       decision,
       score,
@@ -136,18 +142,14 @@ export async function handler(event) {
       hard_kill: false,
       hard_kill_reason: null,
       reason_codes: llmResult.reasons || [],
-      llm_response: {
-        confidence: llmResult.confidence,
-        reasons: llmResult.reasons,
-        concerns: llmResult.concerns,
-      },
+      llm_response: llmResponse,
       routing,
       api_performance: apiPerformance,
       processing_time_ms: Date.now() - startTime,
     });
 
     // 11. Log and emit
-    await logScoredLead(result, apiPerformance);
+    await logScoredLead(result, apiPerformance, apiData, llmResponse);
     emitMetrics(result, apiPerformance);
 
     return result;

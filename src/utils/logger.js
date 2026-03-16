@@ -23,10 +23,12 @@ function getDocClient() {
 /**
  * Log a scored lead to DynamoDB.
  *
- * @param {object} result - Full scoring result (lead_id, score, tier, pillar_breakdown, etc.)
+ * @param {object} result - Full scoring result (lead_id, score, tier, etc.)
  * @param {object} apiPerformance - API response times { trestle: { response_time_ms, success }, ... }
+ * @param {object|null} apiData - Raw merged enrichment fields from all 3 APIs (for auditability)
+ * @param {object|null} llmResponse - LLM output { confidence, reasons, concerns }
  */
-export async function logScoredLead(result, apiPerformance) {
+export async function logScoredLead(result, apiPerformance, apiData = null, llmResponse = null) {
   try {
     const client = getDocClient();
     const now = new Date().toISOString();
@@ -41,8 +43,8 @@ export async function logScoredLead(result, apiPerformance) {
       hard_kill: result.hard_kill,
       hard_kill_reason: result.hard_kill_reason || null,
       reason_codes: result.reason_codes || [],
-      pillar_breakdown: result.pillar_breakdown || {},
-      field_scores: result.field_scores || {},
+      llm_response: llmResponse || null,
+      enrichment_data: apiData ? extractScoredFields(apiData) : null,
       routing: result.routing || {},
       api_performance: apiPerformance || {},
       processing_time_ms: result.processing_time_ms || 0,
@@ -135,6 +137,47 @@ function emitEMF(metrics, dimensions) {
 
   // EMF logs go to stdout — CloudWatch agent picks them up
   console.log(JSON.stringify(emfLog));
+}
+
+/**
+ * Extract the fields that actually matter for scoring from the full API data blob.
+ * Saves the scored signal set to DynamoDB so you can audit why a lead was scored
+ * the way it was without wading through 80+ raw fields.
+ *
+ * Keyed by provider for readability: { trestle: {...}, batchdata: {...}, trustedform: {...} }
+ */
+function extractScoredFields(apiData) {
+  return {
+    trestle: {
+      phone_is_valid: apiData['trestle.phone.is_valid'] ?? null,
+      phone_contact_grade: apiData['trestle.phone.contact_grade'] ?? null,
+      phone_activity_score: apiData['trestle.phone.activity_score'] ?? null,
+      phone_line_type: apiData['trestle.phone.line_type'] ?? null,
+      phone_name_match: apiData['trestle.phone.name_match'] ?? null,
+      email_is_valid: apiData['trestle.email.is_valid'] ?? null,
+      email_is_deliverable: apiData['trestle.email.is_deliverable'] ?? null,
+      email_name_match: apiData['trestle.email.name_match'] ?? null,
+      address_is_valid: apiData['trestle.address.is_valid'] ?? null,
+      address_name_match: apiData['trestle.address.name_match'] ?? null,
+      litigator_risk: apiData['trestle.litigator_risk'] ?? null,
+    },
+    batchdata: {
+      owner_occupied: apiData['batchdata.owner_occupied'] ?? null,
+      property_type: apiData['batchdata.property_type'] ?? null,
+      free_and_clear: apiData['batchdata.free_and_clear'] ?? null,
+      high_equity: apiData['batchdata.high_equity'] ?? null,
+      solar_permit: apiData['batchdata.solar_permit'] ?? null,
+      roof_permit: apiData['batchdata.roof_permit'] ?? null,
+      year_built: apiData['batchdata.year_built'] ?? null,
+      estimated_value: apiData['batchdata.estimated_value'] ?? null,
+      owner_name: apiData['_batchdata.owner_name'] ?? null,
+    },
+    trustedform: {
+      form_input_method: apiData['trustedform.form_input_method'] ?? null,
+      age_seconds: apiData['trustedform.age_seconds'] ?? null,
+      confirmed_owner: apiData['trustedform.confirmed_owner'] ?? null,
+    },
+  };
 }
 
 /**
