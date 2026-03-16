@@ -5,8 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.js",
-    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.js --watch",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.js --watch",
     "dry-run": "node dry-run/simulate.js",
     "analyze": "node dry-run/analyze.js",
     "load-configs": "node seed/load-configs.js",
@@ -14,13 +14,12 @@
     "local": "node dry-run/local-invoke.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.500.0",
     "@aws-sdk/lib-dynamodb": "^3.500.0",
-    "fastest-levenshtein": "^1.0.16",
-    "xlsx": "^0.18.5"
+    "fastest-levenshtein": "^1.0.16"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

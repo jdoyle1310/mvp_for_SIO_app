@@ -45,14 +45,14 @@ B. IDENTITY VERIFICATION
 C. PROPERTY QUALIFICATION
    - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = NEUTRAL in solar — historical data shows renters convert at 16.4% vs owners at 14.2%. Do NOT penalize renters. The renter tag is often wrong in BatchData, and solar financing is available to renters in many markets. Treat as neutral unless other signals (invalid address, name mismatches) suggest the lead is not at the property.
    - property_type: SFR = ideal. "Condominium" = INSTANT REJECT (can't install solar on condos). "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = NEUTRAL — historical data shows commercial property leads convert ABOVE average (21.4% vs 14.3% base). BatchData classification is often wrong. Do NOT penalize or reject commercial property leads.
-   - free_and_clear: "true" = owns home outright = strong positive.
-   - high_equity: "true" = significant equity = can finance solar.
+   - free_and_clear: "true" = owns home outright. NEUTRAL in solar — historical data shows mortgaged homeowners convert at a higher rate (15.5%) than free-and-clear owners (13.4%). Do NOT weight this positively.
+   - high_equity: "true" = NEUTRAL in solar — no appointment rate difference vs non-high-equity leads (14.6% vs 14.3%). null = neutral.
    - solar_permit: "true" = ALREADY HAS SOLAR = cap at Bronze. Zero appointments in historical data for solar permit leads (62.5% DQ rate). Do NOT score Silver or Gold.
    - address.is_valid: "true" = confirmed real address.
 
 D. FINANCIAL CAPACITY
    - household_income: Under $25,000 = INSTANT REJECT. Under $35,000 = financing risk. null = NEUTRAL (don't penalize — most leads won't have this).
-   - living_status: "Own" = good. "Rent" = bad. null = neutral.
+   - living_status: "Own" = slight positive. "Rent" = NEUTRAL in solar — historical data shows renters convert at a higher rate than owners (16.4% vs 14.2%). Do NOT penalize renters. null = neutral.
 
 E. FORM BEHAVIOR
    NOTE: Upstream fraud detection (eHawk) filters bots and fraudulent leads BEFORE they reach this scoring step. Focus on data quality signals, not fraud inference from form behavior.
@@ -347,6 +347,7 @@ export async function scoreLead(apiData, vertical, leadName) {
     body: JSON.stringify({
       model: ANTHROPIC_MODEL,
       max_tokens: 512,
+      temperature: 0,
       system: prompt,
       messages: [{ role: 'user', content: userMessage }],
     }),
@@ -372,7 +373,7 @@ export async function scoreLead(apiData, vertical, leadName) {
 
   return {
     tier: result.tier || 'Bronze',
-    score: result.score || 30,
+    score: result.score ?? 30,
     confidence: result.confidence || 'medium',
     reasons: result.reasons || [],
     concerns: result.concerns || [],

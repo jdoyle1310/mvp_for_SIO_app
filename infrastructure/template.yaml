@@ -5,7 +5,7 @@ Description: GreenWatt Lead Validation and Scoring System
 Globals:
   Function:
     Timeout: 10
-    Runtime: nodejs18.x
+    Runtime: nodejs24.x
     MemorySize: 512
     Environment:
       Variables:

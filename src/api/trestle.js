@@ -98,12 +98,11 @@ function extractFields(data) {
     'trestle.phone.line_type': data['phone.linetype'] ?? null,
     'trestle.phone.name_match': data['phone.name_match'] != null ? String(data['phone.name_match']) : null,
 
-    // ── Email fields (identity) ──
+    // ── Email fields (identity + contactability) ──
     'trestle.email.is_valid': data['email.is_valid'] != null ? String(data['email.is_valid']) : null,
     'trestle.email.name_match': data['email.name_match'] != null ? String(data['email.name_match']) : null,
     'trestle.email.contact_grade': data['email.contact_grade'] ?? null,
-    // Dropped from scoring — eHawk covers email deliverability + age. Log-only.
-    '_trestle.email.is_deliverable': emailIsDeliverable != null ? String(emailIsDeliverable) : null,
+    'trestle.email.is_deliverable': emailIsDeliverable != null ? String(emailIsDeliverable) : null,
     '_trestle.email.age_score': emailAgeScore,
     '_trestle.email.is_free_provider': isFreeEmail ? 'true' : 'false',
 
@@ -129,7 +128,7 @@ function createNullResponse() {
     'trestle.email.is_valid': null,
     'trestle.email.name_match': null,
     'trestle.email.contact_grade': null,
-    '_trestle.email.is_deliverable': null,
+    'trestle.email.is_deliverable': null,
     '_trestle.email.age_score': null,
     '_trestle.email.is_free_provider': null,
     'trestle.address.is_valid': null,
