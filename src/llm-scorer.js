@@ -448,25 +448,44 @@ export async function scoreLead(apiData, vertical, leadName) {
   const prompt = getPromptForVertical(vertical);
   const fields = prepareFieldsForLLM(apiData, vertical);
 
-  const userMessage = leadName
-    ? `Score this lead (name: ${leadName}):\n${JSON.stringify(fields, null, 2)}`
-    : `Score this lead:\n${JSON.stringify(fields, null, 2)}`;
+  const nonNullFields = Object.fromEntries(
+    Object.entries(fields).filter(([, v]) => v != null)
+  );
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
-      max_tokens: 512,
-      temperature: 0,
-      system: prompt,
-      messages: [{ role: 'user', content: userMessage }],
-    }),
-  });
+  const userMessage = leadName
+    ? `Score this lead (name: ${leadName}):\n${JSON.stringify(nonNullFields, null, 2)}`
+    : `Score this lead:\n${JSON.stringify(nonNullFields, null, 2)}`;
+
+  const anthropicController = new AbortController();
+  const anthropicTimeout = setTimeout(() => anthropicController.abort(), 5000);
+
+  let response;
+  try {
+    response = await fetch(ANTHROPIC_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 512,
+        temperature: 0,
+        cache_control: { type: 'ephemeral' },
+        system: prompt,
+        messages: [{ role: 'user', content: userMessage }],
+      }),
+      signal: anthropicController.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Anthropic API timeout after 5000ms');
+    }
+    throw err;
+  } finally {
+    clearTimeout(anthropicTimeout);
+  }
 
   if (!response.ok) {
     const errBody = await response.text();

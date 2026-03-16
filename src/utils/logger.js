@@ -5,20 +5,9 @@
  * Every invocation emits CloudWatch Embedded Metric Format (EMF) metrics.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { TABLE_NAMES, METRICS_NAMESPACE } from './constants.js';
-
-// DynamoDB client (lazy init)
-let docClient = null;
-
-function getDocClient() {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-    docClient = DynamoDBDocumentClient.from(client);
-  }
-  return docClient;
-}
+import { getDocClient, setDocClient } from './dynamo-client.js';
 
 /**
  * Log a scored lead to DynamoDB.
@@ -180,9 +169,4 @@ function extractScoredFields(apiData) {
   };
 }
 
-/**
- * For testing — inject a mock DynamoDB client.
- */
-export function setDocClient(client) {
-  docClient = client;
-}
+export { setDocClient };

@@ -57,11 +57,13 @@ export async function handler(event) {
       return formatError(400, validationError);
     }
 
-    // 2. Load vertical config (still needed for pricing/routing)
-    const config = await loadConfig(lead.vertical);
+    // 2. Load vertical config + normalize phone in parallel (independent operations)
+    const [config, phone] = await Promise.all([
+      loadConfig(lead.vertical),
+      Promise.resolve(normalizePhone(lead.contact.phone)),
+    ]);
 
-    // 3. Normalize phone
-    const phone = normalizePhone(lead.contact.phone);
+    // 3. Reject invalid phone early
     if (!phone) {
       return formatResponse(lead, {
         decision: DECISIONS.REJECT,

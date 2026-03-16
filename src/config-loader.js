@@ -4,9 +4,9 @@
  * For local dev/testing, falls back to reading JSON files from /config directory.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { TABLE_NAMES, CONFIG_CACHE_TTL, VALID_VERTICALS } from './utils/constants.js';
+import { getDocClient, setDocClient } from './utils/dynamo-client.js';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -15,17 +15,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // In-memory cache
 const cache = new Map();
-
-// DynamoDB client (lazy init)
-let docClient = null;
-
-function getDocClient() {
-  if (!docClient) {
-    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-    docClient = DynamoDBDocumentClient.from(client);
-  }
-  return docClient;
-}
 
 /**
  * Load config for a vertical. Checks cache first, then DynamoDB, then local files.
@@ -101,9 +90,4 @@ export function bustCache(vertical = null) {
   }
 }
 
-/**
- * For testing — inject a mock DynamoDB client.
- */
-export function setDocClient(client) {
-  docClient = client;
-}
+export { setDocClient };

@@ -6,7 +6,7 @@ Globals:
   Function:
     Timeout: 10
     Runtime: nodejs24.x
-    MemorySize: 512
+    MemorySize: 1769
     Environment:
       Variables:
         DYNAMO_CONFIG_TABLE: !Ref ConfigTable
