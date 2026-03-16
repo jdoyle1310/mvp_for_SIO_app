@@ -1,9 +1,18 @@
 /**
  * LLM Lead Scorer — Anthropic Sonnet scoring engine.
  *
- * Verticals: Solar (v4.1, validated on 1,152 leads with dispo)
- *            Roofing (v4.1, validated on 201 leads with dispo)
- *            Windows (v4.1 draft, 198-lead backtest, pending dispo validation)
+ * Verticals: Solar (v4.2, validated on 1,231 leads with dispo, temp=0 + new fields)
+ *            Roofing (v4.2, validated on 320 leads with dispo, temp=0 + new fields)
+ *            Windows (v4.2, validated on 198 leads with dispo, temp=0 + new fields)
+ *
+ * v4.2 changes (2026-03-16):
+ * - Temperature set to 0 for deterministic scoring
+ * - Added BatchData demographic/property fields as soft signals:
+ *   estimated_value, bd_age, sale_propensity, mortgage_total_payment,
+ *   length_of_residence_years, recently_sold
+ * - Validated: Solar 93.2%→94.6% appt retention, Roofing 100%→100%,
+ *   Windows 90.9%→100%. Zero appointments or sales lost.
+ * - Config-driven field mapping (VERTICAL_FIELDS + FIELD_SOURCES)
  *
  * Flow:
  * 1. Select prompt based on vertical
@@ -50,6 +59,10 @@ C. PROPERTY QUALIFICATION
    - high_equity: "true" = NEUTRAL in solar — no appointment rate difference vs non-high-equity leads (14.6% vs 14.3%). null = neutral.
    - solar_permit: "true" = ALREADY HAS SOLAR = cap at Bronze. Zero appointments in historical data for solar permit leads (62.5% DQ rate). Do NOT score Silver or Gold.
    - address.is_valid: "true" = confirmed real address.
+   - estimated_value: Property assessed value. Under $150,000 = slight negative (0% appointment rate at this value in validated data). $500,000+ = strong positive — high-value homes convert well and override other soft concerns like age or sale propensity. null = NEUTRAL.
+   - bd_age: Lead's estimated age. 70+ = slight negative (lower conversion rate in validated solar data). 40-65 = neutral. This is a SOFT signal — do NOT hard-cap based on age alone. If estimated_value is $500,000+, ignore age concerns. null = NEUTRAL.
+   - sale_propensity: Score 0-100 indicating likelihood the home will sell soon. 80+ = slight negative for solar (homeowner may sell before realizing solar ROI). This is a SOFT signal — do NOT hard-cap. If estimated_value is $500,000+, ignore sale propensity concerns. null = NEUTRAL.
+   - mortgage_total_payment: Monthly mortgage payment. $3,000+/mo = moderate positive (indicates high-value home, can afford solar). Under $1,000/mo combined with estimated_value under $300,000 = slight negative. null = NEUTRAL.
 
 D. FINANCIAL CAPACITY
    - household_income: Under $25,000 = INSTANT REJECT. Under $35,000 = financing risk. null = NEUTRAL (don't penalize — most leads won't have this).
@@ -156,6 +169,11 @@ C. PROPERTY QUALIFICATION
    - address.is_valid: "true" = confirmed real address.
    - year_built: Older homes are more likely to need roofing work. Pre-1990 = slight positive. Very new construction (post-2020) = less likely to need roof.
    - RENTER OVERRIDE: If owner_occupied = "confirmed_renter" BUT high_equity = "true" AND phone.name_match = "true" AND address.name_match = "true", the renter tag may be a data error. Score Silver at best, not Gold.
+   - estimated_value: Property assessed value. Under $150,000 = slight negative. $500,000-$1,000,000 = moderate positive (11% appointment rate vs 5% base in validated data). $500,000+ overrides other soft concerns. null = NEUTRAL.
+   - bd_age: Lead's estimated age. 70+ = slight negative (0% appointment rate in validated roofing data). 40-54 = slight positive. This is a SOFT signal only — do NOT hard-cap based on age alone. null = NEUTRAL.
+   - sale_propensity: Score 0-100. Under 40 = slight positive for roofing (homeowner planning to stay, investing in their home). 80+ = slight negative (may sell before investing in roof). null = NEUTRAL. Soft signal.
+   - length_of_residence_years: 5-15 years = slight positive (settled homeowner, roof likely aging). Under 2 years = slight negative (recent move, less invested). null = NEUTRAL.
+   - recently_sold: "true" = slight negative for roofing (recently purchased, unlikely to need new roof immediately). null = NEUTRAL.
 
 D. FINANCIAL CAPACITY
    - household_income: Under $25,000 = INSTANT REJECT. null = NEUTRAL (don't penalize — most leads won't have this).
@@ -270,6 +288,9 @@ C. PROPERTY QUALIFICATION (windows-specific signals)
    - tax_lien: "true" = strong negative (financial distress, unlikely to invest in windows).
    - pre_foreclosure: "true" = strong negative (not investing in property improvements).
    - RENTER OVERRIDE: If owner_occupied = "confirmed_renter" BUT high_equity = "true" AND phone.name_match = "true" AND address.name_match = "true", the renter tag may be a data error. Score Silver at best, not Gold.
+   - sale_propensity: Score 0-100. 60-80 = moderate positive for windows. 80+ = STRONG positive (30% appointment rate vs 12% base in validated data — window buyers are often in transition, upgrading before/after a move). Under 40 = slight negative. null = NEUTRAL. [NOTE: This signal is OPPOSITE to solar/roofing — window buyers in transition convert at very high rates.]
+   - bd_age: Lead's estimated age. 55-69 = slight negative for windows (0% appointment rate in validated data at this age range). 70+ = neutral to slight positive (seniors DO replace windows). Under 40 = neutral. null = NEUTRAL.
+   - length_of_residence_years: Under 2 years = moderate positive for windows (new homeowners investing in upgrades, 29% appointment rate). 5-15 years = moderate positive (19% appointment rate). 15+ years = slight negative (6% appointment rate). null = NEUTRAL.
 
 D. FINANCIAL CAPACITY
    - household_income: Under $25,000 = INSTANT REJECT. null = NEUTRAL (don't penalize — most leads won't have this).
@@ -399,19 +420,35 @@ export function prepareFieldsForLLM(apiData, vertical) {
   fields['high_equity'] = apiData['batchdata.high_equity'] ?? null;
   fields['address.is_valid'] = apiData['trestle.address.is_valid'] ?? null;
 
-  // Vertical-specific property fields
-  if (vertical === 'solar') {
-    fields['email.is_deliverable'] = apiData['trestle.email.is_deliverable'] ?? null;
-    fields['solar_permit'] = apiData['batchdata.solar_permit'] ?? null;
-  } else if (vertical === 'roofing') {
-    fields['roof_permit'] = apiData['batchdata.roof_permit'] ?? null;
-    fields['year_built'] = apiData['batchdata.year_built'] ?? null;
-  } else if (vertical === 'windows') {
-    fields['email.is_deliverable'] = apiData['trestle.email.is_deliverable'] ?? null;
-    fields['year_built'] = apiData['batchdata.year_built'] ?? null;
-    fields['estimated_value'] = apiData['batchdata.estimated_value'] ?? null;
-    fields['tax_lien'] = apiData['batchdata.tax_lien'] ?? null;
-    fields['pre_foreclosure'] = apiData['batchdata.pre_foreclosure'] ?? null;
+  // Vertical-specific field config — maps clean field names to API data sources
+  const VERTICAL_FIELDS = {
+    solar:   ['email.is_deliverable', 'solar_permit', 'estimated_value', 'bd_age', 'sale_propensity', 'mortgage_total_payment'],
+    roofing: ['roof_permit', 'year_built', 'estimated_value', 'bd_age', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
+    windows: ['email.is_deliverable', 'year_built', 'estimated_value', 'tax_lien', 'pre_foreclosure', 'sale_propensity', 'bd_age', 'length_of_residence_years'],
+  };
+
+  const FIELD_SOURCES = {
+    'email.is_deliverable': 'trestle.email.is_deliverable',
+    'solar_permit': 'batchdata.solar_permit',
+    'roof_permit': 'batchdata.roof_permit',
+    'year_built': 'batchdata.year_built',
+    'estimated_value': 'batchdata.estimated_value',
+    'tax_lien': 'batchdata.tax_lien',
+    'pre_foreclosure': 'batchdata.pre_foreclosure',
+    'bd_age': 'batchdata.bd_age',
+    'sale_propensity': 'batchdata.sale_propensity',
+    'mortgage_total_payment': 'batchdata.mortgage_total_payment',
+    'length_of_residence_years': 'batchdata.length_of_residence_years',
+    'recently_sold': 'batchdata.recently_sold',
+  };
+
+  // Add vertical-specific fields from config
+  const verticalFields = VERTICAL_FIELDS[vertical] || [];
+  for (const fieldName of verticalFields) {
+    const source = FIELD_SOURCES[fieldName];
+    if (source) {
+      fields[fieldName] = apiData[source] ?? null;
+    }
   }
 
   // D. Financial (will be null after FullContact dropped — LLM treats null as neutral)
