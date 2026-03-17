@@ -1,0 +1,176 @@
+{
+  "vertical": "solar",
+  "version": "4.0",
+  "updated_at": "2026-03-12T00:00:00Z",
+  "hard_kills": {
+    "universal": {},
+    "vertical_specific": {
+      "batchdata_renter_confirmed": true,
+      "batchdata_mobile_manufactured": true
+    }
+  },
+  "pillar_weights": {
+    "contactability": 0.30,
+    "identity": 0.25,
+    "fraud_legal": 0.20,
+    "behavioral": 0.05,
+    "property_financial": 0.20
+  },
+  "tier_thresholds": {
+    "gold": 60,
+    "silver": 40,
+    "bronze": 20
+  },
+  "signal_clusters": {
+    "phone_quality": {
+      "pillar": "contactability",
+      "fields": [
+        "trestle.phone.is_valid",
+        "trestle.phone.contact_grade",
+        "trestle.phone.activity_score"
+      ]
+    },
+    "email_quality": {
+      "pillar": "identity",
+      "fields": [
+        "trestle.email.is_valid",
+        "trestle.email.contact_grade"
+      ]
+    },
+    "name_verification": {
+      "pillar": "identity",
+      "fields": [
+        "trestle.phone.name_match",
+        "trestle.email.name_match",
+        "trestle.address.name_match"
+      ]
+    },
+    "ownership": {
+      "pillar": "property_financial",
+      "fields": [
+        "batchdata.owner_occupied"
+      ]
+    }
+  },
+  "field_scores": {
+    "trestle.phone.is_valid": {
+      "pillar": "contactability",
+      "values": { "true": 30, "false": "HARD_KILL" },
+      "null_penalty": 0
+    },
+    "trestle.phone.contact_grade": {
+      "pillar": "contactability",
+      "values": { "A": 120, "B": 80, "C": 40, "D": 10, "F": "HARD_KILL" },
+      "null_penalty": 0
+    },
+    "trestle.phone.activity_score": {
+      "pillar": "contactability",
+      "ranges": [
+        { "min": 80, "max": 100, "points": 60 },
+        { "min": 50, "max": 79, "points": 30 },
+        { "min": 30, "max": 49, "points": 0 },
+        { "min": 0, "max": 29, "points": -100 }
+      ],
+      "null_penalty": 0
+    },
+    "trestle.phone.line_type": {
+      "pillar": "contactability",
+      "values": { "Mobile": 50, "Landline": 25, "FixedVOIP": 10, "NonFixedVOIP": -40, "Premium": -100, "TollFree": -100 },
+      "null_penalty": 0
+    },
+    "trestle.phone.name_match": {
+      "pillar": "identity",
+      "values": { "true": 50, "false": -60 },
+      "null_penalty": 0
+    },
+    "trestle.email.is_valid": {
+      "pillar": "identity",
+      "values": { "true": 30, "false": -40 },
+      "null_penalty": 0
+    },
+    "trestle.email.name_match": {
+      "pillar": "identity",
+      "values": { "true": 30, "false": -30 },
+      "null_penalty": 0
+    },
+    "trestle.email.contact_grade": {
+      "pillar": "identity",
+      "values": { "A": 30, "B": 20, "C": 5, "D": -20, "F": -50 },
+      "null_penalty": 0
+    },
+    "trestle.address.is_valid": {
+      "pillar": "identity",
+      "values": { "true": 15, "false": -35 },
+      "null_penalty": 0
+    },
+    "trestle.address.name_match": {
+      "pillar": "identity",
+      "values": { "true": 20, "false": -25 },
+      "null_penalty": 0
+    },
+    "trestle.litigator_risk": {
+      "pillar": "fraud_legal",
+      "values": { "false": 15, "true": -120 },
+      "null_penalty": 0
+    },
+    "trustedform.form_input_method": {
+      "pillar": "behavioral",
+      "values": { "typing_only": 50, "typing_autofill": 30, "autofill_only": 15, "typing_paste": 5, "paste_only": -50, "pre-populated_only": "HARD_KILL", "empty": -40 },
+      "null_penalty": 0
+    },
+    "trustedform.age_seconds": {
+      "pillar": "behavioral",
+      "ranges": [
+        { "min": 0, "max": 299, "points": 30 },
+        { "min": 300, "max": 1799, "points": 15 },
+        { "min": 1800, "max": 14399, "points": -5 },
+        { "min": 14400, "max": 86399, "points": -50 },
+        { "min": 86400, "max": null, "points": "HARD_KILL" }
+      ],
+      "null_penalty": 0
+    },
+    "batchdata.owner_occupied": {
+      "pillar": "property_financial",
+      "values": { "confirmed_owner": 80, "probable_owner": 40, "probable_renter": -60, "confirmed_renter": "HARD_KILL" },
+      "null_penalty": 0
+    },
+    "batchdata.property_type": {
+      "pillar": "property_financial",
+      "values": { "Single Family Residential": 60, "Townhouse": 10, "Condominium": "HARD_KILL", "Multi-Family": -40, "Mobile/Manufactured": "HARD_KILL", "Commercial": -80 },
+      "null_penalty": 0
+    },
+    "batchdata.free_and_clear": {
+      "pillar": "property_financial",
+      "values": { "true": 35, "false": 0 },
+      "null_penalty": 0
+    },
+    "batchdata.high_equity": {
+      "pillar": "property_financial",
+      "values": { "true": 25, "false": 0 },
+      "null_penalty": 0
+    },
+    "batchdata.tax_lien": {
+      "pillar": "property_financial",
+      "values": { "false": 10, "true": -80 },
+      "null_penalty": 0
+    },
+    "batchdata.pre_foreclosure": {
+      "pillar": "property_financial",
+      "values": { "false": 10, "true": -100 },
+      "null_penalty": 0
+    },
+    "batchdata.cash_buyer": {
+      "pillar": "property_financial",
+      "values": { "true": 25, "false": 0 },
+      "null_penalty": 0
+    },
+    "batchdata.senior_owner": {
+      "pillar": "property_financial",
+      "values": { "true": 0, "false": 0 },
+      "null_penalty": 0
+    }
+  },
+  "vertical_bonuses": [],
+  "vertical_penalties": [],
+  "bonus_penalty_cap": 15
+}

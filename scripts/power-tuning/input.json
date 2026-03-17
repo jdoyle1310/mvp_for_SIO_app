@@ -1,0 +1,21 @@
+{
+  "lambdaARN": "arn:aws:lambda:REGION:ACCOUNT_ID:function:greenwatt-validation",
+  "powerValues": [512, 768, 1024, 1280, 1536, 1769, 2048, 3008],
+  "num": 10,
+  "payload": {
+    "httpMethod": "POST",
+    "path": "/validate",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "requestContext": {
+      "stage": "Prod",
+      "httpMethod": "POST",
+      "path": "/validate"
+    },
+    "body": "{\"lead_id\":\"TEST-R-006\",\"vertical\":\"roofing\",\"publisher_id\":\"PUB-TEST\",\"publisher_name\":\"Backtest Dataset\",\"contact\":{\"first_name\":\"Gwendolyn\",\"last_name\":\"Allen\",\"phone\":\"9785978058\",\"email\":\"gwendolyn79@gmail.com\",\"address\":\"88 Tyler Rd\",\"city\":\"TOWNSEND\",\"state\":\"MA\",\"zip\":\"01469\"}}",
+    "isBase64Encoded": false
+  },
+  "parallelInvocation": true,
+  "strategy": "speed"
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "buyer_id": "BUYER-SEW-001",
+    "buyer_name": "Solar Energy World",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver"],
+    "cpl_by_tier": { "Gold": 95, "Silver": 65, "Bronze": 40 },
+    "daily_cap": 50,
+    "states": ["MD", "VA", "DC", "PA", "NJ"],
+    "endpoint_url": "https://example.com/sew/post"
+  },
+  {
+    "buyer_id": "BUYER-SOL-002",
+    "buyer_name": "SunPower Direct",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver", "Bronze"],
+    "cpl_by_tier": { "Gold": 85, "Silver": 55, "Bronze": 35 },
+    "daily_cap": 100,
+    "states": ["AZ", "CA", "NV", "TX", "FL"],
+    "endpoint_url": "https://example.com/sunpower/post"
+  },
+  {
+    "buyer_id": "BUYER-SOL-003",
+    "buyer_name": "Green Home Solar",
+    "vertical": "solar",
+    "active": true,
+    "tiers_accepted": ["Gold"],
+    "cpl_by_tier": { "Gold": 120 },
+    "daily_cap": 20,
+    "states": [],
+    "endpoint_url": "https://example.com/greenhome/post"
+  },
+  {
+    "buyer_id": "BUYER-ROOF-001",
+    "buyer_name": "Victory Home Remodeling",
+    "vertical": "roofing",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver", "Bronze"],
+    "cpl_by_tier": { "Gold": 110, "Silver": 75, "Bronze": 45 },
+    "daily_cap": 40,
+    "states": ["PA", "NJ", "DE", "MD"],
+    "endpoint_url": "https://example.com/victory/post"
+  },
+  {
+    "buyer_id": "BUYER-ROOF-002",
+    "buyer_name": "StormGuard Roofing",
+    "vertical": "roofing",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver"],
+    "cpl_by_tier": { "Gold": 100, "Silver": 65 },
+    "daily_cap": 30,
+    "states": ["TX", "OK", "LA", "AR"],
+    "endpoint_url": "https://example.com/stormguard/post"
+  },
+  {
+    "buyer_id": "BUYER-ROOF-003",
+    "buyer_name": "National Roofing",
+    "vertical": "roofing",
+    "active": true,
+    "tiers_accepted": ["Gold", "Silver", "Bronze"],
+    "cpl_by_tier": { "Gold": 90, "Silver": 60, "Bronze": 35 },
+    "daily_cap": 75,
+    "states": [],
+    "endpoint_url": "https://example.com/natroofing/post"
+  }
+]

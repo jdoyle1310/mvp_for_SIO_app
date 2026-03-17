@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: GreenWatt Lead Validation and Scoring System
-
 Globals:
   Function:
     Timeout: 30
@@ -9,29 +8,33 @@ Globals:
     MemorySize: 1769
     Environment:
       Variables:
-        DYNAMO_CONFIG_TABLE: !Ref ConfigTable
-        DYNAMO_SCORE_LOG_TABLE: !Ref ScoreLogTable
-        DYNAMO_BUYER_TABLE: !Ref BuyerTable
+        DYNAMO_CONFIG_TABLE:
+          Ref: ConfigTable
+        DYNAMO_SCORE_LOG_TABLE:
+          Ref: ScoreLogTable
+        DYNAMO_BUYER_TABLE:
+          Ref: BuyerTable
         CONFIG_CACHE_TTL: '300'
         API_TIMEOUT_MS: '3000'
-
 Resources:
-  # Lambda Function
   ValidationFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: greenwatt-validation
       Handler: src/index.handler
-      CodeUri: ..
+      CodeUri: ValidationFunction
       Description: Lead validation and scoring Lambda for GreenWatt
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ConfigTable
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ScoreLogTable
-        - DynamoDBCrudPolicy:
-            TableName: !Ref BuyerTable
-        - CloudWatchPutMetricPolicy: {}
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ConfigTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ScoreLogTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: BuyerTable
+      - CloudWatchPutMetricPolicy: {}
       Events:
         ValidateLead:
           Type: Api
@@ -43,82 +46,78 @@ Resources:
           Properties:
             Path: /health
             Method: get
-
-  # DynamoDB Tables
+    Metadata:
+      SamResourceId: ValidationFunction
   ConfigTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: greenwatt_vertical_configs
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: vertical
-          AttributeType: S
+      - AttributeName: vertical
+        AttributeType: S
       KeySchema:
-        - AttributeName: vertical
-          KeyType: HASH
-
+      - AttributeName: vertical
+        KeyType: HASH
   ScoreLogTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: greenwatt_score_log
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: lead_id
-          AttributeType: S
-        - AttributeName: scored_at
-          AttributeType: S
-        - AttributeName: vertical
-          AttributeType: S
-        - AttributeName: publisher_id
-          AttributeType: S
+      - AttributeName: lead_id
+        AttributeType: S
+      - AttributeName: scored_at
+        AttributeType: S
+      - AttributeName: vertical
+        AttributeType: S
+      - AttributeName: publisher_id
+        AttributeType: S
       KeySchema:
-        - AttributeName: lead_id
-          KeyType: HASH
-        - AttributeName: scored_at
-          KeyType: RANGE
+      - AttributeName: lead_id
+        KeyType: HASH
+      - AttributeName: scored_at
+        KeyType: RANGE
       TimeToLiveSpecification:
         AttributeName: ttl
         Enabled: true
       GlobalSecondaryIndexes:
-        - IndexName: vertical-scored_at-index
-          KeySchema:
-            - AttributeName: vertical
-              KeyType: HASH
-            - AttributeName: scored_at
-              KeyType: RANGE
-          Projection:
-            ProjectionType: KEYS_ONLY
-        - IndexName: publisher-scored_at-index
-          KeySchema:
-            - AttributeName: publisher_id
-              KeyType: HASH
-            - AttributeName: scored_at
-              KeyType: RANGE
-          Projection:
-            ProjectionType: KEYS_ONLY
-
+      - IndexName: vertical-scored_at-index
+        KeySchema:
+        - AttributeName: vertical
+          KeyType: HASH
+        - AttributeName: scored_at
+          KeyType: RANGE
+        Projection:
+          ProjectionType: KEYS_ONLY
+      - IndexName: publisher-scored_at-index
+        KeySchema:
+        - AttributeName: publisher_id
+          KeyType: HASH
+        - AttributeName: scored_at
+          KeyType: RANGE
+        Projection:
+          ProjectionType: KEYS_ONLY
   BuyerTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: greenwatt_buyers
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: buyer_id
-          AttributeType: S
-        - AttributeName: vertical
-          AttributeType: S
+      - AttributeName: buyer_id
+        AttributeType: S
+      - AttributeName: vertical
+        AttributeType: S
       KeySchema:
-        - AttributeName: buyer_id
-          KeyType: HASH
+      - AttributeName: buyer_id
+        KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: vertical-index
-          KeySchema:
-            - AttributeName: vertical
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-
-  # CloudWatch Alarms
+      - IndexName: vertical-index
+        KeySchema:
+        - AttributeName: vertical
+          KeyType: HASH
+        Projection:
+          ProjectionType: ALL
   HighProcessingTimeAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -131,7 +130,6 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 400
       ComparisonOperator: GreaterThanThreshold
-
   HighHardKillRateAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -144,7 +142,6 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 0.3
       ComparisonOperator: GreaterThanThreshold
-
   LambdaErrorAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -153,24 +150,30 @@ Resources:
       MetricName: Errors
       Namespace: AWS/Lambda
       Dimensions:
-        - Name: FunctionName
-          Value: !Ref ValidationFunction
+      - Name: FunctionName
+        Value:
+          Ref: ValidationFunction
       Statistic: Average
       Period: 300
       EvaluationPeriods: 1
       Threshold: 0.01
       ComparisonOperator: GreaterThanThreshold
-
 Outputs:
   ApiUrl:
     Description: API Gateway endpoint URL
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/validate'
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/validate
   FunctionArn:
     Description: Lambda function ARN
-    Value: !GetAtt ValidationFunction.Arn
+    Value:
+      Fn::GetAtt:
+      - ValidationFunction
+      - Arn
   ConfigTableName:
     Description: DynamoDB config table
-    Value: !Ref ConfigTable
+    Value:
+      Ref: ConfigTable
   ScoreLogTableName:
     Description: DynamoDB score log table
-    Value: !Ref ScoreLogTable
+    Value:
+      Ref: ScoreLogTable

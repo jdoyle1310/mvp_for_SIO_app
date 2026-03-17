@@ -1,0 +1,532 @@
+@baseUrl = https://0lc3832g67.execute-api.us-east-1.amazonaws.com/Prod
+
+### Health check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GOLD TIER — Expected: Gold (~95)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-001 | NICK BYRNE | Expected: Gold (95) | Dispo: Qualified
+# Phone A/100/Mobile, all name matches true, confirmed_owner, free & clear, high equity
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-001",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "NICK",
+    "last_name": "BYRNE",
+    "phone": "5713321209",
+    "email": "nicolausbyrne@gmail.com",
+    "address": "3109 SLEEPY HOLLOW ROAD",
+    "city": "FALLS CHURCH",
+    "state": "VA",
+    "zip": "22042"
+  }
+}
+
+###
+
+### TEST-002 | Henry Faber | Expected: Gold (95) | Dispo: Home Details
+# Phone A/100/Mobile, all name matches true, confirmed_owner, free & clear, high equity
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-002",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Henry",
+    "last_name": "Faber",
+    "phone": "3013856006",
+    "email": "henfab@verizon.net",
+    "address": "4116 Sir Walter Road",
+    "city": "Olney",
+    "state": "MD",
+    "zip": "20832"
+  }
+}
+
+###
+
+### TEST-003 | JAMES SZABO | Expected: Gold (95) | Dispo: Qualified
+# Phone A/100/Mobile, all name matches true, confirmed_owner, free & clear, high equity
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-003",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "JAMES",
+    "last_name": "SZABO",
+    "phone": "8562379380",
+    "email": "j_szabo57@yahoo.com",
+    "address": "23 LEE ANN DR",
+    "city": "BLACKWOOD",
+    "state": "NJ",
+    "zip": "08012"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SILVER TIER — Expected: Silver (~55–62)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-004 | INDERJIT SINGH | Expected: Silver (62) | Dispo: Re-engage
+# Phone B/100/Mobile, phone name_match false, address name_match true, confirmed_owner, high equity
+# Owner name on deed is a trust (PANNU LEGACY HOLDINGS), corporate_owned flag
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-004",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "INDERJIT",
+    "last_name": "SINGH",
+    "phone": "4074359995",
+    "email": "isp64@aol.com",
+    "address": "1006 EDMISTON PLACE",
+    "city": "LONGWOOD",
+    "state": "FL",
+    "zip": "32779"
+  }
+}
+
+###
+
+### TEST-005 | Sylvania Woods | Expected: Silver (55) | Dispo: Re-engage
+# Sparse enrichment data — all API fields null, but TrustedForm confirmed_owner verified
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-005",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Sylvania",
+    "last_name": "Woods",
+    "phone": "5712155078",
+    "email": "sylvania126@hotmail.com",
+    "address": "7816 Fiske Ave",
+    "city": "Lanham",
+    "state": "MD",
+    "zip": "20706"
+  }
+}
+
+###
+
+### TEST-006 | Helen Bacon | Expected: Silver (55) | Dispo: Nurture
+# Sparse enrichment data — all API fields null, but TrustedForm confirmed_owner verified
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-006",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Helen",
+    "last_name": "Bacon",
+    "phone": "6107462355",
+    "email": "jobacon750@aol.com",
+    "address": "650 School Rd",
+    "city": "Nazareth",
+    "state": "PA",
+    "zip": "18064"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BRONZE TIER — Expected: Bronze (~20–35)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-007 | DONALD ATKINSON | Expected: Bronze (35) | Dispo: Do Not Contact
+# Phone A/100/Mobile + all name matches true BUT solar_permit=true AND roof_permit=true → Bronze cap
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-007",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "DONALD",
+    "last_name": "ATKINSON",
+    "phone": "3529017109",
+    "email": "dbatk42@gmail.com",
+    "address": "1935 CORDERO COURT",
+    "city": "LADY LAKE",
+    "state": "FL",
+    "zip": "32159"
+  }
+}
+
+###
+
+### TEST-008 | Wayne Krauch | Expected: Bronze (20) | Dispo: Not Interested
+# Sparse enrichment data — all API fields null, no TrustedForm owner verification
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-008",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Wayne",
+    "last_name": "Krauch",
+    "phone": "4436554537",
+    "email": "wdkrauch76@verizon.net",
+    "address": "313 Cigar Loop",
+    "city": "Havre De Grace",
+    "state": "MD",
+    "zip": "21078"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REJECT TIER — Expected: Reject (~5–10)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-009 | JUAN BERMUDEZ | Expected: Reject (5) | Dispo: Bad Contact Data
+# All enrichment null, no TrustedForm verification, form_input empty
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-009",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "JUAN",
+    "last_name": "BERMUDEZ",
+    "phone": "4075796706",
+    "email": "jzzjnj6116@gmail.com",
+    "address": "236 COSMOS DR",
+    "city": "ORLANDO",
+    "state": "FL",
+    "zip": "32807"
+  }
+}
+
+###
+
+### TEST-010 | CHARLES MICHAEL TURNER | Expected: Reject (10) | Dispo: Bad Contact Data
+# All enrichment null, no TrustedForm verification, form_input empty, 24s on page
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-051",
+  "vertical": "solar",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "CHARLES MICHAEL",
+    "last_name": "TURNER",
+    "phone": "4079486998",
+    "email": "gravity6998@gmail.com",
+    "address": "11124 ROCKPORT ST",
+    "city": "ORLANDO",
+    "state": "FL",
+    "zip": "32836"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ROOFING VERTICAL — Backtest Dataset (v4.1)
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GOLD TIER — Expected: Gold (~95)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-R-001 | Christine Holmes | Expected: Gold (95) | Dispo: Qualified/Converted
+# Phone A/100/Mobile, all name matches true, confirmed_owner, free & clear, high equity, year_built 1917
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-001",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Christine",
+    "last_name": "Holmes",
+    "phone": "7245445017",
+    "email": "babyjoy5508@gmail.com",
+    "address": "373 woodlane Ave",
+    "city": "Midland",
+    "state": "PA",
+    "zip": "15059"
+  }
+}
+
+###
+
+### TEST-R-002 | Eric Seager | Expected: Gold (95) | Dispo: Qualified/Converted
+# Phone A/100/Mobile, all name matches true, confirmed_owner, high equity, year_built 1890 (pre-1990 positive)
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-002",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Eric",
+    "last_name": "Seager",
+    "phone": "7176939297",
+    "email": "vlen_leak@hotmail.com",
+    "address": "257 E Prospect St",
+    "city": "York",
+    "state": "PA",
+    "zip": "17403"
+  }
+}
+
+###
+
+### TEST-R-003 | margaret burke-carman | Expected: Gold (95) | Dispo: Qualified/Converted/Appt Completed
+# Phone A/100/Mobile, all name matches true, confirmed_owner, high equity, year_built 1954
+# Owner name is a trust (M M BURKE CARMAN RET) — name matches still converge on lead name
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-003",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "margaret",
+    "last_name": "burke-carman",
+    "phone": "7818546008",
+    "email": "margie_aj@verizon.net",
+    "address": "129 Main Street",
+    "city": "TOPSFIELD",
+    "state": "MA",
+    "zip": "01983"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SILVER TIER — Expected: Silver (~62–65)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-R-004 | Carol Wallace | Expected: Silver (65) | Dispo: Closed/Lost - Competitor
+# Phone C/60/FixedVOIP → FixedVOIP moderate concern, caps at Bronze unless other signals strong
+# All name matches true, confirmed_owner — roofing solar_permit is irrelevant (roof_permit=false)
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-004",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Carol",
+    "last_name": "Wallace",
+    "phone": "4128849240",
+    "email": "cawallace321@comcast.net",
+    "address": "321 Parkfield St",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "zip": "15210"
+  }
+}
+
+###
+
+### TEST-R-005 | Gillan Angela | Expected: Silver (65) | Dispo: Contacted
+# Phone B/100/Mobile BUT phone name_match false (deed shows Angela M Gillan, submitted as Gillan Angela)
+# Address name_match true — only 1 of 2 required name matches for Gold → Silver
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-005",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Gillan",
+    "last_name": "Angela",
+    "phone": "7175074916",
+    "email": "mekiamarie25@gmail.com",
+    "address": "2074 Weavertown rd",
+    "city": "LEBANON",
+    "state": "PA",
+    "zip": "17046"
+  }
+}
+
+###
+
+### TEST-R-006 | Gwendolyn Allen | Expected: Silver (62) | Dispo: Contacted
+# Phone C/80/FixedVOIP — FixedVOIP moderate concern limits to Silver even with strong identity
+# All name matches true, confirmed_owner, free & clear, high equity, year_built 1920
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-006",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Gwendolyn",
+    "last_name": "Allen",
+    "phone": "9785978058",
+    "email": "gwendolyn79@gmail.com",
+    "address": "88 Tyler Rd",
+    "city": "TOWNSEND",
+    "state": "MA",
+    "zip": "01469"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BRONZE TIER — Expected: Bronze (~25)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-R-007 | Juan Colon | Expected: Bronze (25) | Dispo: Closed/Lost - Unresponsive
+# Phone F/30/NonFixedVOIP → NonFixedVOIP = Bronze cap (0% appointments in historical data)
+# Grade F + activity < 40 compounds the issue
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-007",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Juan",
+    "last_name": "Colon",
+    "phone": "9784848564",
+    "email": "darlenemarie12@gmail.com",
+    "address": "44 Osgood Street",
+    "city": "LAWRENCE",
+    "state": "MA",
+    "zip": "01843"
+  }
+}
+
+###
+
+### TEST-R-008 | Charlotte Lawson | Expected: Bronze (25) | Dispo: Closed/Lost - Unresponsive
+# Phone F/30/Landline + roof_permit=true → Bronze cap (recent roof work, high DQ rate)
+# Owner on deed is Julio Morales / Estefania Orellana — name mismatch across all sources
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-008",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "Charlotte",
+    "last_name": "Lawson",
+    "phone": "4019426964",
+    "email": "charlaw40@aol.com",
+    "address": "212 Crescent Avenue",
+    "city": "CRANSTON",
+    "state": "RI",
+    "zip": "02910"
+  }
+}
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REJECT TIER — Expected: Reject (~15)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### TEST-R-009 | bart simpson | Expected: Reject (15) | Dispo: Closed/Lost - Incorrect Info
+# Phone F/30/Landline, address.is_valid=false, all BatchData null, email name_match false
+# Likely fake name — no property data found, severe identity failures
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-009",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "bart",
+    "last_name": "simpson",
+    "phone": "7178729911",
+    "email": "soccerdad@yahoo.com",
+    "address": "42 st regis lane",
+    "city": "Rohrerstown",
+    "state": "PA",
+    "zip": "17603"
+  }
+}
+
+###
+
+### TEST-R-010 | lebron james | Expected: Reject (15) | Dispo: Closed/Lost - Incorrect Info
+# Phone F/30/Landline, address.is_valid=false, all BatchData null, all name matches null
+# Obvious fake name/address — zero enrichment, severe fraud indicators
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "TEST-R-010",
+  "vertical": "roofing",
+  "publisher_id": "PUB-TEST",
+  "publisher_name": "Backtest Dataset",
+  "contact": {
+    "first_name": "lebron",
+    "last_name": "james",
+    "phone": "4238264861",
+    "email": "iamdoingitforschoolproject@gmail.com",
+    "address": "52 fuvk me ave",
+    "city": "Swampscott",
+    "state": "MA",
+    "zip": "01907"
+  }
+}
+
+###
