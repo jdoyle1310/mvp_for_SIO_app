@@ -129,8 +129,8 @@ export async function handler(event) {
     // 8. Use LLM tier + score
     const { tier, score } = llmResult;
 
-    // 9. Route to buyer
-    const { decision, routing } = await routeLead(lead.vertical, tier, score, lead);
+    // 9. Route to buyer (pass config for shadow_mode check)
+    const { decision, routing } = await routeLead(lead.vertical, tier, score, lead, config);
 
     // 10. Build final result
     const llmResponse = {

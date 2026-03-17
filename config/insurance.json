@@ -1,22 +1,18 @@
 {
-  "vertical": "solar",
-  "version": "5.0",
+  "vertical": "insurance",
+  "version": "5.0-unvalidated",
   "updated_at": "2026-03-17T00:00:00Z",
-  "shadow_mode": false,
+  "shadow_mode": true,
   "hard_kills": {
     "universal": {},
-    "vertical_specific": {
-      "batchdata_renter_confirmed": true,
-      "batchdata_mobile_manufactured": true,
-      "batchdata_condominium": true
-    }
+    "vertical_specific": {}
   },
   "pillar_weights": {
-    "contactability": 0.06,
-    "identity": 0.18,
-    "fraud_legal": 0.33,
+    "contactability": 0.18,
+    "identity": 0.19,
+    "fraud_legal": 0.29,
     "behavioral": 0.28,
-    "property_financial": 0.15
+    "property_financial": 0.06
   },
   "tier_thresholds": {
     "gold": 70,
@@ -220,8 +216,8 @@
       "values": {
         "confirmed_owner": 80,
         "probable_owner": 40,
-        "probable_renter": -60,
-        "confirmed_renter": "HARD_KILL"
+        "probable_renter": 0,
+        "confirmed_renter": 0
       },
       "null_penalty": 0
     },
@@ -230,9 +226,9 @@
       "values": {
         "Single Family Residential": 60,
         "Townhouse": 10,
-        "Condominium": "HARD_KILL",
+        "Condominium": 5,
         "Multi-Family": -40,
-        "Mobile/Manufactured": "HARD_KILL",
+        "Mobile/Manufactured": 5,
         "Commercial": -80
       },
       "null_penalty": 0
@@ -240,7 +236,7 @@
     "batchdata.free_and_clear": {
       "pillar": "property_financial",
       "values": {
-        "true": 35,
+        "true": -15,
         "false": 0
       },
       "null_penalty": 0

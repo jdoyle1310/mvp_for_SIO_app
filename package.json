@@ -17,7 +17,7 @@
     "perf:analyze": "node scripts/performance/analyze-timings.js"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.500.0",

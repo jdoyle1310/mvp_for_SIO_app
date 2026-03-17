@@ -1,22 +1,20 @@
 {
-  "vertical": "solar",
-  "version": "5.0",
+  "vertical": "gutters",
+  "version": "5.0-unvalidated",
   "updated_at": "2026-03-17T00:00:00Z",
-  "shadow_mode": false,
+  "shadow_mode": true,
   "hard_kills": {
     "universal": {},
     "vertical_specific": {
-      "batchdata_renter_confirmed": true,
-      "batchdata_mobile_manufactured": true,
-      "batchdata_condominium": true
+      "batchdata_renter_confirmed": true
     }
   },
   "pillar_weights": {
-    "contactability": 0.06,
-    "identity": 0.18,
-    "fraud_legal": 0.33,
-    "behavioral": 0.28,
-    "property_financial": 0.15
+    "contactability": 0.11,
+    "identity": 0.19,
+    "fraud_legal": 0.27,
+    "behavioral": 0.31,
+    "property_financial": 0.12
   },
   "tier_thresholds": {
     "gold": 70,
@@ -230,9 +228,9 @@
       "values": {
         "Single Family Residential": 60,
         "Townhouse": 10,
-        "Condominium": "HARD_KILL",
+        "Condominium": 5,
         "Multi-Family": -40,
-        "Mobile/Manufactured": "HARD_KILL",
+        "Mobile/Manufactured": 5,
         "Commercial": -80
       },
       "null_penalty": 0

@@ -1,5 +1,5 @@
 {
-  "vertical": "solar",
+  "vertical": "windows",
   "version": "5.0",
   "updated_at": "2026-03-17T00:00:00Z",
   "shadow_mode": false,
@@ -7,16 +7,15 @@
     "universal": {},
     "vertical_specific": {
       "batchdata_renter_confirmed": true,
-      "batchdata_mobile_manufactured": true,
-      "batchdata_condominium": true
+      "batchdata_mobile_manufactured": true
     }
   },
   "pillar_weights": {
-    "contactability": 0.06,
-    "identity": 0.18,
-    "fraud_legal": 0.33,
+    "contactability": 0.13,
+    "identity": 0.05,
+    "fraud_legal": 0.35,
     "behavioral": 0.28,
-    "property_financial": 0.15
+    "property_financial": 0.19
   },
   "tier_thresholds": {
     "gold": 70,
@@ -230,7 +229,7 @@
       "values": {
         "Single Family Residential": 60,
         "Townhouse": 10,
-        "Condominium": "HARD_KILL",
+        "Condominium": 5,
         "Multi-Family": -40,
         "Mobile/Manufactured": "HARD_KILL",
         "Commercial": -80

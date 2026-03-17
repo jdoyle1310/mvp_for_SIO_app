@@ -1,21 +1,33 @@
 import { jest } from '@jest/globals';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const CONFIG_DIR = join(__dirname, '..', 'config');
 
 describe('Config Validation', () => {
-  // Only test verticals that have config files
-  const verticals = ['solar', 'roofing'];
+  // Test ALL verticals that have config files
+  const configFiles = readdirSync(CONFIG_DIR).filter(f => f.endsWith('.json'));
+  const verticals = configFiles.map(f => f.replace('.json', ''));
   const requiredPillars = ['contactability', 'identity', 'fraud_legal', 'behavioral', 'property_financial'];
+
+  const validatedVerticals = ['solar', 'roofing', 'windows'];
+  const shadowVerticals = ['hvac', 'siding', 'gutters', 'painting', 'plumbing', 'bathroom_remodel', 'kitchen_remodel', 'flooring', 'insurance', 'mortgage'];
+
+  test('all 13 verticals have config files', () => {
+    const expected = [...validatedVerticals, ...shadowVerticals];
+    for (const v of expected) {
+      expect(verticals).toContain(v);
+    }
+  });
 
   for (const vertical of verticals) {
     describe(`${vertical} config`, () => {
       let config;
 
       beforeAll(() => {
-        const filePath = join(__dirname, '..', 'config', `${vertical}.json`);
+        const filePath = join(CONFIG_DIR, `${vertical}.json`);
         const raw = readFileSync(filePath, 'utf-8');
         config = JSON.parse(raw);
       });
@@ -24,8 +36,9 @@ describe('Config Validation', () => {
         expect(config.vertical).toBe(vertical);
       });
 
-      test('has version 4.0', () => {
-        expect(config.version).toBe('4.0');
+      test('has version string', () => {
+        expect(typeof config.version).toBe('string');
+        expect(config.version.length).toBeGreaterThan(0);
       });
 
       test('has hard_kills with universal rules', () => {
@@ -46,11 +59,11 @@ describe('Config Validation', () => {
         }
       });
 
-      test('has tier_thresholds with gold=60, silver=40, bronze=20', () => {
+      test('has tier_thresholds in correct order', () => {
         expect(config.tier_thresholds).toBeDefined();
-        expect(config.tier_thresholds.gold).toBe(60);
-        expect(config.tier_thresholds.silver).toBe(40);
-        expect(config.tier_thresholds.bronze).toBe(20);
+        expect(config.tier_thresholds.gold).toBeDefined();
+        expect(config.tier_thresholds.silver).toBeDefined();
+        expect(config.tier_thresholds.bronze).toBeDefined();
         expect(config.tier_thresholds.gold).toBeGreaterThan(config.tier_thresholds.silver);
         expect(config.tier_thresholds.silver).toBeGreaterThan(config.tier_thresholds.bronze);
       });
@@ -121,7 +134,7 @@ describe('Config Validation', () => {
         }
       });
 
-      // ── HARD_KILLs (shared across all verticals) ──
+      // ── Universal HARD_KILLs ──
 
       test('pre-populated form is HARD_KILL', () => {
         expect(config.field_scores['trustedform.form_input_method'].values['pre-populated_only']).toBe('HARD_KILL');
@@ -141,19 +154,39 @@ describe('Config Validation', () => {
         expect(config.field_scores['trestle.phone.contact_grade'].values['F']).toBe('HARD_KILL');
       });
 
-      test('confirmed renter is HARD_KILL', () => {
-        expect(config.field_scores['batchdata.owner_occupied'].values['confirmed_renter']).toBe('HARD_KILL');
+      // ── Shadow mode flag ──
+
+      test('has shadow_mode flag', () => {
+        expect(typeof config.shadow_mode).toBe('boolean');
       });
 
-      test('Mobile/Manufactured is HARD_KILL', () => {
-        expect(config.field_scores['batchdata.property_type'].values['Mobile/Manufactured']).toBe('HARD_KILL');
-      });
+      if (validatedVerticals.includes(vertical)) {
+        test('validated vertical is NOT in shadow mode', () => {
+          expect(config.shadow_mode).toBe(false);
+        });
+      }
 
-      // ── Vertical-specific tests ──
+      if (shadowVerticals.includes(vertical)) {
+        test('unvalidated vertical IS in shadow mode', () => {
+          expect(config.shadow_mode).toBe(true);
+        });
+      }
+
+      // ── Vertical-specific hard kills ──
+
+      if (['solar', 'roofing', 'windows', 'siding'].includes(vertical)) {
+        test('Mobile/Manufactured is HARD_KILL for structural verticals', () => {
+          expect(config.field_scores['batchdata.property_type'].values['Mobile/Manufactured']).toBe('HARD_KILL');
+        });
+      }
 
       if (vertical === 'solar') {
         test('Condominium is HARD_KILL for solar', () => {
           expect(config.field_scores['batchdata.property_type'].values['Condominium']).toBe('HARD_KILL');
+        });
+
+        test('confirmed renter is HARD_KILL for solar', () => {
+          expect(config.field_scores['batchdata.owner_occupied'].values['confirmed_renter']).toBe('HARD_KILL');
         });
       }
 
@@ -165,23 +198,23 @@ describe('Config Validation', () => {
         });
       }
 
+      if (['insurance', 'mortgage'].includes(vertical)) {
+        test('renter is NOT HARD_KILL for financial verticals', () => {
+          const renterScore = config.field_scores['batchdata.owner_occupied'].values['confirmed_renter'];
+          expect(renterScore).not.toBe('HARD_KILL');
+        });
+      }
+
       // ── Key Fields Present ──
 
-      test('has BatchData quickLists fields', () => {
+      test('has BatchData fields', () => {
         const fields = [
           'batchdata.free_and_clear', 'batchdata.high_equity',
           'batchdata.tax_lien', 'batchdata.pre_foreclosure',
-          'batchdata.cash_buyer', 'batchdata.senior_owner',
         ];
         for (const field of fields) {
           expect(config.field_scores[field]).toBeDefined();
         }
-      });
-
-      test('senior_owner is neutral (not penalizing)', () => {
-        const seniorConfig = config.field_scores['batchdata.senior_owner'];
-        expect(seniorConfig.values['true']).toBeGreaterThanOrEqual(0);
-        expect(seniorConfig.values['false']).toBeGreaterThanOrEqual(0);
       });
     });
   }

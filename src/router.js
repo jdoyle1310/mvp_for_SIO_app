@@ -1,8 +1,9 @@
 /**
- * Buyer routing — STUB.
+ * Buyer routing with shadow mode support.
  *
- * This is a pass-through stub. Real buyer matching comes later.
- * For now, returns the tier and score without routing to a specific buyer.
+ * Shadow mode: New verticals (HVAC, siding, etc.) get scored and logged
+ * but return HOLD instead of POST. This lets us collect real scoring data
+ * without affecting live traffic until dispo data validates the prompts.
  *
  * Future implementation will:
  * - Query DynamoDB buyers table for buyers matching this vertical + tier
@@ -20,31 +21,29 @@ import { DECISIONS, TIERS } from './utils/constants.js';
  * @param {string} tier - Assigned tier (Gold/Silver/Bronze/Reject)
  * @param {number} score - Composite score 0-100
  * @param {object} lead - Original lead data
+ * @param {object} config - Vertical config (from loadConfig)
  * @returns {{ decision: string, routing: object }}
  */
-export async function routeLead(vertical, tier, score, lead) {
+export async function routeLead(vertical, tier, score, lead, config = {}) {
+  const nullRouting = {
+    buyer_id: null,
+    buyer_name: null,
+    endpoint_url: null,
+    cpl: null,
+  };
+
   // Reject tier leads always get rejected
   if (tier === TIERS.REJECT) {
-    return {
-      decision: DECISIONS.REJECT,
-      routing: {
-        buyer_id: null,
-        buyer_name: null,
-        endpoint_url: null,
-        cpl: null,
-      },
-    };
+    return { decision: DECISIONS.REJECT, routing: nullRouting };
   }
 
-  // STUB: For now, all non-reject leads get "post" decision
+  // Shadow mode: score + log but don't route to buyers
+  // Unvalidated verticals return HOLD until dispo data confirms prompt accuracy
+  if (config.shadow_mode) {
+    return { decision: DECISIONS.HOLD, routing: nullRouting };
+  }
+
+  // STUB: For now, all non-reject, non-shadow leads get "post" decision
   // Real implementation will query buyer table and match
-  return {
-    decision: DECISIONS.POST,
-    routing: {
-      buyer_id: null,
-      buyer_name: null,
-      endpoint_url: null,
-      cpl: null,
-    },
-  };
+  return { decision: DECISIONS.POST, routing: nullRouting };
 }
