@@ -4,7 +4,13 @@
  */
 
 // Valid verticals — reject anything not in this list with 400
-export const VALID_VERTICALS = ['solar', 'roofing', 'windows'];
+// 3 validated (solar, roofing, windows) + 10 research-based
+export const VALID_VERTICALS = [
+  'solar', 'roofing', 'windows',
+  'hvac', 'siding', 'gutters', 'painting', 'plumbing',
+  'bathroom_remodel', 'kitchen_remodel', 'flooring',
+  'insurance', 'mortgage',
+];
 
 // Tier names (for output schema)
 export const TIERS = {

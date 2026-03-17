@@ -190,35 +190,41 @@ async function callAllAPIs(lead, phone, signal, apiPerformance) {
 
 /**
  * Quick hard-kill checks that save the ~$0.003 LLM cost on obvious rejects.
- * These are universal across all verticals and indisputable.
  * The LLM prompt also has these rules, so this is purely a cost optimization.
+ *
+ * Universal: invalid phone, bot, pre-populated form
+ * Mobile/Manufactured: hard kill for structural home services only (solar, roofing, windows, siding)
+ *   — HVAC, gutters, painting, plumbing, flooring, insurance, mortgage handle in LLM prompt
+ * Condominium: hard kill for solar only (shared roof) and siding (HOA exterior)
  *
  * @returns {string|null} Kill reason or null if lead passes
  */
 function checkQuickHardKills(apiData, vertical) {
-  // Invalid phone
+  // Invalid phone (universal)
   if (apiData['trestle.phone.is_valid'] === false || apiData['trestle.phone.is_valid'] === 'false') {
     return 'INVALID_PHONE';
   }
 
-  // Bot detected
+  // Bot detected (universal)
   if (apiData['trustedform.bot_detected'] === true || apiData['trustedform.bot_detected'] === 'true') {
     return 'BOT_DETECTED';
   }
 
-  // Pre-populated form (bot/aggregator)
+  // Pre-populated form (universal)
   if (apiData['trustedform.form_input_method'] === 'pre-populated_only') {
     return 'PRE_POPULATED_FORM';
   }
 
-  // Mobile/Manufactured home (all verticals)
-  if (apiData['batchdata.property_type'] === 'Mobile/Manufactured') {
+  // Mobile/Manufactured home — hard kill for structural verticals only
+  // HVAC, gutters, painting, plumbing, flooring, insurance, mortgage serve mobile homes (handled in LLM)
+  const mobileHardKillVerticals = ['solar', 'roofing', 'windows', 'siding'];
+  if (mobileHardKillVerticals.includes(vertical) && apiData['batchdata.property_type'] === 'Mobile/Manufactured') {
     return 'MOBILE_MANUFACTURED_HOME';
   }
 
-  // Condominium — instant reject for solar only
-  if (vertical === 'solar' && apiData['batchdata.property_type'] === 'Condominium') {
-    return 'CONDOMINIUM_SOLAR';
+  // Condominium — solar (can't install on shared roof) + siding (HOA manages exterior)
+  if ((vertical === 'solar' || vertical === 'siding') && apiData['batchdata.property_type'] === 'Condominium') {
+    return 'CONDOMINIUM_HARD_KILL';
   }
 
   return null;
