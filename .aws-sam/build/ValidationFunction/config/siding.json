@@ -1,8 +1,8 @@
 {
-  "vertical": "solar",
-  "version": "5.0",
+  "vertical": "siding",
+  "version": "5.0-unvalidated",
   "updated_at": "2026-03-17T00:00:00Z",
-  "shadow_mode": false,
+  "shadow_mode": true,
   "hard_kills": {
     "universal": {},
     "vertical_specific": {
@@ -12,11 +12,11 @@
     }
   },
   "pillar_weights": {
-    "contactability": 0.06,
-    "identity": 0.18,
-    "fraud_legal": 0.33,
-    "behavioral": 0.28,
-    "property_financial": 0.15
+    "contactability": 0.11,
+    "identity": 0.19,
+    "fraud_legal": 0.27,
+    "behavioral": 0.31,
+    "property_financial": 0.12
   },
   "tier_thresholds": {
     "gold": 70,
