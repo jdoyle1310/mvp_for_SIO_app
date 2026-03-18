@@ -27,6 +27,8 @@
  * Model: claude-sonnet-4-20250514
  */
 
+import { ANTHROPIC_TIMEOUT_MS } from './utils/constants.js';
+
 const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -1003,7 +1005,7 @@ export async function scoreLead(apiData, vertical, leadName) {
     : `Score this lead:\n${JSON.stringify(nonNullFields, null, 2)}`;
 
   const anthropicController = new AbortController();
-  const anthropicTimeout = setTimeout(() => anthropicController.abort(), 5000);
+  const anthropicTimeout = setTimeout(() => anthropicController.abort(), ANTHROPIC_TIMEOUT_MS);
 
   let response;
   try {
@@ -1026,7 +1028,7 @@ export async function scoreLead(apiData, vertical, leadName) {
     });
   } catch (err) {
     if (err.name === 'AbortError') {
-      throw new Error('Anthropic API timeout after 5000ms');
+      throw new Error(`Anthropic API timeout after ${ANTHROPIC_TIMEOUT_MS}ms`);
     }
     throw err;
   } finally {
