@@ -28,7 +28,7 @@ import { loadConfig } from './config-loader.js';
 import { normalizePhone } from './utils/phone-normalizer.js';
 import { VALID_VERTICALS, DECISIONS, API_TIMEOUT_MS } from './utils/constants.js';
 import { routeLead } from './router.js';
-import { logScoredLead, emitMetrics } from './utils/logger.js';
+import { logScoredLead, emitMetrics, buildEnrichmentData } from './utils/logger.js';
 
 // API clients (3 enrichment APIs — FullContact dropped, Twilio dropped)
 import { callTrestle } from './api/trestle.js';
@@ -102,12 +102,13 @@ export async function handler(event) {
         hard_kill_reason: hardKillReason,
         reason_codes: [hardKillReason],
         llm_response: null,
+        enrichment_data: buildEnrichmentData(apiData),
         routing: { buyer_id: null, buyer_name: null, endpoint_url: null, cpl: null },
         api_performance: apiPerformance,
         processing_time_ms: Date.now() - startTime,
       });
 
-      await logScoredLead(result, apiPerformance, apiData, null);
+      await logScoredLead(result, apiPerformance, null);
       emitMetrics(result, apiPerformance);
       return toApiGwResponse(200, result);
     }
@@ -147,13 +148,14 @@ export async function handler(event) {
       hard_kill_reason: null,
       reason_codes: llmResult.reasons || [],
       llm_response: llmResponse,
+      enrichment_data: buildEnrichmentData(apiData),
       routing,
       api_performance: apiPerformance,
       processing_time_ms: Date.now() - startTime,
     });
 
     // 11. Log and emit
-    await logScoredLead(result, apiPerformance, apiData, llmResponse);
+    await logScoredLead(result, apiPerformance, llmResponse);
     emitMetrics(result, apiPerformance);
 
     return toApiGwResponse(200, result);
@@ -288,6 +290,7 @@ function formatResponse(lead, data) {
     hard_kill_reason: data.hard_kill_reason,
     reason_codes: data.reason_codes,
     llm_response: data.llm_response || null,
+    enrichment_data: data.enrichment_data ?? null,
     routing: data.routing,
     api_performance: data.api_performance,
     processing_time_ms: data.processing_time_ms,
