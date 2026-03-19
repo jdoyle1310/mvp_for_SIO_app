@@ -127,8 +127,83 @@ export async function handler(event) {
       output_tokens: llmResult.llm_usage?.output_tokens || 0,
     };
 
-    // 8. Use LLM tier + score
-    const { tier, score } = llmResult;
+    // 8. Use LLM tier + score, then apply post-scoring caps
+    let { tier, score } = llmResult;
+
+    // ── 8a. Data coverage cap ──
+    // If 3+ of 5 signal groups are entirely null, cap at Bronze.
+    // Backtest: sparse-data Silver leads had 0% appointment rate (0/7 with dispo).
+    const groupsPresent = countSignalGroups(apiData);
+    if (groupsPresent <= 2) {
+      if (tier === 'Gold' || tier === 'Silver') {
+        tier = 'Bronze';
+        score = Math.min(score, 44);
+      }
+    }
+
+    // ── 8b. Dual identity mismatch cap ──
+    // Phone belongs to someone else AND property belongs to someone else.
+    // Backtest: 42 leads, avg score 41.7 (Bronze). 0% appts when also sparse.
+    const phoneNameMatch = apiData['trestle.phone.name_match'];
+    const addrNameMatch = apiData['trestle.address.name_match'];
+    const ownerName = apiData['_batchdata.owner_name'];
+    const lastNameLower = (lead.contact.last_name || '').toLowerCase();
+
+    if (String(phoneNameMatch).toLowerCase() === 'false') {
+      const ownerMismatch = ownerName && lastNameLower &&
+        !ownerName.toLowerCase().includes(lastNameLower);
+      if (ownerMismatch) {
+        if (String(addrNameMatch).toLowerCase() === 'false') {
+          // Triple mismatch: phone + owner + address = Bronze cap
+          if (tier === 'Gold' || tier === 'Silver') {
+            tier = 'Bronze';
+            score = Math.min(score, 44);
+          }
+        } else {
+          // Dual mismatch: phone + owner, address ok = Silver cap
+          if (tier === 'Gold') {
+            tier = 'Silver';
+            score = Math.min(score, 69);
+          }
+        }
+      }
+    }
+
+    // ── 8c. TrustedForm verified owner cap ──
+    // "no_verified_account" converts at 5.9% vs "verified" at 21.4% (102 vs 28 leads).
+    // If unverified and score < 80, cap at Silver.
+    const confirmedOwner = apiData['trustedform.confirmed_owner'];
+    if (confirmedOwner === 'no_verified_account' && score < 80) {
+      if (tier === 'Gold') {
+        tier = 'Silver';
+        score = Math.min(score, 69);
+      }
+    }
+
+    // ── 8d. Age-based caps ──
+    // Dispo data (559 leads, 74 with age):
+    //   Under 60: 19-26% appt rate
+    //   60-64: 0% (9 leads)
+    //   65-69: 0% (8 leads)
+    //   70+: ~5% (2 appts in 32 leads, outliers at 75 and 80+)
+    // Insurance and mortgage exempt (financial products, no physical presence needed).
+    const NON_AGE_CAPPED_VERTICALS = ['insurance', 'mortgage'];
+    const bdAge = apiData['batchdata.bd_age'];
+    if (bdAge && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
+      if (bdAge >= 65) {
+        // 65+ = Bronze cap. 0% appt rate at 65-69, near-zero at 70+.
+        if (tier === 'Gold' || tier === 'Silver') {
+          tier = 'Bronze';
+          score = Math.min(score, 44);
+        }
+      } else if (bdAge >= 60) {
+        // 60-64 = Silver cap. 0% appt rate in 9 leads, sharp drop from 20%+.
+        if (tier === 'Gold') {
+          tier = 'Silver';
+          score = Math.min(score, 69);
+        }
+      }
+    }
 
     // 9. Route to buyer (pass config for shadow_mode check)
     const { decision, routing } = await routeLead(lead.vertical, tier, score, lead, config);
@@ -231,7 +306,38 @@ function checkQuickHardKills(apiData, vertical) {
     return 'CONDOMINIUM_HARD_KILL';
   }
 
+  // Solar permit = already has solar. 0% appointment rate, 40% DQ rate in backtest.
+  // Only applies to solar vertical (other verticals don't care about existing solar).
+  if (vertical === 'solar' && apiData['batchdata.solar_permit'] === true) {
+    return 'ALREADY_HAS_SOLAR';
+  }
+
+  // Empty form input = TrustedForm captured zero form interaction.
+  // 0% appointment rate across 16 leads. Suspicious — possible bot or uninstrumented form.
+  if (apiData['trustedform.form_input_method'] === 'empty') {
+    return 'EMPTY_FORM_INPUT';
+  }
+
   return null;
+}
+
+/**
+ * Count how many of the 5 signal groups have at least one non-null field.
+ * Groups: A=Contactability, B=Identity, C=Property, D=Financial, E=Form Behavior
+ */
+function countSignalGroups(apiData) {
+  let groups = 0;
+  if (['trestle.phone.is_valid', 'trestle.phone.contact_grade', 'trestle.phone.activity_score', 'trestle.phone.line_type']
+    .some(k => apiData[k] != null)) groups++;
+  if (['trestle.phone.name_match', 'trestle.email.name_match', 'trestle.address.name_match', '_batchdata.owner_name']
+    .some(k => apiData[k] != null)) groups++;
+  if (['batchdata.owner_occupied', 'batchdata.property_type', 'batchdata.estimated_value', 'batchdata.year_built', 'batchdata.free_and_clear', 'batchdata.high_equity']
+    .some(k => apiData[k] != null)) groups++;
+  if (['fullcontact.household_income', 'fullcontact.living_status']
+    .some(k => apiData[k] != null)) groups++;
+  if (['trustedform.form_input_method', 'trustedform.bot_detected', 'trustedform.confirmed_owner', 'trustedform.age_seconds']
+    .some(k => apiData[k] != null)) groups++;
+  return groups;
 }
 
 /**

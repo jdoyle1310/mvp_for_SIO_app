@@ -1,0 +1,5332 @@
+[
+  {
+    "lead_id": "L1_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 281,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 764,
+          "success": true
+        }
+      },
+      "processing_time_ms": 905
+    }
+  },
+  {
+    "lead_id": "L1_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 502,
+          "success": true
+        }
+      },
+      "processing_time_ms": 511
+    }
+  },
+  {
+    "lead_id": "L1_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 506,
+          "success": true
+        }
+      },
+      "processing_time_ms": 520
+    }
+  },
+  {
+    "lead_id": "L1_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 119,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 466,
+          "success": true
+        }
+      },
+      "processing_time_ms": 474
+    }
+  },
+  {
+    "lead_id": "L1_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 105,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 532,
+          "success": true
+        }
+      },
+      "processing_time_ms": 538
+    }
+  },
+  {
+    "lead_id": "L1_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 517,
+          "success": true
+        }
+      },
+      "processing_time_ms": 524
+    }
+  },
+  {
+    "lead_id": "L1_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 567,
+          "success": true
+        }
+      },
+      "processing_time_ms": 574
+    }
+  },
+  {
+    "lead_id": "L1_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 513,
+          "success": true
+        }
+      },
+      "processing_time_ms": 521
+    }
+  },
+  {
+    "lead_id": "L1_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 118,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 508,
+          "success": true
+        }
+      },
+      "processing_time_ms": 513
+    }
+  },
+  {
+    "lead_id": "L1_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 467,
+          "success": true
+        }
+      },
+      "processing_time_ms": 474
+    }
+  },
+  {
+    "lead_id": "L1_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 503,
+          "success": true
+        }
+      },
+      "processing_time_ms": 515
+    }
+  },
+  {
+    "lead_id": "L1_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 104,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 512,
+          "success": true
+        }
+      },
+      "processing_time_ms": 519
+    }
+  },
+  {
+    "lead_id": "L1_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L1_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 526,
+          "success": true
+        }
+      },
+      "processing_time_ms": 532
+    }
+  },
+  {
+    "lead_id": "L2_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 484,
+          "success": true
+        }
+      },
+      "processing_time_ms": 485
+    }
+  },
+  {
+    "lead_id": "L2_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 478,
+          "success": true
+        }
+      },
+      "processing_time_ms": 478
+    }
+  },
+  {
+    "lead_id": "L2_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 105,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 449,
+          "success": true
+        }
+      },
+      "processing_time_ms": 451
+    }
+  },
+  {
+    "lead_id": "L2_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 115,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 514,
+          "success": true
+        }
+      },
+      "processing_time_ms": 515
+    }
+  },
+  {
+    "lead_id": "L2_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 120,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 537,
+          "success": true
+        }
+      },
+      "processing_time_ms": 538
+    }
+  },
+  {
+    "lead_id": "L2_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 509,
+          "success": true
+        }
+      },
+      "processing_time_ms": 510
+    }
+  },
+  {
+    "lead_id": "L2_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 126,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 632,
+          "success": true
+        }
+      },
+      "processing_time_ms": 633
+    }
+  },
+  {
+    "lead_id": "L2_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 852,
+          "success": true
+        }
+      },
+      "processing_time_ms": 853
+    }
+  },
+  {
+    "lead_id": "L2_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 503,
+          "success": true
+        }
+      },
+      "processing_time_ms": 504
+    }
+  },
+  {
+    "lead_id": "L2_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 528,
+          "success": true
+        }
+      },
+      "processing_time_ms": 529
+    }
+  },
+  {
+    "lead_id": "L2_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 99,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 451,
+          "success": true
+        }
+      },
+      "processing_time_ms": 452
+    }
+  },
+  {
+    "lead_id": "L2_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 684,
+          "success": true
+        }
+      },
+      "processing_time_ms": 685
+    }
+  },
+  {
+    "lead_id": "L2_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L2_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 114,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 508,
+          "success": true
+        }
+      },
+      "processing_time_ms": 508
+    }
+  },
+  {
+    "lead_id": "L3_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 564,
+          "success": true
+        }
+      },
+      "processing_time_ms": 565
+    }
+  },
+  {
+    "lead_id": "L3_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 659,
+          "success": true
+        }
+      },
+      "processing_time_ms": 660
+    }
+  },
+  {
+    "lead_id": "L3_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 569,
+          "success": true
+        }
+      },
+      "processing_time_ms": 570
+    }
+  },
+  {
+    "lead_id": "L3_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 551,
+          "success": true
+        }
+      },
+      "processing_time_ms": 552
+    }
+  },
+  {
+    "lead_id": "L3_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 524,
+          "success": true
+        }
+      },
+      "processing_time_ms": 525
+    }
+  },
+  {
+    "lead_id": "L3_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 491,
+          "success": true
+        }
+      },
+      "processing_time_ms": 492
+    }
+  },
+  {
+    "lead_id": "L3_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 115,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 501,
+          "success": true
+        }
+      },
+      "processing_time_ms": 502
+    }
+  },
+  {
+    "lead_id": "L3_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 504,
+          "success": true
+        }
+      },
+      "processing_time_ms": 505
+    }
+  },
+  {
+    "lead_id": "L3_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 116,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 519,
+          "success": true
+        }
+      },
+      "processing_time_ms": 520
+    }
+  },
+  {
+    "lead_id": "L3_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 505,
+          "success": true
+        }
+      },
+      "processing_time_ms": 506
+    }
+  },
+  {
+    "lead_id": "L3_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 106,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 596,
+          "success": true
+        }
+      },
+      "processing_time_ms": 597
+    }
+  },
+  {
+    "lead_id": "L3_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 510,
+          "success": true
+        }
+      },
+      "processing_time_ms": 510
+    }
+  },
+  {
+    "lead_id": "L3_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L3_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 510,
+          "success": true
+        }
+      },
+      "processing_time_ms": 510
+    }
+  },
+  {
+    "lead_id": "L4_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 460,
+          "success": true
+        }
+      },
+      "processing_time_ms": 461
+    }
+  },
+  {
+    "lead_id": "L4_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 106,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 449,
+          "success": true
+        }
+      },
+      "processing_time_ms": 449
+    }
+  },
+  {
+    "lead_id": "L4_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 532,
+          "success": true
+        }
+      },
+      "processing_time_ms": 533
+    }
+  },
+  {
+    "lead_id": "L4_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 492,
+          "success": true
+        }
+      },
+      "processing_time_ms": 492
+    }
+  },
+  {
+    "lead_id": "L4_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 530,
+          "success": true
+        }
+      },
+      "processing_time_ms": 531
+    }
+  },
+  {
+    "lead_id": "L4_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 560,
+          "success": true
+        }
+      },
+      "processing_time_ms": 561
+    }
+  },
+  {
+    "lead_id": "L4_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 525,
+          "success": true
+        }
+      },
+      "processing_time_ms": 526
+    }
+  },
+  {
+    "lead_id": "L4_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 116,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 495,
+          "success": true
+        }
+      },
+      "processing_time_ms": 495
+    }
+  },
+  {
+    "lead_id": "L4_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 105,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 510,
+          "success": true
+        }
+      },
+      "processing_time_ms": 511
+    }
+  },
+  {
+    "lead_id": "L4_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 106,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 568,
+          "success": true
+        }
+      },
+      "processing_time_ms": 569
+    }
+  },
+  {
+    "lead_id": "L4_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 104,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 501,
+          "success": true
+        }
+      },
+      "processing_time_ms": 501
+    }
+  },
+  {
+    "lead_id": "L4_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 464,
+          "success": true
+        }
+      },
+      "processing_time_ms": 465
+    }
+  },
+  {
+    "lead_id": "L4_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L4_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 500,
+          "success": true
+        }
+      },
+      "processing_time_ms": 501
+    }
+  },
+  {
+    "lead_id": "L5_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 546,
+          "success": true
+        }
+      },
+      "processing_time_ms": 547
+    }
+  },
+  {
+    "lead_id": "L5_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 105,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 537,
+          "success": true
+        }
+      },
+      "processing_time_ms": 537
+    }
+  },
+  {
+    "lead_id": "L5_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 116,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 505,
+          "success": true
+        }
+      },
+      "processing_time_ms": 506
+    }
+  },
+  {
+    "lead_id": "L5_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 507,
+          "success": true
+        }
+      },
+      "processing_time_ms": 508
+    }
+  },
+  {
+    "lead_id": "L5_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 527,
+          "success": true
+        }
+      },
+      "processing_time_ms": 527
+    }
+  },
+  {
+    "lead_id": "L5_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 461,
+          "success": true
+        }
+      },
+      "processing_time_ms": 462
+    }
+  },
+  {
+    "lead_id": "L5_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 115,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 498,
+          "success": true
+        }
+      },
+      "processing_time_ms": 499
+    }
+  },
+  {
+    "lead_id": "L5_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 535,
+          "success": true
+        }
+      },
+      "processing_time_ms": 536
+    }
+  },
+  {
+    "lead_id": "L5_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 103,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 468,
+          "success": true
+        }
+      },
+      "processing_time_ms": 468
+    }
+  },
+  {
+    "lead_id": "L5_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 524,
+          "success": true
+        }
+      },
+      "processing_time_ms": 524
+    }
+  },
+  {
+    "lead_id": "L5_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 545,
+          "success": true
+        }
+      },
+      "processing_time_ms": 546
+    }
+  },
+  {
+    "lead_id": "L5_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 530,
+          "success": true
+        }
+      },
+      "processing_time_ms": 531
+    }
+  },
+  {
+    "lead_id": "L5_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L5_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 118,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 483,
+          "success": true
+        }
+      },
+      "processing_time_ms": 484
+    }
+  },
+  {
+    "lead_id": "L6_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 448,
+          "success": true
+        }
+      },
+      "processing_time_ms": 449
+    }
+  },
+  {
+    "lead_id": "L6_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 104,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 522,
+          "success": true
+        }
+      },
+      "processing_time_ms": 522
+    }
+  },
+  {
+    "lead_id": "L6_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 502,
+          "success": true
+        }
+      },
+      "processing_time_ms": 503
+    }
+  },
+  {
+    "lead_id": "L6_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 525,
+          "success": true
+        }
+      },
+      "processing_time_ms": 526
+    }
+  },
+  {
+    "lead_id": "L6_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 551,
+          "success": true
+        }
+      },
+      "processing_time_ms": 551
+    }
+  },
+  {
+    "lead_id": "L6_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 514,
+          "success": true
+        }
+      },
+      "processing_time_ms": 515
+    }
+  },
+  {
+    "lead_id": "L6_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 606,
+          "success": true
+        }
+      },
+      "processing_time_ms": 608
+    }
+  },
+  {
+    "lead_id": "L6_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 468,
+          "success": true
+        }
+      },
+      "processing_time_ms": 469
+    }
+  },
+  {
+    "lead_id": "L6_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 516,
+          "success": true
+        }
+      },
+      "processing_time_ms": 517
+    }
+  },
+  {
+    "lead_id": "L6_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 541,
+          "success": true
+        }
+      },
+      "processing_time_ms": 542
+    }
+  },
+  {
+    "lead_id": "L6_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 601,
+          "success": true
+        }
+      },
+      "processing_time_ms": 602
+    }
+  },
+  {
+    "lead_id": "L6_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 524,
+          "success": true
+        }
+      },
+      "processing_time_ms": 524
+    }
+  },
+  {
+    "lead_id": "L6_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L6_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 496,
+          "success": true
+        }
+      },
+      "processing_time_ms": 496
+    }
+  },
+  {
+    "lead_id": "L7_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 497,
+          "success": true
+        }
+      },
+      "processing_time_ms": 498
+    }
+  },
+  {
+    "lead_id": "L7_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 108,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 469,
+          "success": true
+        }
+      },
+      "processing_time_ms": 471
+    }
+  },
+  {
+    "lead_id": "L7_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 552,
+          "success": true
+        }
+      },
+      "processing_time_ms": 553
+    }
+  },
+  {
+    "lead_id": "L7_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 549,
+          "success": true
+        }
+      },
+      "processing_time_ms": 550
+    }
+  },
+  {
+    "lead_id": "L7_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 105,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 500,
+          "success": true
+        }
+      },
+      "processing_time_ms": 500
+    }
+  },
+  {
+    "lead_id": "L7_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 534,
+          "success": true
+        }
+      },
+      "processing_time_ms": 535
+    }
+  },
+  {
+    "lead_id": "L7_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 491,
+          "success": true
+        }
+      },
+      "processing_time_ms": 491
+    }
+  },
+  {
+    "lead_id": "L7_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 523,
+          "success": true
+        }
+      },
+      "processing_time_ms": 523
+    }
+  },
+  {
+    "lead_id": "L7_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 116,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 458,
+          "success": true
+        }
+      },
+      "processing_time_ms": 458
+    }
+  },
+  {
+    "lead_id": "L7_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 582,
+          "success": true
+        }
+      },
+      "processing_time_ms": 583
+    }
+  },
+  {
+    "lead_id": "L7_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 125,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 553,
+          "success": true
+        }
+      },
+      "processing_time_ms": 554
+    }
+  },
+  {
+    "lead_id": "L7_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 659,
+          "success": true
+        }
+      },
+      "processing_time_ms": 659
+    }
+  },
+  {
+    "lead_id": "L7_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L7_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 535,
+          "success": true
+        }
+      },
+      "processing_time_ms": 535
+    }
+  },
+  {
+    "lead_id": "L8_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 617,
+          "success": true
+        }
+      },
+      "processing_time_ms": 618
+    }
+  },
+  {
+    "lead_id": "L8_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 119,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 536,
+          "success": true
+        }
+      },
+      "processing_time_ms": 537
+    }
+  },
+  {
+    "lead_id": "L8_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 581,
+          "success": true
+        }
+      },
+      "processing_time_ms": 582
+    }
+  },
+  {
+    "lead_id": "L8_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 489,
+          "success": true
+        }
+      },
+      "processing_time_ms": 490
+    }
+  },
+  {
+    "lead_id": "L8_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 467,
+          "success": true
+        }
+      },
+      "processing_time_ms": 468
+    }
+  },
+  {
+    "lead_id": "L8_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 114,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 555,
+          "success": true
+        }
+      },
+      "processing_time_ms": 556
+    }
+  },
+  {
+    "lead_id": "L8_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 113,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 562,
+          "success": true
+        }
+      },
+      "processing_time_ms": 562
+    }
+  },
+  {
+    "lead_id": "L8_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 846,
+          "success": true
+        }
+      },
+      "processing_time_ms": 846
+    }
+  },
+  {
+    "lead_id": "L8_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 554,
+          "success": true
+        }
+      },
+      "processing_time_ms": 555
+    }
+  },
+  {
+    "lead_id": "L8_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 104,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 613,
+          "success": true
+        }
+      },
+      "processing_time_ms": 614
+    }
+  },
+  {
+    "lead_id": "L8_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 935,
+          "success": true
+        }
+      },
+      "processing_time_ms": 936
+    }
+  },
+  {
+    "lead_id": "L8_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 561,
+          "success": true
+        }
+      },
+      "processing_time_ms": 562
+    }
+  },
+  {
+    "lead_id": "L8_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L8_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 100,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 473,
+          "success": true
+        }
+      },
+      "processing_time_ms": 474
+    }
+  },
+  {
+    "lead_id": "L9_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 106,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 527,
+          "success": true
+        }
+      },
+      "processing_time_ms": 528
+    }
+  },
+  {
+    "lead_id": "L9_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 547,
+          "success": true
+        }
+      },
+      "processing_time_ms": 548
+    }
+  },
+  {
+    "lead_id": "L9_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 542,
+          "success": true
+        }
+      },
+      "processing_time_ms": 543
+    }
+  },
+  {
+    "lead_id": "L9_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 513,
+          "success": true
+        }
+      },
+      "processing_time_ms": 513
+    }
+  },
+  {
+    "lead_id": "L9_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 115,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 504,
+          "success": true
+        }
+      },
+      "processing_time_ms": 506
+    }
+  },
+  {
+    "lead_id": "L9_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 516,
+          "success": true
+        }
+      },
+      "processing_time_ms": 516
+    }
+  },
+  {
+    "lead_id": "L9_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 540,
+          "success": true
+        }
+      },
+      "processing_time_ms": 541
+    }
+  },
+  {
+    "lead_id": "L9_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 104,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 635,
+          "success": true
+        }
+      },
+      "processing_time_ms": 635
+    }
+  },
+  {
+    "lead_id": "L9_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 114,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 535,
+          "success": true
+        }
+      },
+      "processing_time_ms": 535
+    }
+  },
+  {
+    "lead_id": "L9_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 531,
+          "success": true
+        }
+      },
+      "processing_time_ms": 531
+    }
+  },
+  {
+    "lead_id": "L9_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 552,
+          "success": true
+        }
+      },
+      "processing_time_ms": 552
+    }
+  },
+  {
+    "lead_id": "L9_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 103,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 600,
+          "success": true
+        }
+      },
+      "processing_time_ms": 601
+    }
+  },
+  {
+    "lead_id": "L9_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L9_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 103,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 586,
+          "success": true
+        }
+      },
+      "processing_time_ms": 587
+    }
+  },
+  {
+    "lead_id": "L10_solar_validation",
+    "vertical": "solar",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_solar_validation",
+      "vertical": "solar",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 101,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 513,
+          "success": true
+        }
+      },
+      "processing_time_ms": 514
+    }
+  },
+  {
+    "lead_id": "L10_roofing_validation",
+    "vertical": "roofing",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_roofing_validation",
+      "vertical": "roofing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 111,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 478,
+          "success": true
+        }
+      },
+      "processing_time_ms": 478
+    }
+  },
+  {
+    "lead_id": "L10_windows_validation",
+    "vertical": "windows",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_windows_validation",
+      "vertical": "windows",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 525,
+          "success": true
+        }
+      },
+      "processing_time_ms": 525
+    }
+  },
+  {
+    "lead_id": "L10_hvac_validation",
+    "vertical": "hvac",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_hvac_validation",
+      "vertical": "hvac",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 565,
+          "success": true
+        }
+      },
+      "processing_time_ms": 566
+    }
+  },
+  {
+    "lead_id": "L10_siding_validation",
+    "vertical": "siding",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_siding_validation",
+      "vertical": "siding",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 114,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 512,
+          "success": true
+        }
+      },
+      "processing_time_ms": 512
+    }
+  },
+  {
+    "lead_id": "L10_gutters_validation",
+    "vertical": "gutters",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_gutters_validation",
+      "vertical": "gutters",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 112,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 532,
+          "success": true
+        }
+      },
+      "processing_time_ms": 533
+    }
+  },
+  {
+    "lead_id": "L10_painting_validation",
+    "vertical": "painting",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_painting_validation",
+      "vertical": "painting",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 110,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 524,
+          "success": true
+        }
+      },
+      "processing_time_ms": 525
+    }
+  },
+  {
+    "lead_id": "L10_plumbing_validation",
+    "vertical": "plumbing",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_plumbing_validation",
+      "vertical": "plumbing",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 529,
+          "success": true
+        }
+      },
+      "processing_time_ms": 529
+    }
+  },
+  {
+    "lead_id": "L10_bathroom_remodel_validation",
+    "vertical": "bathroom_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_bathroom_remodel_validation",
+      "vertical": "bathroom_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 115,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 515,
+          "success": true
+        }
+      },
+      "processing_time_ms": 516
+    }
+  },
+  {
+    "lead_id": "L10_kitchen_remodel_validation",
+    "vertical": "kitchen_remodel",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_kitchen_remodel_validation",
+      "vertical": "kitchen_remodel",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 502,
+          "success": true
+        }
+      },
+      "processing_time_ms": 502
+    }
+  },
+  {
+    "lead_id": "L10_flooring_validation",
+    "vertical": "flooring",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_flooring_validation",
+      "vertical": "flooring",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 106,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 518,
+          "success": true
+        }
+      },
+      "processing_time_ms": 518
+    }
+  },
+  {
+    "lead_id": "L10_insurance_validation",
+    "vertical": "insurance",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_insurance_validation",
+      "vertical": "insurance",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 1,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 107,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 657,
+          "success": true
+        }
+      },
+      "processing_time_ms": 658
+    }
+  },
+  {
+    "lead_id": "L10_mortgage_validation",
+    "vertical": "mortgage",
+    "status": 200,
+    "body": {
+      "lead_id": "L10_mortgage_validation",
+      "vertical": "mortgage",
+      "publisher_id": "validation_script",
+      "publisher_name": "Production Validation",
+      "decision": "reject",
+      "score": 0,
+      "tier": "Reject",
+      "hard_kill": true,
+      "hard_kill_reason": "INVALID_PHONE",
+      "reason_codes": [
+        "INVALID_PHONE"
+      ],
+      "llm_response": null,
+      "routing": {
+        "buyer_id": null,
+        "buyer_name": null,
+        "endpoint_url": null,
+        "cpl": null
+      },
+      "api_performance": {
+        "trustedform": {
+          "response_time_ms": 0,
+          "success": true
+        },
+        "trestle": {
+          "response_time_ms": 109,
+          "success": true
+        },
+        "batchdata": {
+          "response_time_ms": 504,
+          "success": true
+        }
+      },
+      "processing_time_ms": 505
+    }
+  }
+]
