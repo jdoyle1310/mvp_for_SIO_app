@@ -1042,13 +1042,13 @@ export async function scoreLead(apiData, vertical, leadName) {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'prompt-caching-2024-07-31',
       },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 512,
+        max_tokens: 256,
         temperature: 0,
-        cache_control: { type: 'ephemeral' },
-        system: prompt,
+        system: [{ type: 'text', text: prompt, cache_control: { type: 'ephemeral' } }],
         messages: [{ role: 'user', content: userMessage }],
       }),
       signal: anthropicController.signal,
@@ -1089,6 +1089,8 @@ export async function scoreLead(apiData, vertical, leadName) {
     llm_usage: {
       input_tokens: data.usage?.input_tokens || 0,
       output_tokens: data.usage?.output_tokens || 0,
+      cache_read_tokens: data.usage?.cache_read_input_tokens || 0,
+      cache_write_tokens: data.usage?.cache_creation_input_tokens || 0,
     },
   };
 }

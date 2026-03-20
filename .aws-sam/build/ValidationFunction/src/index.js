@@ -108,7 +108,9 @@ export async function handler(event) {
         processing_time_ms: Date.now() - startTime,
       });
 
-      await logScoredLead(result, apiPerformance, null);
+      logScoredLead(result, apiPerformance, null).catch(err => {
+        console.error('Background log failed:', err.message);
+      });
       emitMetrics(result, apiPerformance);
       return toApiGwResponse(200, result);
     }
@@ -311,8 +313,10 @@ export async function handler(event) {
       processing_time_ms: Date.now() - startTime,
     });
 
-    // 11. Log and emit
-    await logScoredLead(result, apiPerformance, llmResponse);
+    // 11. Log and emit — fire-and-forget so DynamoDB write doesn't block the HTTP response
+    logScoredLead(result, apiPerformance, llmResponse).catch(err => {
+      console.error('Background log failed:', err.message);
+    });
     emitMetrics(result, apiPerformance);
 
     return toApiGwResponse(200, result);

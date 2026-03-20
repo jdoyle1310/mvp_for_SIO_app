@@ -59,9 +59,11 @@ export const TABLE_NAMES = {
 export const CONFIG_CACHE_TTL = parseInt(process.env.CONFIG_CACHE_TTL || '300', 10);
 
 // API timeout for enrichment APIs — Trestle, BatchData, TrustedForm (milliseconds)
-export const API_TIMEOUT_MS = parseInt(process.env.API_TIMEOUT_MS || '3000', 10);
+// Production max observed: Trestle 821ms, BatchData 1,731ms, TrustedForm 263ms (155 leads)
+export const API_TIMEOUT_MS = parseInt(process.env.API_TIMEOUT_MS || '2000', 10);
 
-// Anthropic LLM timeout — higher than enrichment APIs; complex prompts can take 10-12s (milliseconds)
+// Anthropic LLM timeout (milliseconds)
+// With prompt caching: 800-1,200ms. Without cache hit: 1,500-2,000ms.
 export const ANTHROPIC_TIMEOUT_MS = parseInt(process.env.ANTHROPIC_TIMEOUT_MS || '15000', 10);
 
 // Special field_score values that trigger hard kills
