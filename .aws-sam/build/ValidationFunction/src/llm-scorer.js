@@ -27,6 +27,8 @@
  * Model: claude-sonnet-4-20250514
  */
 
+import { ANTHROPIC_TIMEOUT_MS } from './utils/constants.js';
+
 const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -881,6 +883,12 @@ function getPromptForVertical(vertical) {
 // Config-driven: VERTICAL_FIELDS + FIELD_SOURCES maps
 // ════════════════════════════════════════════════════════════════════
 
+// Verticals where Commercial property is a clear disqualifier (no physical structure to service)
+const HOME_SERVICES_VERTICALS = [
+  'solar', 'roofing', 'windows', 'hvac', 'siding', 'gutters',
+  'painting', 'plumbing', 'bathroom_remodel', 'kitchen_remodel', 'flooring',
+];
+
 // Vertical-specific field config — which extra fields each vertical gets
 const VERTICAL_FIELDS = {
   solar:             ['email.is_deliverable', 'solar_permit', 'estimated_value', 'bd_age', 'sale_propensity', 'mortgage_total_payment'],
@@ -937,6 +945,16 @@ export function prepareFieldsForLLM(apiData, vertical) {
   fields['phone.line_type'] = apiData['trestle.phone.line_type'] ?? null;
   fields['email.is_valid'] = apiData['trestle.email.is_valid'] ?? null;
 
+  // Flag a complete Trestle null response so the model knows identity can't be verified.
+  // Post-LLM enforcement also applies a Silver cap when this flag is present.
+  const trestleMissing = [
+    'trestle.phone.is_valid', 'trestle.phone.contact_grade',
+    'trestle.phone.activity_score', 'trestle.phone.line_type', 'trestle.phone.name_match',
+  ].every(k => apiData[k] == null);
+  if (trestleMissing) {
+    fields['trestle_data'] = 'MISSING';
+  }
+
   // B. Identity (all verticals)
   fields['phone.name_match'] = apiData['trestle.phone.name_match'] ?? null;
   fields['email.name_match'] = apiData['trestle.email.name_match'] ?? null;
@@ -944,11 +962,22 @@ export function prepareFieldsForLLM(apiData, vertical) {
   fields['owner_name'] = apiData['_batchdata.owner_name'] ?? null;
 
   // C. Property (all verticals)
-  fields['owner_occupied'] = apiData['batchdata.owner_occupied'] ?? null;
+  // Use 'UNKNOWN' instead of null so the model sees a visible negative signal
+  // rather than silently omitting the field (null is filtered out before the LLM call).
+  fields['owner_occupied'] = apiData['batchdata.owner_occupied'] ?? 'UNKNOWN';
   fields['property_type'] = apiData['batchdata.property_type'] ?? null;
   fields['free_and_clear'] = apiData['batchdata.free_and_clear'] ?? null;
   fields['high_equity'] = apiData['batchdata.high_equity'] ?? null;
   fields['address.is_valid'] = apiData['trestle.address.is_valid'] ?? null;
+
+  // Flag commercial property on home-services verticals — model should treat as disqualifying.
+  // Post-LLM enforcement applies a Silver cap when this mismatch is detected.
+  if (
+    apiData['batchdata.property_type'] === 'Commercial' &&
+    HOME_SERVICES_VERTICALS.includes(vertical)
+  ) {
+    fields['property_vertical_mismatch'] = true;
+  }
 
   // Add vertical-specific fields from config
   const verticalFields = VERTICAL_FIELDS[vertical] || [];
@@ -1003,7 +1032,7 @@ export async function scoreLead(apiData, vertical, leadName) {
     : `Score this lead:\n${JSON.stringify(nonNullFields, null, 2)}`;
 
   const anthropicController = new AbortController();
-  const anthropicTimeout = setTimeout(() => anthropicController.abort(), 5000);
+  const anthropicTimeout = setTimeout(() => anthropicController.abort(), ANTHROPIC_TIMEOUT_MS);
 
   let response;
   try {
@@ -1026,7 +1055,7 @@ export async function scoreLead(apiData, vertical, leadName) {
     });
   } catch (err) {
     if (err.name === 'AbortError') {
-      throw new Error('Anthropic API timeout after 5000ms');
+      throw new Error(`Anthropic API timeout after ${ANTHROPIC_TIMEOUT_MS}ms`);
     }
     throw err;
   } finally {
@@ -1064,5 +1093,5 @@ export async function scoreLead(apiData, vertical, leadName) {
   };
 }
 
-// Export buildPrompt for testing/verification
-export { buildPrompt, VERTICAL_FIELDS, FIELD_SOURCES };
+// Export buildPrompt for testing/verification + HOME_SERVICES_VERTICALS for enforcement rules
+export { buildPrompt, VERTICAL_FIELDS, FIELD_SOURCES, HOME_SERVICES_VERTICALS };

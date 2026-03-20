@@ -58,8 +58,11 @@ export const TABLE_NAMES = {
 // Config cache TTL (seconds)
 export const CONFIG_CACHE_TTL = parseInt(process.env.CONFIG_CACHE_TTL || '300', 10);
 
-// API timeout (milliseconds)
+// API timeout for enrichment APIs — Trestle, BatchData, TrustedForm (milliseconds)
 export const API_TIMEOUT_MS = parseInt(process.env.API_TIMEOUT_MS || '3000', 10);
+
+// Anthropic LLM timeout — higher than enrichment APIs; complex prompts can take 10-12s (milliseconds)
+export const ANTHROPIC_TIMEOUT_MS = parseInt(process.env.ANTHROPIC_TIMEOUT_MS || '15000', 10);
 
 // Special field_score values that trigger hard kills
 export const HARD_KILL_SENTINEL = 'HARD_KILL';

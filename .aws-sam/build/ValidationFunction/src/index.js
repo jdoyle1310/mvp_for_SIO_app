@@ -28,7 +28,7 @@ import { loadConfig } from './config-loader.js';
 import { normalizePhone } from './utils/phone-normalizer.js';
 import { VALID_VERTICALS, DECISIONS, API_TIMEOUT_MS } from './utils/constants.js';
 import { routeLead } from './router.js';
-import { logScoredLead, emitMetrics } from './utils/logger.js';
+import { logScoredLead, emitMetrics, buildEnrichmentData } from './utils/logger.js';
 
 // API clients (3 enrichment APIs — FullContact dropped, Twilio dropped)
 import { callTrestle } from './api/trestle.js';
@@ -36,7 +36,7 @@ import { callBatchData } from './api/batchdata.js';
 import { callTrustedForm } from './api/trustedform.js';
 
 // LLM scorer (replaces rules engine — scorer.js + normalizer.js)
-import { scoreLead } from './llm-scorer.js';
+import { scoreLead, HOME_SERVICES_VERTICALS } from './llm-scorer.js';
 
 /**
  * Lambda handler.
@@ -102,12 +102,13 @@ export async function handler(event) {
         hard_kill_reason: hardKillReason,
         reason_codes: [hardKillReason],
         llm_response: null,
+        enrichment_data: buildEnrichmentData(apiData),
         routing: { buyer_id: null, buyer_name: null, endpoint_url: null, cpl: null },
         api_performance: apiPerformance,
         processing_time_ms: Date.now() - startTime,
       });
 
-      await logScoredLead(result, apiPerformance, apiData, null);
+      await logScoredLead(result, apiPerformance, null);
       emitMetrics(result, apiPerformance);
       return toApiGwResponse(200, result);
     }
@@ -126,11 +127,168 @@ export async function handler(event) {
       output_tokens: llmResult.llm_usage?.output_tokens || 0,
     };
 
-    // 8. Use LLM tier + score
-    const { tier, score } = llmResult;
+    // 8. Use LLM tier + score, then apply deterministic post-scoring enforcement.
+    // Rules run most-restrictive first: Bronze caps → Silver caps → Silver floor.
+    // Each section only tightens; a Bronze result cannot be upgraded by a later Silver cap.
+    let { tier, score } = llmResult;
 
-    // 9. Route to buyer
-    const { decision, routing } = await routeLead(lead.vertical, tier, score, lead);
+    // Shared values referenced across multiple rules
+    const phoneNameMatch = apiData['trestle.phone.name_match'];
+    const addrNameMatch  = apiData['trestle.address.name_match'];
+    const ownerOccupied  = apiData['batchdata.owner_occupied'];
+    const corporateOwned = apiData['batchdata.corporate_owned'];
+    const propertyType   = apiData['batchdata.property_type'];
+    const phoneGrade     = apiData['trestle.phone.contact_grade'];
+    const phoneActivity  = apiData['trestle.phone.activity_score'];
+    const phoneLineType  = apiData['trestle.phone.line_type'];
+    const taxLien        = apiData['batchdata.tax_lien'];
+    const involuntaryLien = apiData['batchdata.involuntary_lien'];
+    const preForeclosure = apiData['batchdata.pre_foreclosure'];
+    const confirmedOwner = apiData['trustedform.confirmed_owner'];
+    const bdAge          = apiData['batchdata.bd_age'];
+    const trestleMissing = isTrestleDataMissing(apiData);
+
+    // Helper: demote to Bronze
+    const capBronze = () => { tier = 'Bronze'; score = Math.min(score, 44); };
+    // Helper: demote to Silver (no-op if already Bronze)
+    const capSilver = () => {
+      if (tier === 'Gold') { tier = 'Silver'; score = Math.min(score, 69); }
+    };
+
+    // ── 8a. BRONZE CAPS (most restrictive — run first) ──────────────────────────
+
+    // Rule 3: Both phone AND address name mismatches — confirmed wrong contact data.
+    // Proof: Mary Browning Silver 52 — wrong number, DNC, tax lien + involuntary lien.
+    if (
+      String(phoneNameMatch).toLowerCase() === 'false' &&
+      String(addrNameMatch).toLowerCase() === 'false'
+    ) {
+      capBronze();
+    }
+
+    // Rule 4: Phone name mismatch + corporate owned — identity can't be tied to a person.
+    // Proof: Harsha Patel Gold 85 — phone mismatch, corporate owned, involuntary lien → Bad Contact Data.
+    if (
+      String(phoneNameMatch).toLowerCase() === 'false' &&
+      corporateOwned === true
+    ) {
+      capBronze();
+    }
+
+    // Rule 5: Confirmed renter without clean name-match signals — can't authorize home work.
+    // Proof: Randy Rush Gold 85 — renter on commercial, absentee owner → Wrong Number.
+    if (
+      ownerOccupied === 'confirmed_renter' &&
+      !(String(phoneNameMatch).toLowerCase() === 'true' && String(addrNameMatch).toLowerCase() === 'true')
+    ) {
+      capBronze();
+    }
+
+    // Rule 6: NonFixedVOIP line type — high fraud/wrong-person risk.
+    if (phoneLineType === 'NonFixedVOIP') {
+      capBronze();
+    }
+
+    // Rule 7: Grade F phone + low activity — effectively unreachable.
+    if (phoneGrade === 'F' && phoneActivity != null && phoneActivity < 40) {
+      capBronze();
+    }
+
+    // Existing 8a: Data coverage cap — 3+ of 5 signal groups entirely null.
+    // Backtest: sparse-data Silver leads had 0% appointment rate (0/7 with dispo).
+    if (countSignalGroups(apiData) <= 2) {
+      capBronze();
+    }
+
+    // Age 65+ cap (Bronze) — moved here from 8d since Bronze is the outcome.
+    // Dispo data: 0% appt rate at 65-69, near-zero at 70+. Insurance/mortgage exempt.
+    const NON_AGE_CAPPED_VERTICALS = ['insurance', 'mortgage'];
+    if (bdAge && bdAge >= 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
+      capBronze();
+    }
+
+    // ── 8b. SILVER CAPS (run only if not already Bronze) ────────────────────────
+
+    // Rule 8: Corporate owned — real person can't authorize work on corporate property.
+    // Affects: DAVE PARKER, Stephen Marshall, Erlinda Stone, JOSEPH CASCONE, Keith Batker,
+    //          Sharon St Clair, Harsha Patel (also Bronze via rule 4).
+    if (corporateOwned === true) {
+      capSilver();
+    }
+
+    // Rule 9: Confirmed renter with clean name-match signals — contactable but can't convert
+    //         on home services (doesn't own the property being serviced).
+    // Affects: Curtis Nobis, Michael McCarthy, Amanda Lewis, Youssef Bessam, Scott Lee.
+    if (
+      ownerOccupied === 'confirmed_renter' &&
+      String(phoneNameMatch).toLowerCase() === 'true' &&
+      String(addrNameMatch).toLowerCase() === 'true'
+    ) {
+      capSilver();
+    }
+
+    // Rule 10: Commercial property on a home-services vertical — no residential structure.
+    // Affects: Randy Rush (solar), NANCY HOST (solar).
+    if (propertyType === 'Commercial' && HOME_SERVICES_VERTICALS.includes(lead.vertical)) {
+      capSilver();
+    }
+
+    // Rule 11: No Trestle data — identity can't be verified at all.
+    // Affects: Nino Pacantara, DEL MCCORD, Gregory Brooks, wendell dotson, Raman Patel, Dan Houston.
+    if (trestleMissing) {
+      capSilver();
+    }
+
+    // Rule 12: Stacked fraud signals — 2+ of tax lien, involuntary lien, pre-foreclosure.
+    // Affects: Terry Olson Gold 85, Sherrie McCloud-McGHee Gold 95.
+    {
+      const fraudCount = [taxLien, involuntaryLien, preForeclosure].filter(v => v === true).length;
+      if (fraudCount >= 2) {
+        capSilver();
+      }
+    }
+
+    // Existing 8b: Dual identity mismatch — phone belongs to someone else AND owner name
+    // doesn't match. Backtest: avg score 41.7 (Bronze), 0% appts when also sparse.
+    {
+      const ownerName = apiData['_batchdata.owner_name'];
+      const lastNameLower = (lead.contact.last_name || '').toLowerCase();
+      if (String(phoneNameMatch).toLowerCase() === 'false') {
+        const ownerMismatch = ownerName && lastNameLower &&
+          !ownerName.toLowerCase().includes(lastNameLower);
+        if (ownerMismatch) {
+          if (String(addrNameMatch).toLowerCase() === 'false') {
+            capBronze(); // triple mismatch: phone + owner + address
+          } else {
+            capSilver(); // dual mismatch: phone + owner, address ok
+          }
+        }
+      }
+    }
+
+    // Existing 8c: TrustedForm unverified owner cap.
+    // "no_verified_account" converts at 5.9% vs "verified" at 21.4% (102 vs 28 leads).
+    if (confirmedOwner === 'no_verified_account' && score < 80) {
+      capSilver();
+    }
+
+    // Existing 8d: Age 60-64 Silver cap (65+ already handled above in Bronze section).
+    // Dispo: 0% appt rate in 9 leads at 60-64, sharp drop from 20%+.
+    if (bdAge && bdAge >= 60 && bdAge < 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
+      capSilver();
+    }
+
+    // ── 8c. SILVER FLOOR ────────────────────────────────────────────────────────
+    // Silver scores below 53 have 0% appointment rate — demote to Bronze.
+    // Affects: Katie Woodring 52, RANI BAHR 52, Aaron Morse 52, Ralph Poston 52.
+    // (Mary Browning 52 already Bronze via rule 3.)
+    if (tier === 'Silver' && score < 53) {
+      tier = 'Bronze';
+      score = 44;
+    }
+
+    // 9. Route to buyer (pass config for shadow_mode check)
+    const { decision, routing } = await routeLead(lead.vertical, tier, score, lead, config);
 
     // 10. Build final result
     const llmResponse = {
@@ -147,13 +305,14 @@ export async function handler(event) {
       hard_kill_reason: null,
       reason_codes: llmResult.reasons || [],
       llm_response: llmResponse,
+      enrichment_data: buildEnrichmentData(apiData),
       routing,
       api_performance: apiPerformance,
       processing_time_ms: Date.now() - startTime,
     });
 
     // 11. Log and emit
-    await logScoredLead(result, apiPerformance, apiData, llmResponse);
+    await logScoredLead(result, apiPerformance, llmResponse);
     emitMetrics(result, apiPerformance);
 
     return toApiGwResponse(200, result);
@@ -207,6 +366,11 @@ function checkQuickHardKills(apiData, vertical) {
     return 'INVALID_PHONE';
   }
 
+  // Litigator risk (universal) — stored as stringified boolean from Trestle add_on
+  if (apiData['trestle.litigator_risk'] === 'true') {
+    return 'LITIGATOR_RISK';
+  }
+
   // Bot detected (universal)
   if (apiData['trustedform.bot_detected'] === true || apiData['trustedform.bot_detected'] === 'true') {
     return 'BOT_DETECTED';
@@ -229,7 +393,50 @@ function checkQuickHardKills(apiData, vertical) {
     return 'CONDOMINIUM_HARD_KILL';
   }
 
+  // Solar permit = already has solar. 0% appointment rate, 40% DQ rate in backtest.
+  // Only applies to solar vertical (other verticals don't care about existing solar).
+  if (vertical === 'solar' && apiData['batchdata.solar_permit'] === true) {
+    return 'ALREADY_HAS_SOLAR';
+  }
+
+  // Empty form input = TrustedForm captured zero form interaction.
+  // 0% appointment rate across 16 leads. Suspicious — possible bot or uninstrumented form.
+  if (apiData['trustedform.form_input_method'] === 'empty') {
+    return 'EMPTY_FORM_INPUT';
+  }
+
   return null;
+}
+
+/**
+ * Returns true when Trestle returned no usable phone data — all 5 core phone
+ * fields are null, indicating either an API error or a completely unknown number.
+ * Used to inject a context flag for the LLM and enforce a Silver cap post-LLM.
+ */
+function isTrestleDataMissing(apiData) {
+  return [
+    'trestle.phone.is_valid', 'trestle.phone.contact_grade',
+    'trestle.phone.activity_score', 'trestle.phone.line_type', 'trestle.phone.name_match',
+  ].every(k => apiData[k] == null);
+}
+
+/**
+ * Count how many of the 5 signal groups have at least one non-null field.
+ * Groups: A=Contactability, B=Identity, C=Property, D=Financial, E=Form Behavior
+ */
+function countSignalGroups(apiData) {
+  let groups = 0;
+  if (['trestle.phone.is_valid', 'trestle.phone.contact_grade', 'trestle.phone.activity_score', 'trestle.phone.line_type']
+    .some(k => apiData[k] != null)) groups++;
+  if (['trestle.phone.name_match', 'trestle.email.name_match', 'trestle.address.name_match', '_batchdata.owner_name']
+    .some(k => apiData[k] != null)) groups++;
+  if (['batchdata.owner_occupied', 'batchdata.property_type', 'batchdata.estimated_value', 'batchdata.year_built', 'batchdata.free_and_clear', 'batchdata.high_equity']
+    .some(k => apiData[k] != null)) groups++;
+  if (['fullcontact.household_income', 'fullcontact.living_status']
+    .some(k => apiData[k] != null)) groups++;
+  if (['trustedform.form_input_method', 'trustedform.bot_detected', 'trustedform.confirmed_owner', 'trustedform.age_seconds']
+    .some(k => apiData[k] != null)) groups++;
+  return groups;
 }
 
 /**
@@ -288,6 +495,7 @@ function formatResponse(lead, data) {
     hard_kill_reason: data.hard_kill_reason,
     reason_codes: data.reason_codes,
     llm_response: data.llm_response || null,
+    enrichment_data: data.enrichment_data ?? null,
     routing: data.routing,
     api_performance: data.api_performance,
     processing_time_ms: data.processing_time_ms,

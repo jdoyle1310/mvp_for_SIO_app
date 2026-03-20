@@ -1,0 +1,3037 @@
+@baseUrl = https://0lc3832g67.execute-api.us-east-1.amazonaws.com/Prod
+
+### Health check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L1 — Andy Kim | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L1_solar_validation | Andy Kim | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_roofing_validation | Andy Kim | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_windows_validation | Andy Kim | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_hvac_validation | Andy Kim | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_siding_validation | Andy Kim | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_gutters_validation | Andy Kim | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_painting_validation | Andy Kim | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_plumbing_validation | Andy Kim | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_bathroom_remodel_validation | Andy Kim | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_kitchen_remodel_validation | Andy Kim | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_flooring_validation | Andy Kim | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_insurance_validation | Andy Kim | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L1_mortgage_validation | Andy Kim | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L1_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Andy",
+    "last_name": "Kim",
+    "phone": "2025550100",
+    "email": "L1_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L2 — Lisa Baker | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L2_solar_validation | Lisa Baker | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_roofing_validation | Lisa Baker | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_windows_validation | Lisa Baker | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_hvac_validation | Lisa Baker | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_siding_validation | Lisa Baker | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_gutters_validation | Lisa Baker | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_painting_validation | Lisa Baker | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_plumbing_validation | Lisa Baker | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_bathroom_remodel_validation | Lisa Baker | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_kitchen_remodel_validation | Lisa Baker | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_flooring_validation | Lisa Baker | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_insurance_validation | Lisa Baker | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L2_mortgage_validation | Lisa Baker | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L2_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lisa",
+    "last_name": "Baker",
+    "phone": "2025550100",
+    "email": "L2_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L3 — Dharma Bum | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L3_solar_validation | Dharma Bum | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_roofing_validation | Dharma Bum | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_windows_validation | Dharma Bum | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_hvac_validation | Dharma Bum | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_siding_validation | Dharma Bum | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_gutters_validation | Dharma Bum | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_painting_validation | Dharma Bum | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_plumbing_validation | Dharma Bum | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_bathroom_remodel_validation | Dharma Bum | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_kitchen_remodel_validation | Dharma Bum | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_flooring_validation | Dharma Bum | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_insurance_validation | Dharma Bum | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L3_mortgage_validation | Dharma Bum | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L3_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Dharma",
+    "last_name": "Bum",
+    "phone": "2025550100",
+    "email": "L3_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L4 — Bonnie Jenkins | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L4_solar_validation | Bonnie Jenkins | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_roofing_validation | Bonnie Jenkins | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_windows_validation | Bonnie Jenkins | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_hvac_validation | Bonnie Jenkins | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_siding_validation | Bonnie Jenkins | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_gutters_validation | Bonnie Jenkins | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_painting_validation | Bonnie Jenkins | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_plumbing_validation | Bonnie Jenkins | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_bathroom_remodel_validation | Bonnie Jenkins | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_kitchen_remodel_validation | Bonnie Jenkins | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_flooring_validation | Bonnie Jenkins | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_insurance_validation | Bonnie Jenkins | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L4_mortgage_validation | Bonnie Jenkins | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L4_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Bonnie",
+    "last_name": "Jenkins",
+    "phone": "2025550100",
+    "email": "L4_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L5 — Lawrence Horn | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L5_solar_validation | Lawrence Horn | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_roofing_validation | Lawrence Horn | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_windows_validation | Lawrence Horn | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_hvac_validation | Lawrence Horn | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_siding_validation | Lawrence Horn | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_gutters_validation | Lawrence Horn | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_painting_validation | Lawrence Horn | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_plumbing_validation | Lawrence Horn | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_bathroom_remodel_validation | Lawrence Horn | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_kitchen_remodel_validation | Lawrence Horn | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_flooring_validation | Lawrence Horn | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_insurance_validation | Lawrence Horn | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L5_mortgage_validation | Lawrence Horn | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L5_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Lawrence",
+    "last_name": "Horn",
+    "phone": "2025550100",
+    "email": "L5_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L6 — Mary Beacham | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L6_solar_validation | Mary Beacham | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_roofing_validation | Mary Beacham | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_windows_validation | Mary Beacham | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_hvac_validation | Mary Beacham | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_siding_validation | Mary Beacham | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_gutters_validation | Mary Beacham | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_painting_validation | Mary Beacham | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_plumbing_validation | Mary Beacham | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_bathroom_remodel_validation | Mary Beacham | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_kitchen_remodel_validation | Mary Beacham | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_flooring_validation | Mary Beacham | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_insurance_validation | Mary Beacham | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L6_mortgage_validation | Mary Beacham | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L6_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Mary",
+    "last_name": "Beacham",
+    "phone": "2025550100",
+    "email": "L6_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L7 — Ken Sickmen | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L7_solar_validation | Ken Sickmen | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_roofing_validation | Ken Sickmen | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_windows_validation | Ken Sickmen | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_hvac_validation | Ken Sickmen | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_siding_validation | Ken Sickmen | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_gutters_validation | Ken Sickmen | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_painting_validation | Ken Sickmen | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_plumbing_validation | Ken Sickmen | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_bathroom_remodel_validation | Ken Sickmen | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_kitchen_remodel_validation | Ken Sickmen | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_flooring_validation | Ken Sickmen | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_insurance_validation | Ken Sickmen | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L7_mortgage_validation | Ken Sickmen | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L7_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Ken",
+    "last_name": "Sickmen",
+    "phone": "2025550100",
+    "email": "L7_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L8 — Nick Byrne | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L8_solar_validation | Nick Byrne | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_roofing_validation | Nick Byrne | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_windows_validation | Nick Byrne | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_hvac_validation | Nick Byrne | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_siding_validation | Nick Byrne | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_gutters_validation | Nick Byrne | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_painting_validation | Nick Byrne | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_plumbing_validation | Nick Byrne | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_bathroom_remodel_validation | Nick Byrne | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_kitchen_remodel_validation | Nick Byrne | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_flooring_validation | Nick Byrne | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_insurance_validation | Nick Byrne | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L8_mortgage_validation | Nick Byrne | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L8_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Nick",
+    "last_name": "Byrne",
+    "phone": "2025550100",
+    "email": "L8_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L9 — Vijay Pakalapati | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L9_solar_validation | Vijay Pakalapati | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_roofing_validation | Vijay Pakalapati | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_windows_validation | Vijay Pakalapati | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_hvac_validation | Vijay Pakalapati | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_siding_validation | Vijay Pakalapati | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_gutters_validation | Vijay Pakalapati | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_painting_validation | Vijay Pakalapati | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_plumbing_validation | Vijay Pakalapati | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_bathroom_remodel_validation | Vijay Pakalapati | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_kitchen_remodel_validation | Vijay Pakalapati | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_flooring_validation | Vijay Pakalapati | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_insurance_validation | Vijay Pakalapati | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L9_mortgage_validation | Vijay Pakalapati | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L9_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Vijay",
+    "last_name": "Pakalapati",
+    "phone": "2025550100",
+    "email": "L9_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+# ═════════════════════════════════════════════════════════════════════════════
+# L10 — Amani Abou Harb | 13 verticals
+# ═════════════════════════════════════════════════════════════════════════════
+
+### L10_solar_validation | Amani Abou Harb | SOLAR
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_solar_validation",
+  "vertical": "solar",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_solar_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_roofing_validation | Amani Abou Harb | ROOFING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_roofing_validation",
+  "vertical": "roofing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_roofing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_windows_validation | Amani Abou Harb | WINDOWS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_windows_validation",
+  "vertical": "windows",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_windows_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_hvac_validation | Amani Abou Harb | HVAC
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_hvac_validation",
+  "vertical": "hvac",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_hvac_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_siding_validation | Amani Abou Harb | SIDING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_siding_validation",
+  "vertical": "siding",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_siding_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_gutters_validation | Amani Abou Harb | GUTTERS
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_gutters_validation",
+  "vertical": "gutters",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_gutters_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_painting_validation | Amani Abou Harb | PAINTING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_painting_validation",
+  "vertical": "painting",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_painting_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_plumbing_validation | Amani Abou Harb | PLUMBING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_plumbing_validation",
+  "vertical": "plumbing",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_plumbing_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_bathroom_remodel_validation | Amani Abou Harb | BATHROOM REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_bathroom_remodel_validation",
+  "vertical": "bathroom_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_bathroom_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_kitchen_remodel_validation | Amani Abou Harb | KITCHEN REMODEL
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_kitchen_remodel_validation",
+  "vertical": "kitchen_remodel",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_kitchen_remodel_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_flooring_validation | Amani Abou Harb | FLOORING
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_flooring_validation",
+  "vertical": "flooring",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_flooring_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_insurance_validation | Amani Abou Harb | INSURANCE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_insurance_validation",
+  "vertical": "insurance",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_insurance_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###
+
+### L10_mortgage_validation | Amani Abou Harb | MORTGAGE
+POST {{baseUrl}}/validate
+Content-Type: application/json
+
+{
+  "lead_id": "L10_mortgage_validation",
+  "vertical": "mortgage",
+  "publisher_id": "validation_script",
+  "publisher_name": "Production Validation",
+  "contact": {
+    "first_name": "Amani",
+    "last_name": "Abou Harb",
+    "phone": "2025550100",
+    "email": "L10_mortgage_validation@validation.test",
+    "address": "123 Main St",
+    "city": "Arlington",
+    "state": "VA",
+    "zip": "22201"
+  }
+}
+
+###

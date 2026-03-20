@@ -1,0 +1,26 @@
+# SAM CLI deploy configuration for GreenWatt Lead Validation Lambda
+# Created: 2026-03-17
+#
+# Usage:
+#   sam build -t infrastructure/template.yaml
+#   sam deploy              (uses this config)
+#   sam deploy --guided     (interactive first-time setup)
+
+version = 0.1
+
+[default.build.parameters]
+template_file = "infrastructure/template.yaml"
+profile = "greenwatt"
+
+[default.deploy.parameters]
+stack_name = "greenwatt-lead-scoring"
+region = "us-east-1"
+profile = "greenwatt"
+resolve_s3 = true
+s3_prefix = "greenwatt-lead-scoring"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+template_file = "infrastructure/template.yaml"
+
+# API keys are set via Lambda env vars AFTER deploy (not in template — secrets)
+# See DEPLOY_GUIDE.md step 5 for instructions

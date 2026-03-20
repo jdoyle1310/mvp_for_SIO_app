@@ -15,9 +15,9 @@
     "property_financial": 0.06
   },
   "tier_thresholds": {
-    "gold": 70,
-    "silver": 45,
-    "bronze": 20
+    "gold": 75,
+    "silver": 53,
+    "bronze": 25
   },
   "signal_clusters": {
     "phone_quality": {

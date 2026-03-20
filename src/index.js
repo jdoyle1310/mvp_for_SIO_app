@@ -36,7 +36,7 @@ import { callBatchData } from './api/batchdata.js';
 import { callTrustedForm } from './api/trustedform.js';
 
 // LLM scorer (replaces rules engine — scorer.js + normalizer.js)
-import { scoreLead } from './llm-scorer.js';
+import { scoreLead, HOME_SERVICES_VERTICALS } from './llm-scorer.js';
 
 /**
  * Lambda handler.
@@ -127,82 +127,164 @@ export async function handler(event) {
       output_tokens: llmResult.llm_usage?.output_tokens || 0,
     };
 
-    // 8. Use LLM tier + score, then apply post-scoring caps
+    // 8. Use LLM tier + score, then apply deterministic post-scoring enforcement.
+    // Rules run most-restrictive first: Bronze caps → Silver caps → Silver floor.
+    // Each section only tightens; a Bronze result cannot be upgraded by a later Silver cap.
     let { tier, score } = llmResult;
 
-    // ── 8a. Data coverage cap ──
-    // If 3+ of 5 signal groups are entirely null, cap at Bronze.
-    // Backtest: sparse-data Silver leads had 0% appointment rate (0/7 with dispo).
-    const groupsPresent = countSignalGroups(apiData);
-    if (groupsPresent <= 2) {
-      if (tier === 'Gold' || tier === 'Silver') {
-        tier = 'Bronze';
-        score = Math.min(score, 44);
-      }
-    }
-
-    // ── 8b. Dual identity mismatch cap ──
-    // Phone belongs to someone else AND property belongs to someone else.
-    // Backtest: 42 leads, avg score 41.7 (Bronze). 0% appts when also sparse.
+    // Shared values referenced across multiple rules
     const phoneNameMatch = apiData['trestle.phone.name_match'];
-    const addrNameMatch = apiData['trestle.address.name_match'];
-    const ownerName = apiData['_batchdata.owner_name'];
-    const lastNameLower = (lead.contact.last_name || '').toLowerCase();
-
-    if (String(phoneNameMatch).toLowerCase() === 'false') {
-      const ownerMismatch = ownerName && lastNameLower &&
-        !ownerName.toLowerCase().includes(lastNameLower);
-      if (ownerMismatch) {
-        if (String(addrNameMatch).toLowerCase() === 'false') {
-          // Triple mismatch: phone + owner + address = Bronze cap
-          if (tier === 'Gold' || tier === 'Silver') {
-            tier = 'Bronze';
-            score = Math.min(score, 44);
-          }
-        } else {
-          // Dual mismatch: phone + owner, address ok = Silver cap
-          if (tier === 'Gold') {
-            tier = 'Silver';
-            score = Math.min(score, 69);
-          }
-        }
-      }
-    }
-
-    // ── 8c. TrustedForm verified owner cap ──
-    // "no_verified_account" converts at 5.9% vs "verified" at 21.4% (102 vs 28 leads).
-    // If unverified and score < 80, cap at Silver.
+    const addrNameMatch  = apiData['trestle.address.name_match'];
+    const ownerOccupied  = apiData['batchdata.owner_occupied'];
+    const corporateOwned = apiData['batchdata.corporate_owned'];
+    const propertyType   = apiData['batchdata.property_type'];
+    const phoneGrade     = apiData['trestle.phone.contact_grade'];
+    const phoneActivity  = apiData['trestle.phone.activity_score'];
+    const phoneLineType  = apiData['trestle.phone.line_type'];
+    const taxLien        = apiData['batchdata.tax_lien'];
+    const involuntaryLien = apiData['batchdata.involuntary_lien'];
+    const preForeclosure = apiData['batchdata.pre_foreclosure'];
     const confirmedOwner = apiData['trustedform.confirmed_owner'];
-    if (confirmedOwner === 'no_verified_account' && score < 80) {
-      if (tier === 'Gold') {
-        tier = 'Silver';
-        score = Math.min(score, 69);
+    const bdAge          = apiData['batchdata.bd_age'];
+    const trestleMissing = isTrestleDataMissing(apiData);
+
+    // Helper: demote to Bronze
+    const capBronze = () => { tier = 'Bronze'; score = Math.min(score, 44); };
+    // Helper: demote to Silver (no-op if already Bronze)
+    const capSilver = () => {
+      if (tier === 'Gold') { tier = 'Silver'; score = Math.min(score, 69); }
+    };
+
+    // ── 8a. BRONZE CAPS (most restrictive — run first) ──────────────────────────
+
+    // Rule 3: Both phone AND address name mismatches — confirmed wrong contact data.
+    // Proof: Mary Browning Silver 52 — wrong number, DNC, tax lien + involuntary lien.
+    if (
+      String(phoneNameMatch).toLowerCase() === 'false' &&
+      String(addrNameMatch).toLowerCase() === 'false'
+    ) {
+      capBronze();
+    }
+
+    // Rule 4: Phone name mismatch + corporate owned — identity can't be tied to a person.
+    // Proof: Harsha Patel Gold 85 — phone mismatch, corporate owned, involuntary lien → Bad Contact Data.
+    if (
+      String(phoneNameMatch).toLowerCase() === 'false' &&
+      corporateOwned === true
+    ) {
+      capBronze();
+    }
+
+    // Rule 5: Confirmed renter without clean name-match signals — can't authorize home work.
+    // Proof: Randy Rush Gold 85 — renter on commercial, absentee owner → Wrong Number.
+    if (
+      ownerOccupied === 'confirmed_renter' &&
+      !(String(phoneNameMatch).toLowerCase() === 'true' && String(addrNameMatch).toLowerCase() === 'true')
+    ) {
+      capBronze();
+    }
+
+    // Rule 6: NonFixedVOIP line type — high fraud/wrong-person risk.
+    if (phoneLineType === 'NonFixedVOIP') {
+      capBronze();
+    }
+
+    // Rule 7: Grade F phone + low activity — effectively unreachable.
+    if (phoneGrade === 'F' && phoneActivity != null && phoneActivity < 40) {
+      capBronze();
+    }
+
+    // Existing 8a: Data coverage cap — 3+ of 5 signal groups entirely null.
+    // Backtest: sparse-data Silver leads had 0% appointment rate (0/7 with dispo).
+    if (countSignalGroups(apiData) <= 2) {
+      capBronze();
+    }
+
+    // Age 65+ cap (Bronze) — moved here from 8d since Bronze is the outcome.
+    // Dispo data: 0% appt rate at 65-69, near-zero at 70+. Insurance/mortgage exempt.
+    const NON_AGE_CAPPED_VERTICALS = ['insurance', 'mortgage'];
+    if (bdAge && bdAge >= 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
+      capBronze();
+    }
+
+    // ── 8b. SILVER CAPS (run only if not already Bronze) ────────────────────────
+
+    // Rule 8: Corporate owned — real person can't authorize work on corporate property.
+    // Affects: DAVE PARKER, Stephen Marshall, Erlinda Stone, JOSEPH CASCONE, Keith Batker,
+    //          Sharon St Clair, Harsha Patel (also Bronze via rule 4).
+    if (corporateOwned === true) {
+      capSilver();
+    }
+
+    // Rule 9: Confirmed renter with clean name-match signals — contactable but can't convert
+    //         on home services (doesn't own the property being serviced).
+    // Affects: Curtis Nobis, Michael McCarthy, Amanda Lewis, Youssef Bessam, Scott Lee.
+    if (
+      ownerOccupied === 'confirmed_renter' &&
+      String(phoneNameMatch).toLowerCase() === 'true' &&
+      String(addrNameMatch).toLowerCase() === 'true'
+    ) {
+      capSilver();
+    }
+
+    // Rule 10: Commercial property on a home-services vertical — no residential structure.
+    // Affects: Randy Rush (solar), NANCY HOST (solar).
+    if (propertyType === 'Commercial' && HOME_SERVICES_VERTICALS.includes(lead.vertical)) {
+      capSilver();
+    }
+
+    // Rule 11: No Trestle data — identity can't be verified at all.
+    // Affects: Nino Pacantara, DEL MCCORD, Gregory Brooks, wendell dotson, Raman Patel, Dan Houston.
+    if (trestleMissing) {
+      capSilver();
+    }
+
+    // Rule 12: Stacked fraud signals — 2+ of tax lien, involuntary lien, pre-foreclosure.
+    // Affects: Terry Olson Gold 85, Sherrie McCloud-McGHee Gold 95.
+    {
+      const fraudCount = [taxLien, involuntaryLien, preForeclosure].filter(v => v === true).length;
+      if (fraudCount >= 2) {
+        capSilver();
       }
     }
 
-    // ── 8d. Age-based caps ──
-    // Dispo data (559 leads, 74 with age):
-    //   Under 60: 19-26% appt rate
-    //   60-64: 0% (9 leads)
-    //   65-69: 0% (8 leads)
-    //   70+: ~5% (2 appts in 32 leads, outliers at 75 and 80+)
-    // Insurance and mortgage exempt (financial products, no physical presence needed).
-    const NON_AGE_CAPPED_VERTICALS = ['insurance', 'mortgage'];
-    const bdAge = apiData['batchdata.bd_age'];
-    if (bdAge && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
-      if (bdAge >= 65) {
-        // 65+ = Bronze cap. 0% appt rate at 65-69, near-zero at 70+.
-        if (tier === 'Gold' || tier === 'Silver') {
-          tier = 'Bronze';
-          score = Math.min(score, 44);
-        }
-      } else if (bdAge >= 60) {
-        // 60-64 = Silver cap. 0% appt rate in 9 leads, sharp drop from 20%+.
-        if (tier === 'Gold') {
-          tier = 'Silver';
-          score = Math.min(score, 69);
+    // Existing 8b: Dual identity mismatch — phone belongs to someone else AND owner name
+    // doesn't match. Backtest: avg score 41.7 (Bronze), 0% appts when also sparse.
+    {
+      const ownerName = apiData['_batchdata.owner_name'];
+      const lastNameLower = (lead.contact.last_name || '').toLowerCase();
+      if (String(phoneNameMatch).toLowerCase() === 'false') {
+        const ownerMismatch = ownerName && lastNameLower &&
+          !ownerName.toLowerCase().includes(lastNameLower);
+        if (ownerMismatch) {
+          if (String(addrNameMatch).toLowerCase() === 'false') {
+            capBronze(); // triple mismatch: phone + owner + address
+          } else {
+            capSilver(); // dual mismatch: phone + owner, address ok
+          }
         }
       }
+    }
+
+    // Existing 8c: TrustedForm unverified owner cap.
+    // "no_verified_account" converts at 5.9% vs "verified" at 21.4% (102 vs 28 leads).
+    if (confirmedOwner === 'no_verified_account' && score < 80) {
+      capSilver();
+    }
+
+    // Existing 8d: Age 60-64 Silver cap (65+ already handled above in Bronze section).
+    // Dispo: 0% appt rate in 9 leads at 60-64, sharp drop from 20%+.
+    if (bdAge && bdAge >= 60 && bdAge < 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
+      capSilver();
+    }
+
+    // ── 8c. SILVER FLOOR ────────────────────────────────────────────────────────
+    // Silver scores below 53 have 0% appointment rate — demote to Bronze.
+    // Affects: Katie Woodring 52, RANI BAHR 52, Aaron Morse 52, Ralph Poston 52.
+    // (Mary Browning 52 already Bronze via rule 3.)
+    if (tier === 'Silver' && score < 53) {
+      tier = 'Bronze';
+      score = 44;
     }
 
     // 9. Route to buyer (pass config for shadow_mode check)
@@ -284,6 +366,11 @@ function checkQuickHardKills(apiData, vertical) {
     return 'INVALID_PHONE';
   }
 
+  // Litigator risk (universal) — stored as stringified boolean from Trestle add_on
+  if (apiData['trestle.litigator_risk'] === 'true') {
+    return 'LITIGATOR_RISK';
+  }
+
   // Bot detected (universal)
   if (apiData['trustedform.bot_detected'] === true || apiData['trustedform.bot_detected'] === 'true') {
     return 'BOT_DETECTED';
@@ -319,6 +406,18 @@ function checkQuickHardKills(apiData, vertical) {
   }
 
   return null;
+}
+
+/**
+ * Returns true when Trestle returned no usable phone data — all 5 core phone
+ * fields are null, indicating either an API error or a completely unknown number.
+ * Used to inject a context flag for the LLM and enforce a Silver cap post-LLM.
+ */
+function isTrestleDataMissing(apiData) {
+  return [
+    'trestle.phone.is_valid', 'trestle.phone.contact_grade',
+    'trestle.phone.activity_score', 'trestle.phone.line_type', 'trestle.phone.name_match',
+  ].every(k => apiData[k] == null);
 }
 
 /**
