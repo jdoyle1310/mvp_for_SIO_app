@@ -8,9 +8,9 @@
  * 4. Call 3 APIs in parallel (Trestle, BatchData, TrustedForm)
  * 5. Merge API responses
  * 6. Run quick hard-kill checks (save LLM cost on obvious rejects)
- * 7. Call Anthropic Sonnet with locked v4 prompt
- * 8. Parse tier + score from LLM response
- * 9. Route to buyer
+ * 7. Call Anthropic Sonnet (abort if SIO_BUDGET_MS wall clock exceeded → enrichment fast path)
+ * 8. Parse tier + score; legacy post-scoring + four post-score tier caps + Silver floor
+ * 9. Route to buyer (direct_buyers_gold_only → HOLD for Silver)
  * 10. Log to DynamoDB + emit CloudWatch metrics
  * 11. Return SIO response
  *
@@ -26,7 +26,8 @@
 
 import { loadConfig } from './config-loader.js';
 import { normalizePhone } from './utils/phone-normalizer.js';
-import { VALID_VERTICALS, DECISIONS, API_TIMEOUT_MS } from './utils/constants.js';
+import { VALID_VERTICALS, DECISIONS, API_TIMEOUT_MS, SIO_BUDGET_MS } from './utils/constants.js';
+import { applyPostScoreTierCaps, logTierCapsAudit } from './utils/post-score-tier-caps.js';
 import { routeLead } from './router.js';
 import { logScoredLead, emitMetrics, buildEnrichmentData } from './utils/logger.js';
 
@@ -115,19 +116,69 @@ export async function handler(event) {
       return toApiGwResponse(200, result);
     }
 
-    // 7. Call Anthropic Sonnet with v4 prompt
+    // 7. Call Anthropic Sonnet with v4 prompt (abort if SIO wall-clock budget exceeded)
     const leadName = [lead.contact.first_name, lead.contact.last_name]
       .filter(Boolean).join(' ') || null;
 
-    const llmStart = Date.now();
-    const llmResult = await scoreLead(apiData, lead.vertical, leadName);
+    const budgetRemaining = SIO_BUDGET_MS - (Date.now() - startTime);
+    const sioAbort = new AbortController();
+    let sioTimer = null;
+    if (budgetRemaining > 0) {
+      sioTimer = setTimeout(() => sioAbort.abort(), budgetRemaining);
+    } else {
+      sioAbort.abort();
+    }
 
-    apiPerformance.anthropic = {
-      response_time_ms: Date.now() - llmStart,
-      success: true,
-      input_tokens: llmResult.llm_usage?.input_tokens || 0,
-      output_tokens: llmResult.llm_usage?.output_tokens || 0,
-    };
+    const llmStart = Date.now();
+    let llmResult;
+    let timeoutFastPath = false;
+
+    try {
+      if (budgetRemaining <= 0) {
+        const budgetErr = new Error('SIO budget exhausted');
+        budgetErr.name = 'AbortError';
+        throw budgetErr;
+      }
+      llmResult = await scoreLead(apiData, lead.vertical, leadName, { signal: sioAbort.signal });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        timeoutFastPath = true;
+        llmResult = {
+          tier: 'Silver',
+          score: 0,
+          confidence: 'low',
+          reasons: ['Scored on enrichment data only — no LLM analysis'],
+          concerns: ['TIMEOUT: Anthropic did not respond within 5.8s'],
+          llm_usage: {
+            input_tokens: 0,
+            output_tokens: 0,
+            cache_read_tokens: 0,
+            cache_write_tokens: 0,
+          },
+        };
+        apiPerformance.anthropic = {
+          response_time_ms: Date.now() - llmStart,
+          success: false,
+          timeout_fast_path: true,
+        };
+      } else {
+        if (sioTimer) clearTimeout(sioTimer);
+        throw err;
+      }
+    } finally {
+      if (sioTimer) clearTimeout(sioTimer);
+    }
+
+    if (!timeoutFastPath) {
+      apiPerformance.anthropic = {
+        response_time_ms: Date.now() - llmStart,
+        success: true,
+        input_tokens: llmResult.llm_usage?.input_tokens || 0,
+        output_tokens: llmResult.llm_usage?.output_tokens || 0,
+        cache_read_tokens: llmResult.llm_usage?.cache_read_tokens ?? 0,
+        cache_write_tokens: llmResult.llm_usage?.cache_write_tokens ?? 0,
+      };
+    }
 
     // 8. Use LLM tier + score, then apply deterministic post-scoring enforcement.
     // Rules run most-restrictive first: Bronze caps → Silver caps → Silver floor.
@@ -280,11 +331,27 @@ export async function handler(event) {
       capSilver();
     }
 
+    // ── 8b2. Four post-score tier caps (validated dispo — runs after legacy enforcement, before Silver floor)
+    const tierBeforeFourCaps = tier;
+    const fourCaps = applyPostScoreTierCaps(apiData, tier, score, lead.vertical);
+    tier = fourCaps.tier;
+    score = fourCaps.score;
+    logTierCapsAudit(fourCaps.capsTriggered, tierBeforeFourCaps, tier, score, lead);
+
+    if (timeoutFastPath) {
+      const fn = lead.contact?.first_name ?? '';
+      const ln = lead.contact?.last_name ?? '';
+      console.log(
+        `TIMEOUT_FAST_PATH | lead: ${fn} ${ln} | enrichment_tier: ${tier} | caps: ${fourCaps.capsTriggered.join(', ') || 'none'}`,
+      );
+    }
+
     // ── 8c. SILVER FLOOR ────────────────────────────────────────────────────────
     // Silver scores below 53 have 0% appointment rate — demote to Bronze.
     // Affects: Katie Woodring 52, RANI BAHR 52, Aaron Morse 52, Ralph Poston 52.
     // (Mary Browning 52 already Bronze via rule 3.)
-    if (tier === 'Silver' && score < 53) {
+    // Skip when SIO timeout fast path: score is 0 (not LLM-comparable); spec keeps Silver if no caps fired.
+    if (tier === 'Silver' && score < 53 && !timeoutFastPath) {
       tier = 'Bronze';
       score = 44;
     }

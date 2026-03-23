@@ -3,6 +3,7 @@
   "version": "5.0",
   "updated_at": "2026-03-17T00:00:00Z",
   "shadow_mode": false,
+  "direct_buyers_gold_only": true,
   "hard_kills": {
     "universal": {},
     "vertical_specific": {

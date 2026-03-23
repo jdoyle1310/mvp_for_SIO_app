@@ -43,6 +43,11 @@ export async function routeLead(vertical, tier, score, lead, config = {}) {
     return { decision: DECISIONS.HOLD, routing: nullRouting };
   }
 
+  // Direct buyers: only Gold until Silver performance improves (stub routing — no DynamoDB match yet)
+  if (config.direct_buyers_gold_only === true && tier === TIERS.SILVER) {
+    return { decision: DECISIONS.HOLD, routing: nullRouting };
+  }
+
   // STUB: For now, all non-reject, non-shadow leads get "post" decision
   // Real implementation will query buyer table and match
   return { decision: DECISIONS.POST, routing: nullRouting };

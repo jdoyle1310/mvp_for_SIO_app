@@ -1012,9 +1012,11 @@ export function prepareFieldsForLLM(apiData, vertical) {
  * @param {object} apiData - Merged flat map of all API response fields
  * @param {string} vertical - One of the 13 valid verticals
  * @param {string} leadName - Lead's name (for identity comparison in prompt)
+ * @param {object} [options]
+ * @param {AbortSignal} [options.signal] - Optional external abort (e.g. SIO wall clock). Merged with internal Anthropic timeout.
  * @returns {object} { tier, score, confidence, reasons, concerns }
  */
-export async function scoreLead(apiData, vertical, leadName) {
+export async function scoreLead(apiData, vertical, leadName, options = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY not configured');
@@ -1031,8 +1033,14 @@ export async function scoreLead(apiData, vertical, leadName) {
     ? `Score this lead (name: ${leadName}):\n${JSON.stringify(nonNullFields, null, 2)}`
     : `Score this lead:\n${JSON.stringify(nonNullFields, null, 2)}`;
 
-  const anthropicController = new AbortController();
-  const anthropicTimeout = setTimeout(() => anthropicController.abort(), ANTHROPIC_TIMEOUT_MS);
+  // Abort when either internal Anthropic timeout fires OR external signal (SIO budget) aborts.
+  const merged = new AbortController();
+  const internalTimer = setTimeout(() => merged.abort(), ANTHROPIC_TIMEOUT_MS);
+  const externalSignal = options.signal;
+  if (externalSignal) {
+    if (externalSignal.aborted) merged.abort();
+    else externalSignal.addEventListener('abort', () => merged.abort(), { once: true });
+  }
 
   let response;
   try {
@@ -1051,15 +1059,16 @@ export async function scoreLead(apiData, vertical, leadName) {
         system: [{ type: 'text', text: prompt, cache_control: { type: 'ephemeral' } }],
         messages: [{ role: 'user', content: userMessage }],
       }),
-      signal: anthropicController.signal,
+      signal: merged.signal,
     });
   } catch (err) {
+    // Propagate AbortError so handler can distinguish timeout / SIO budget from other failures
     if (err.name === 'AbortError') {
-      throw new Error(`Anthropic API timeout after ${ANTHROPIC_TIMEOUT_MS}ms`);
+      throw err;
     }
     throw err;
   } finally {
-    clearTimeout(anthropicTimeout);
+    clearTimeout(internalTimer);
   }
 
   if (!response.ok) {

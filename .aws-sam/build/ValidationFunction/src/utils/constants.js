@@ -66,6 +66,9 @@ export const API_TIMEOUT_MS = parseInt(process.env.API_TIMEOUT_MS || '2000', 10)
 // With prompt caching: 800-1,200ms. Without cache hit: 1,500-2,000ms.
 export const ANTHROPIC_TIMEOUT_MS = parseInt(process.env.ANTHROPIC_TIMEOUT_MS || '15000', 10);
 
+// SIO wall-clock budget from request start — abort LLM and use enrichment fast path if exceeded (ms)
+export const SIO_BUDGET_MS = parseInt(process.env.SIO_BUDGET_MS || '5800', 10);
+
 // Special field_score values that trigger hard kills
 export const HARD_KILL_SENTINEL = 'HARD_KILL';
 

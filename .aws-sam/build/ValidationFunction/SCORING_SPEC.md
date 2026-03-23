@@ -359,6 +359,17 @@ node dry-run/sew-v4-backtest.mjs --rescore
 
 ---
 
+## 10a. SIO budget, post-score caps, direct buyers
+
+| Mechanism | Location | Notes |
+|-----------|----------|--------|
+| **SIO wall clock** | `SIO_BUDGET_MS` in `src/utils/constants.js` (default 5800ms, env `SIO_BUDGET_MS`) | From handler `startTime`. Merged abort signal passed into `scoreLead`. On abort: enrichment-only fast path (Silver default, score 0, synthetic `llm_response`). |
+| **Four tier caps** | `src/utils/post-score-tier-caps.js` | Runs after legacy post-LLM enforcement, before Silver floor. Renter cap only on `HOME_SERVICES_VERTICALS` (not mortgage/insurance). |
+| **Silver floor** | `src/index.js` | Skipped when `timeoutFastPath` — fast-path score 0 is not LLM-comparable. |
+| **Direct buyers Gold-only** | `config.direct_buyers_gold_only` on vertical JSON + `src/router.js` | When `true` and tier is Silver → `decision: hold`. When DynamoDB buyer matching exists, replace HOLD with routing to non-direct buyers if applicable. |
+
+---
+
 ## 11. Next Steps
 
 1. **Run more backtest data** through locked v4 prompts to validate with larger sample
