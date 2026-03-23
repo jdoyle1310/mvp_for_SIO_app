@@ -1,7 +1,15 @@
 @baseUrl = https://0lc3832g67.execute-api.us-east-1.amazonaws.com/Prod
+# Preview Lambda/API (stack greenwatt-lead-scoring-preview): paste PreviewApiUrl output, same paths /validate and /health
+@previewBaseUrl = https://REPLACE.execute-api.us-east-1.amazonaws.com/Prod
 
 ### Health check
 GET {{baseUrl}}/health
+Content-Type: application/json
+
+###
+
+### Health check (preview stack)
+GET {{previewBaseUrl}}/health
 Content-Type: application/json
 
 ###

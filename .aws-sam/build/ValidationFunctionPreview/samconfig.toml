@@ -24,3 +24,22 @@ template_file = "infrastructure/template.yaml"
 
 # API keys are set via Lambda env vars AFTER deploy (not in template — secrets)
 # See DEPLOY_GUIDE.md step 5 for instructions
+#
+# Preview stack (test new Lambda code without changing greenwatt-validation):
+#   sam build --config-env preview
+#   sam deploy --config-env preview
+# Deploy the main stack once first so DynamoDB tables exist.
+
+[preview.build.parameters]
+template_file = "infrastructure/template-preview.yaml"
+profile = "greenwatt"
+
+[preview.deploy.parameters]
+stack_name = "greenwatt-lead-scoring-preview"
+region = "us-east-1"
+profile = "greenwatt"
+resolve_s3 = true
+s3_prefix = "greenwatt-lead-scoring-preview"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+template_file = "infrastructure/template-preview.yaml"

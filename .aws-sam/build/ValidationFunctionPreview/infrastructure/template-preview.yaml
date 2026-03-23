@@ -1,8 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Preview / canary Lambda + API for GreenWatt validation. Uses existing
-  DynamoDB tables from the main stack so you can deploy and test code without updating
-  greenwatt-validation.
+Description: >-
+  Preview / canary Lambda + API for GreenWatt validation. Uses existing DynamoDB tables
+  from the main stack so you can deploy and test code without updating greenwatt-validation.
+
 Parameters:
   ConfigTableName:
     Type: String
@@ -19,8 +20,8 @@ Parameters:
   PreviewFunctionName:
     Type: String
     Default: greenwatt-validation-preview
-    Description: Distinct Lambda name so production function is never replaced by
-      this deploy
+    Description: Distinct Lambda name so production function is never replaced by this deploy
+
 Globals:
   Function:
     Timeout: 30
@@ -28,35 +29,28 @@ Globals:
     MemorySize: 1769
     Environment:
       Variables:
-        DYNAMO_CONFIG_TABLE:
-          Ref: ConfigTableName
-        DYNAMO_SCORE_LOG_TABLE:
-          Ref: ScoreLogTableName
-        DYNAMO_BUYER_TABLE:
-          Ref: BuyerTableName
+        DYNAMO_CONFIG_TABLE: !Ref ConfigTableName
+        DYNAMO_SCORE_LOG_TABLE: !Ref ScoreLogTableName
+        DYNAMO_BUYER_TABLE: !Ref BuyerTableName
         CONFIG_CACHE_TTL: '300'
         API_TIMEOUT_MS: '3000'
+
 Resources:
   ValidationFunctionPreview:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName:
-        Ref: PreviewFunctionName
+      FunctionName: !Ref PreviewFunctionName
       Handler: src/index.handler
-      CodeUri: ValidationFunctionPreview
-      Description: "Preview / test deployment \u2014 same code path as production\
-        \ Lambda"
+      CodeUri: ..
+      Description: Preview / test deployment — same code path as production Lambda
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName:
-            Ref: ConfigTableName
-      - DynamoDBCrudPolicy:
-          TableName:
-            Ref: ScoreLogTableName
-      - DynamoDBCrudPolicy:
-          TableName:
-            Ref: BuyerTableName
-      - CloudWatchPutMetricPolicy: {}
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConfigTableName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ScoreLogTableName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BuyerTableName
+        - CloudWatchPutMetricPolicy: {}
       Events:
         ValidateLead:
           Type: Api
@@ -68,20 +62,14 @@ Resources:
           Properties:
             Path: /health
             Method: get
-    Metadata:
-      SamResourceId: ValidationFunctionPreview
+
 Outputs:
   PreviewApiUrl:
     Description: Preview API base (append /validate or /health)
-    Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
   PreviewFunctionArn:
     Description: Preview Lambda ARN (invoke directly or via API above)
-    Value:
-      Fn::GetAtt:
-      - ValidationFunctionPreview
-      - Arn
+    Value: !GetAtt ValidationFunctionPreview.Arn
   PreviewFunctionName:
     Description: Preview Lambda function name
-    Value:
-      Ref: ValidationFunctionPreview
+    Value: !Ref ValidationFunctionPreview
