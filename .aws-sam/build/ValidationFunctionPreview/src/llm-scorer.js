@@ -1089,12 +1089,32 @@ export async function scoreLead(apiData, vertical, leadName, options = {}) {
   const parsed = JSON.parse(jsonStr);
   const result = Array.isArray(parsed) ? parsed[0] : parsed;
 
+  // ── Post-LLM deterministic enforcement ──────────────────────────
+  // The LLM had its chance. These caps are applied regardless of what
+  // the LLM scored. If a rule fires, the tier/score are forced down
+  // and a concern is appended so the override is auditable.
+
+  let enforcedTier = result.tier || 'Bronze';
+  let enforcedScore = result.score ?? 30;
+  const enforcedConcerns = [...(result.concerns || [])];
+
+  // solar_permit=true → Bronze cap (0% historical appointment rate)
+  if (
+    vertical === 'solar' &&
+    fields['solar_permit'] === 'true' &&
+    (enforcedTier === 'Gold' || enforcedTier === 'Silver')
+  ) {
+    enforcedTier = 'Bronze';
+    enforcedScore = Math.min(enforcedScore, 44);
+    enforcedConcerns.push('solar_permit=true: forced Bronze (0% historical appt rate, overrides LLM)');
+  }
+
   return {
-    tier: result.tier || 'Bronze',
-    score: result.score ?? 30,
+    tier: enforcedTier,
+    score: enforcedScore,
     confidence: result.confidence || 'medium',
     reasons: result.reasons || [],
-    concerns: result.concerns || [],
+    concerns: enforcedConcerns,
     llm_usage: {
       input_tokens: data.usage?.input_tokens || 0,
       output_tokens: data.usage?.output_tokens || 0,
