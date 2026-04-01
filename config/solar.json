@@ -1,9 +1,10 @@
 {
   "vertical": "solar",
-  "version": "5.0",
-  "updated_at": "2026-03-17T00:00:00Z",
+  "version": "5.1",
+  "updated_at": "2026-04-01T00:00:00Z",
   "shadow_mode": false,
   "direct_buyers_gold_only": true,
+  "_DEPRECATED_NOTE": "pillar_weights, field_scores, and tier_thresholds are NOT used in current system. All scoring is done by the LLM prompt in llm-scorer.js VERTICAL_CONTEXTS. These values are retained for reference only.",
   "hard_kills": {
     "universal": {},
     "vertical_specific": {
