@@ -8,6 +8,7 @@
  */
 
 import { API_ENDPOINTS } from '../utils/constants.js';
+import { normalizeAddress } from '../utils/address-normalizer.js';
 
 /**
  * Call BatchData Property API.
@@ -18,13 +19,15 @@ export async function callBatchData(contact, signal) {
     return createNullResponse();
   }
 
+  const addr = normalizeAddress(contact);
+
   const body = {
     requests: [{
       address: {
-        street: contact.address || '',
-        city: contact.city || '',
-        state: contact.state || '',
-        zip: contact.zip || '',
+        street: addr.street,
+        city: addr.city,
+        state: addr.state,
+        zip: addr.zip,
       },
     }],
   };

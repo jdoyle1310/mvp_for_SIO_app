@@ -10,6 +10,7 @@
  */
 
 import { API_ENDPOINTS, API_TIMEOUT_MS } from '../utils/constants.js';
+import { normalizeAddress } from '../utils/address-normalizer.js';
 
 /**
  * Call Trestle Real Contact API.
@@ -25,14 +26,16 @@ export async function callTrestle(contact, phone, signal) {
     return createNullResponse();
   }
 
+  const addr = normalizeAddress(contact);
+
   const params = new URLSearchParams({
     phone: phone.replace('+1', '').replace('+', ''),
     email: contact.email || '',
     name: `${contact.first_name || ''} ${contact.last_name || ''}`.trim(),
-    'address.street_line_1': contact.address || '',
-    'address.city': contact.city || '',
-    'address.state_code': contact.state || '',
-    'address.postal_code': contact.zip || '',
+    'address.street_line_1': addr.street,
+    'address.city': addr.city,
+    'address.state_code': addr.state,
+    'address.postal_code': addr.zip,
     add_ons: 'litigator_checks',
   });
 

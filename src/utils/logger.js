@@ -15,8 +15,9 @@ import { getDocClient, setDocClient } from './dynamo-client.js';
  * @param {object} result - Full scoring result (lead_id, score, tier, enrichment_data, etc.)
  * @param {object} apiPerformance - API response times { trestle: { response_time_ms, success }, ... }
  * @param {object|null} llmResponse - LLM output { confidence, reasons, concerns }
+ * @param {object|null} contact - Raw contact object from the lead (address, city, state, zip, name, phone)
  */
-export async function logScoredLead(result, apiPerformance, llmResponse = null) {
+export async function logScoredLead(result, apiPerformance, llmResponse = null, contact = null) {
   try {
     const client = getDocClient();
     const now = new Date().toISOString();
@@ -38,6 +39,15 @@ export async function logScoredLead(result, apiPerformance, llmResponse = null) 
       processing_time_ms: result.processing_time_ms || 0,
       publisher_id: result.publisher_id || null,
       publisher_name: result.publisher_name || null,
+      // Raw contact stored for address format analysis and debugging
+      contact: contact ? {
+        first_name: contact.first_name || null,
+        last_name: contact.last_name || null,
+        address: contact.address || null,
+        city: contact.city || null,
+        state: contact.state || null,
+        zip: contact.zip || null,
+      } : null,
       // TTL: auto-delete after 90 days
       ttl: Math.floor(Date.now() / 1000) + (90 * 24 * 60 * 60),
     };

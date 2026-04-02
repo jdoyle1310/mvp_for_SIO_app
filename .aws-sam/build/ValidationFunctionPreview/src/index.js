@@ -8,6 +8,7 @@
  * 4. Call 3 APIs in parallel (Trestle, BatchData, TrustedForm)
  * 5. Merge API responses
  * 6. Run quick hard-kill checks (save LLM cost on obvious rejects)
+ * 6.5 Check permit/corporate Bronze cap (skip LLM if already Bronze)
  * 7. Call Anthropic Sonnet (abort if SIO_BUDGET_MS wall clock exceeded → enrichment fast path)
  * 8. Parse tier + score; legacy post-scoring + four post-score tier caps + Silver floor
  * 9. Route to buyer (direct_buyers_gold_only → HOLD for Silver)
@@ -105,6 +106,37 @@ export async function handler(event) {
         llm_response: null,
         enrichment_data: buildEnrichmentData(apiData),
         routing: { buyer_id: null, buyer_name: null, endpoint_url: null, cpl: null },
+        api_performance: apiPerformance,
+        processing_time_ms: Date.now() - startTime,
+      });
+
+      logScoredLead(result, apiPerformance, null).catch(err => {
+        console.error('Background log failed:', err.message);
+      });
+      emitMetrics(result, apiPerformance);
+      return toApiGwResponse(200, result);
+    }
+
+    // 6.5. Permit/corporate Bronze cap — skip LLM on leads that are definitively Bronze
+    const permitCap = checkPermitBronzeCap(apiData, lead.vertical);
+
+    if (permitCap) {
+      const { decision, routing } = await routeLead(lead.vertical, 'Bronze', 30, lead, config);
+
+      const result = formatResponse(lead, {
+        decision,
+        score: 30,
+        tier: 'Bronze',
+        hard_kill: false,
+        hard_kill_reason: null,
+        reason_codes: [permitCap.reason],
+        llm_response: {
+          confidence: 'high',
+          reasons: [],
+          concerns: [permitCap.concern],
+        },
+        enrichment_data: buildEnrichmentData(apiData),
+        routing,
         api_performance: apiPerformance,
         processing_time_ms: Date.now() - startTime,
       });
@@ -474,6 +506,41 @@ function checkQuickHardKills(apiData, vertical) {
   // 0% appointment rate across 16 leads. Suspicious — possible bot or uninstrumented form.
   if (apiData['trustedform.form_input_method'] === 'empty') {
     return 'EMPTY_FORM_INPUT';
+  }
+
+  return null;
+}
+
+/**
+ * Deterministic Bronze cap for leads that already have the service installed
+ * (permit on file) or own corporate property. Runs after hard kills, before
+ * the LLM call, saving ~$0.003/lead on outcomes that are definitively Bronze.
+ *
+ * Permit map covers the four verticals with reliable BatchData permit fields.
+ * Corporate-owned applies universally — corporate entities don't buy residential
+ * home services.
+ *
+ * @returns {{ reason: string, concern: string } | null}
+ */
+function checkPermitBronzeCap(apiData, vertical) {
+  const permitMap = {
+    solar:   { field: 'batchdata.solar_permit',      concern: 'Existing solar permit on property — already has solar' },
+    roofing: { field: 'batchdata.roof_permit',        concern: 'Existing roof permit on property — recently replaced roof' },
+    hvac:    { field: 'batchdata.hvac_permit',        concern: 'Existing HVAC permit on property — recently serviced HVAC' },
+    windows: { field: 'batchdata.electrical_permit',  concern: 'Existing electrical/window permit on property — recently replaced windows' },
+  };
+
+  const permitEntry = permitMap[vertical];
+  if (permitEntry) {
+    const val = apiData[permitEntry.field];
+    if (val === true || val === 'true') {
+      return { reason: `EXISTING_${vertical.toUpperCase()}_PERMIT`, concern: permitEntry.concern };
+    }
+  }
+
+  const corporateOwned = apiData['batchdata.corporate_owned'];
+  if (corporateOwned === true || corporateOwned === 'true') {
+    return { reason: 'CORPORATE_OWNED_PROPERTY', concern: 'Corporate-owned property — not a residential homeowner' };
   }
 
   return null;
