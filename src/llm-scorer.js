@@ -391,18 +391,18 @@ MISSION: Filter out junk leads (wrong person, uncontactable, non-homeowner, unqu
 
 SIGNAL GROUPS — score each group by its role:
 
-A. CONTACTABILITY (primary — a lead you can reach on the phone is a GOOD lead)
-   Strong contactability is the FOUNDATION of a good lead. A perfect phone + identity profile is Gold-worthy even without property data.
+A. CONTACTABILITY (foundation — a lead you can't reach is worthless, but reachability alone doesn't make a great lead)
+   Contactability is the FLOOR. You must be able to reach the person. But a reachable lead with poor demographic/property signals is NOT automatically Gold.
    - phone.is_valid: "true" = reachable. "false" = INSTANT REJECT.
    - phone.contact_grade: A = strong positive. B = solid positive. C = moderate (Silver ceiling). D = poor. F = very poor (strong negative, NOT auto-reject).
-   - phone.activity_score: higher = phone actively used = more likely to answer. 90+ = strong positive. 50-89 = moderate. Under 40 = concern.
-   - phone.line_type: Mobile = best (texting + calling). Landline = ok. FixedVOIP = moderate concern, limits Gold eligibility. NonFixedVOIP = STRONG NEGATIVE — these numbers almost never connect. Cap at Bronze unless identity + property signals are exceptional.
+   - phone.activity_score: This is a FLOOR signal, not a differentiator. Under 60 = STRONG NEGATIVE (0% win rate in validated data). 60+ = acceptable. Do NOT boost 80+ — 91% of leads score 80+ so it doesn't differentiate.
+   - phone.line_type: Mobile = baseline (good). Landline = ok. FixedVOIP = INSTANT REJECT (0% win rate in validated data). NonFixedVOIP = STRONG NEGATIVE — cap at Bronze unless identity + property signals are exceptional.
    - email.is_valid: "true" = can follow up via email.
 
 B. IDENTITY VERIFICATION{{IDENTITY_WEIGHT}}
-   - phone.name_match: "true" = phone registered to this person. "false" = could be wrong person.
-   - email.name_match: "true" = email belongs to this person.
-   - address.name_match: "true" = property records show this name.
+   - phone.name_match: "true" = phone registered to this person. "false" = concerning (-6% lift in validated data).
+   - email.name_match: "true" = email belongs to this person. "false" = STRONG NEGATIVE (4% win rate vs 18% for true — near hard-kill territory).
+   - address.name_match: "true" = property records show this name. "false" = STRONG NEGATIVE (10% win rate vs 21% for true).
    - owner_name: The name on the property deed. Compare to the lead name — significant mismatch across ALL sources = potential fake.
    - When ONE source mismatches but others match, it's fine (spouses, legal names, maiden names). When ALL sources mismatch = red flag.
 
@@ -410,61 +410,73 @@ C. PROPERTY QUALIFICATION
 {{PROPERTY_CONTEXT}}
    - address.is_valid: "true" = confirmed real address.
 
-D. FINANCIAL CAPACITY
-   - household_income: Under $25,000 = INSTANT REJECT. Under $35,000 = financing risk. null = NEUTRAL (don't penalize — most leads won't have this).
-   - living_status: "Own" = slight positive. null = neutral.
+D. DEMOGRAPHIC SIGNALS (v5.2 — validated on 299 leads across 5 buyers)
+   These signals come from BatchData demographics. When present, they significantly improve tier accuracy. When null, treat as NEUTRAL — do not penalize missing demographics.
+   - bd_age: STRONGEST demographic signal. Under 35 = STRONG POSITIVE (57% win rate, +37 lift). 35-54 = moderate positive (+5 lift). 55-64 = neutral. 65-74 = slight negative (-7 lift). 75+ = STRONG NEGATIVE (8% win rate, -11 lift). null = NEUTRAL.
+   - bd_gender: Second strongest demographic. "Female" = moderate positive (28% win rate, +8 lift — likely indicates the decision-maker filled out the form). "Male" = slight negative (12.5% win rate). null = NEUTRAL. NOTE: Weight this conservatively — it's a supporting signal, not a primary driver.
+   - bd_income: BIMODAL pattern — NOT linear. $150,000+ = moderate positive (26% win rate). $100,000-$149,999 = slight negative (10% win rate — dead zone). $75,000-$99,999 = slight negative (11% win rate — dead zone). $50,000-$74,999 = neutral. $35,000-$49,999 = slight positive (29% win rate — motivated by savings). Under $35,000 = slight negative. null = NEUTRAL.
+{{INCOME_OVERRIDE}}
 
 E. FORM BEHAVIOR (quality signal)
    NOTE: Upstream fraud detection (eHawk) filters bots and fraudulent leads BEFORE they reach this scoring step. Focus on data quality signals, not fraud inference.
-   - form_input_method: "typing_only" = slight positive (best conversion signal in validated data). "typing_autofill" = normal (NOT a negative — most real leads use autofill). "autofill_only" = slight concern (high DQ risk in validated data — cap at Silver). "typing_paste" = moderate concern. "pre-populated_only" = INSTANT REJECT (bot/aggregator). "paste_only" = strong negative (Bronze cap in validated verticals). "empty" = neutral.
+   - form_input_method: "typing_autofill" = slight positive (25% win rate — autofill means saved browser profile, engaged user). "typing_only" = neutral (17% win rate). "autofill_only" = moderate concern (cap at Silver). "typing_paste" = moderate concern. "pre-populated_only" = INSTANT REJECT (bot/aggregator). "paste_only" = strong negative (Bronze cap). "empty" = INSTANT REJECT (0% win rate).
    - bot_detected: "true" = INSTANT REJECT.
-   - confirmed_owner: "verified" = moderate positive signal. Positive but effect varies by buyer. "no_verified_account" = neutral.
-   - age_seconds: Time since form submission. 0-60 seconds = slight positive (sweet spot). 1-5 minutes = neutral. 5-60 minutes = slight negative. 1-24 hours = moderate negative. Over 86400 (>24 hrs) = strong negative. null = NEUTRAL.
+   - confirmed_owner: "verified" = slight positive. "no_verified_account" = neutral.
+   - age_seconds: PENALTY ONLY — do not boost fresh leads (0-15s and 15-60s perform identically at ~20%). Over 60 seconds = moderate negative. Over 86400 (>24 hrs) = strong negative. null = NEUTRAL.
 
 INSTANT REJECTS (any one = Reject, score 0-10):
 - phone.is_valid = "false"
 - property_type = "Mobile/Manufactured"
 - form_input_method = "pre-populated_only"
+- form_input_method = "empty" (0% win rate — bot or accidental submission)
+- phone.line_type = "FixedVOIP" (0% win rate — call center numbers)
 - bot_detected = "true"
-- household_income confirmed under $25,000
+- bd_income confirmed under $25,000
 {{INSTANT_REJECT_ADDITIONS}}
 
 STRONG NEGATIVES (NOT instant rejects — weigh against other signals):
 - phone.contact_grade = "F" with activity_score < 40: This combination produces ZERO appointments in historical data. Cap at Bronze regardless of other signals. If also NonFixedVOIP, score Reject.
 - phone.contact_grade = "F" with activity_score >= 40: Still a strong negative, but slightly better odds. Score Bronze or low Silver only if identity + property signals are very strong.
 - phone.line_type = "NonFixedVOIP": Zero appointments in historical data. Cap at Bronze. Combined with Grade F or low activity, score Reject.
+- email.name_match = "false": 4% win rate on 25 leads. Near hard-kill territory. Cap at Bronze unless address.name_match + phone.name_match are both true (possible spouse email).
+- address.name_match = "false": 10% win rate. Significant concern. Cap at Silver unless other identity signals are strong.
 - age_seconds > 86400: Lead is over 24 hours old — likely stale or recycled. Downgrade but don't auto-reject if other signals are strong.
+- bd_age 75+: 8% win rate. Strong negative for conversion likelihood. Downgrade one tier from where other signals would place.
 {{STRONG_NEGATIVE_ADDITIONS}}
 
-MISSING DATA: null fields and "UNKNOWN" values are NEUTRAL. Do NOT penalize missing data. Most leads will NOT have complete property or financial data — that is NORMAL and expected. Only score what IS present. A lead with strong contactability and identity but sparse property data is still a GOOD lead.
+MISSING DATA: null fields and "UNKNOWN" values are NEUTRAL. Do NOT penalize missing data. Most leads will NOT have complete property, financial, or demographic data — that is NORMAL and expected. Only score what IS present. A lead with strong contactability and identity but sparse property/demographic data is still a GOOD lead.
 
 TIER DEFINITIONS — based on signal convergence:
 
-GOLD (score 70-100) — Strong contactability + verified identity + no disqualifying signals:
+GOLD (score 70-100) — Strong contactability + verified identity + positive demographic/property signals when available:
 - Phone valid AND grade A or B (contactable)
 - line_type is NOT NonFixedVOIP or FixedVOIP
 - At least 2 of 3 name matches are "true" (identity verified)
 - No instant reject triggers
 - No strong negatives firing
-- Property data, when present, is not disqualifying (but MISSING property data does NOT prevent Gold)
+- When demographic data IS present: younger (<55), female, income $150K+ or $35-50K = Gold-supporting signals that STRENGTHEN the case
+- When demographic data shows NEGATIVES (75+, male, income $75-150K dead zone) = these should WEAKEN Gold eligibility, potentially pushing to Silver
+- Property data, when present, is not disqualifying (but MISSING property/demographic data does NOT prevent Gold)
 {{GOLD_ADDITIONS}}
-- Gold means: "We're confident this is a real, verified lead we can reach. Call first."
-- IMPORTANT: A lead with Grade A/B phone, 2+ name matches, clean form behavior, and no red flags IS Gold — even if property data is sparse or missing. Do NOT require property signals to reach Gold.
+- Gold means: "We're confident this is a real, verified lead we can reach, and the data we have supports qualification. Call first."
+- IMPORTANT: A lead with Grade A/B phone, 2+ name matches, clean form behavior, and no red flags IS Gold — even if demographic/property data is sparse. But when demographic data IS present and shows concerning signals (elderly, dead-zone income), it CAN prevent Gold.
 
-SILVER (score 45-69) — Decent contactability with some gaps OR one notable concern:
+SILVER (score 45-69) — Decent contactability with some gaps, OR strong contactability with demographic concerns:
 - Phone valid with grade A/B/C (contactable)
 - Some identity verification passes but maybe only 1 name match
+- OR strong contactability + identity but demographic signals are negative (75+, income dead zone)
+- OR strong contactability but missing demographic data (can't confirm qualification)
 - Property data may be sparse but nothing disqualifying
-- OR strong contactability + identity but ONE concerning signal (e.g., autofill_only, FixedVOIP)
 - Grade F phones can reach Silver ONLY if activity_score >= 40 AND identity signals are strong
 {{SILVER_ADDITIONS}}
-- Silver means: "Looks like a real lead, some gaps or a minor concern. Worth calling."
+- Silver means: "Looks like a real lead, some gaps or a concern. Worth calling."
 
 BRONZE (score 20-44) — Notable concerns present:
 - Phone grade D or F with limited supporting signals
 - Grade F + activity_score < 40 = capped here regardless of other signals
 - NonFixedVOIP line type = capped here regardless of other signals
 - Multiple identity fields missing or mismatching
+- email.name_match = "false" = capped here
 - OR very sparse data with the few signals present being weak
 {{BRONZE_ADDITIONS}}
 - Bronze means: "Concerns present — call if you have capacity."
@@ -491,443 +503,458 @@ Respond with ONLY a JSON array, no other text. Each object:
 // ════════════════════════════════════════════════════════════════════
 
 const VERTICAL_CONTEXTS = {
-  // ── SOLAR (v5.1 — validated on 1,655 leads, Gold 16.3% vs Silver 14.0%, +2.2pp gap) ──
+  // ── SOLAR (v5.2 — validated on 299 resolved leads across 5 buyers, +3.3pp G+S conversion, -5pp DQ) ──
   solar: {
     VERTICAL_LABEL: 'residential solar companies',
     IDENTITY_WEIGHT: '',
-    PROPERTY_CONTEXT: `   - listing_sold_price: STRONGEST property signal. $350,000+ = STRONG POSITIVE (25.9% appt rate, 18.5% DQ — nearly 2x sub-$350K). $200,000-$350,000 = neutral. Under $200,000 = slight negative. null = NEUTRAL.
-   - year_built: Pre-1970 = slight positive (older roof = solar opportunity, 12.9% appt). 1970-1989 = neutral. 1990-2004 = MODERATE NEGATIVE — dead zone for solar (2.9% appt rate). 2005+ = neutral. null = NEUTRAL.
-   - bedrooms: 1-2 = MODERATE NEGATIVE (2.5% appt — small homes are poor solar candidates). 3+ = neutral. null = NEUTRAL.
-   - cash_buyer: "true" = SLIGHT POSITIVE (17.8% vs 12.3% appt, lower DQ). null = NEUTRAL.
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = NEUTRAL in solar — validated data shows renters convert at 18.5% vs owners at 14.7%. Do NOT penalize renters.
-   - property_type: SFR = ideal. "Condominium" = INSTANT REJECT (can't install solar on condos). "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = NEUTRAL (17.6% appt — above residential base). Do NOT penalize commercial.
-   - high_equity: "true" = SLIGHT POSITIVE (+8.5pp within Gold converters). null = neutral.
-   - free_and_clear: "true" = NEUTRAL — mortgaged homeowners convert at higher rates (15.5% vs 13.4%). Do NOT weight positively.
-   - tax_lien: "true" = MILD CONCERN ONLY — data shows 19.2% vs 13.7% appt rate. Do NOT hard-penalize. null = neutral.
+    PROPERTY_CONTEXT: `   - listing_sold_price: Strong property signal. $350,000+ = moderate positive. $200,000-$350,000 = neutral. Under $200,000 = moderate negative (9.5% win rate, -10 lift). null = NEUTRAL.
+   - year_built: 1970-1989 = slight positive (+3 lift). 1990-2005 = slight positive. Pre-1950 = slight negative. null = NEUTRAL.
+   - bedrooms: 1-2 = moderate negative (small homes poor solar candidates). 3+ = neutral. null = NEUTRAL.
+   - cash_buyer: "true" = slight NEGATIVE (-3 lift in v5.2 backtest — counter-intuitive but validated). null = NEUTRAL.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = handled by hard kill upstream.
+   - property_type: SFR = ideal. "Condominium" = INSTANT REJECT (can't install solar on condos). "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = NEUTRAL.
+   - free_and_clear: NEUTRAL — validated flat on 271 leads (18.7% True vs 20.3% False). Do NOT weight. Pass through for buyer info only.
+   - high_equity: NEUTRAL — validated flat on 271 leads (19.4% True vs 20.7% False). Do NOT weight. Pass through for buyer info only.
+   - tax_lien: "true" = mild concern only. null = neutral.
    - pre_foreclosure: "true" = moderate concern — financial distress.
-   - solar_permit: "true" = ALREADY HAS SOLAR = Bronze cap. Zero appointments (76.5% DQ).
-   - estimated_value: Under $150,000 = slight negative. $500,000+ = moderate positive. null = NEUTRAL (low fill rate).`,
-    INSTANT_REJECT_ADDITIONS: `- property_type = "Condominium" (can't install solar on condos)`,
-    STRONG_NEGATIVE_ADDITIONS: `- solar_permit = "true": Already has solar, 0% appt. Bronze cap.
-- form_input_method = "paste_only": 0% appt. Bronze cap.
-- year_built 1990-2004: Solar dead zone (2.9% appt). Downgrade.
-- bedrooms 1-2: Small home, poor solar candidate. Downgrade.`,
+   - solar_permit: "true" = ALREADY HAS SOLAR = INSTANT REJECT (0% win rate).
+   - estimated_value: Under $200,000 = moderate negative. $500,000-$750,000 = moderate positive (25% win rate). null = NEUTRAL.
+   - roof_permit: "true" = moderate positive (+8 lift — recent roof work means solar-ready). null = NEUTRAL.
+   - length_of_residence_years: 25+ = moderate positive (+9 lift — committed homeowner). 7-15 = slight negative (-5 lift). null = NEUTRAL.`,
+    INCOME_OVERRIDE: '',
+    INSTANT_REJECT_ADDITIONS: `- property_type = "Condominium" (can't install solar on condos)
+- solar_permit = "true" (already has solar — 0% win rate)`,
+    STRONG_NEGATIVE_ADDITIONS: `- form_input_method = "paste_only": 0% appt. Bronze cap.
+- year_built 1990-2004 with weak contactability: Downgrade.
+- bedrooms 1-2: Small home, poor solar candidate. Downgrade.
+- bd_age 75+ with no compensating signals: Downgrade one tier.`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (verified identity)
 - solar_permit is NOT "true"
-- When property data IS present: owner/SFR + listing_sold_price $350K+ = BONUS (strengthens Gold, score 85+)
-- When property data is MISSING: Gold is still achievable on contactability + identity alone. Do NOT require property signals.
-- BONUS signals (boost score within Gold): listing_sold_price $350K+, cash_buyer=true, high_equity=true, year_built pre-1970, bedrooms 3+, confirmed_owner=verified`,
+- When demographic data IS present and positive (age <55, female, income $150K+ or $35-50K), it STRENGTHENS Gold case
+- When demographic data IS present and negative (age 75+, income $75-150K), it WEAKENS Gold case — consider Silver
+- When property/demographic data is MISSING: Gold is still achievable on contactability + identity alone
+- BONUS signals: listing_sold_price $350K+, roof_permit=true, length_of_residence 25+, bd_age <55, bd_gender Female, confirmed_owner=verified`,
     SILVER_ADDITIONS: `- solar_permit is NOT "true"
-- form_input_method "autofill_only" with otherwise strong signals = Silver ceiling`,
-    BRONZE_ADDITIONS: `- solar_permit = "true" = capped here
-- form_input_method = "paste_only" = capped here
+- form_input_method "autofill_only" with otherwise strong signals = Silver ceiling
+- Strong contactability but demographic negatives (75+, income dead zone) = Silver`,
+    BRONZE_ADDITIONS: `- form_input_method = "paste_only" = capped here
 - year_built 1990-2004 with weak contactability = Bronze`,
     CONFIDENCE_NOTE: '',
   },
 
-  // ── ROOFING (v5.1 — migrated from standalone v4.2, validated on 320 leads, 100% appt retention) ──
+
+  // ── ROOFING (v5.2 — validated 320 leads + demographic updates) ──
   roofing: {
     VERTICAL_LABEL: 'residential roofing companies',
     IDENTITY_WEIGHT: ` (critical tier separator — weight heavily)`,
-    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters almost never convert in roofing. Score Bronze unless equity override applies AND identity very strong.
+    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters almost never convert in roofing. Bronze unless equity override.
    - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = possibly data error. Silver at best, NEVER Gold.
-   - property_type: Residential/SFR = ideal. "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = strong negative (residential focus, but BatchData classification can be wrong). "Condominium" = moderate negative (HOA-managed).
-   - free_and_clear: "true" = SLIGHT positive only — does not strongly predict quality for roofing. Do NOT weight heavily.
-   - high_equity: "true" = moderate positive — can finance roofing.
-   - cash_buyer: "true" = slight positive. null = neutral.
-   - tax_lien: "true" = moderate negative — financial distress, unlikely to invest in roof. null = neutral.
-   - pre_foreclosure: "true" = strong negative — not investing in a home they may lose.
-   - roof_permit: "true" = recent roof work done = cap at Bronze. Historically high DQ rate.
-   - year_built: Pre-1990 = slight positive (older roof). 2020+ = slight negative (new roof). null = NEUTRAL.
-   - estimated_value: Under $150,000 = slight negative. $500,000+ = moderate positive (11% appt vs 5% base). null = NEUTRAL.
-   - bd_age: 70+ = slight negative (0% appt in validated data). 40-54 = slight positive. SOFT signal. null = NEUTRAL.
-   - sale_propensity: Under 40 = slight positive (staying, investing). 80+ = slight negative. null = NEUTRAL.
-   - length_of_residence_years: 5-15 = slight positive (roof aging). Under 2 = slight negative. null = NEUTRAL.
-   - recently_sold: "true" = slight negative (unlikely to need new roof immediately). null = NEUTRAL.`,
+   - property_type: Residential/SFR = ideal. "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = strong negative. "Condominium" = moderate negative (HOA-managed).
+   - free_and_clear: NEUTRAL — validated flat in v5.2 cross-vertical backtest. Do NOT weight.
+   - high_equity: NEUTRAL — validated flat. Do NOT weight.
+   - cash_buyer: "true" = slight negative (v5.2 validated). null = neutral.
+   - tax_lien: "true" = moderate negative. null = neutral.
+   - pre_foreclosure: "true" = strong negative.
+   - roof_permit: "true" = recent roof work done = STRONG NEGATIVE. Already got roofing. Bronze cap.
+   - year_built: Pre-1990 = slight positive (older roof). 2020+ = slight negative. null = NEUTRAL.
+   - estimated_value: Under $200,000 = moderate negative. $500,000+ = moderate positive. null = NEUTRAL.
+   - sale_propensity: Under 40 = slight positive. 80+ = slight negative. null = NEUTRAL.
+   - length_of_residence_years: 25+ = moderate positive (committed homeowner). 5-15 = slight positive. Under 2 = slight negative. null = NEUTRAL.
+   - recently_sold: "true" = slight negative. null = NEUTRAL.`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Commercial": Residential roofing focus. If confirmed_owner + name matches, may be data error. Strong negative, not auto-reject.
+    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Commercial": Residential focus. Strong negative, not auto-reject.
 - owner_occupied = "confirmed_renter": Renters almost never convert. Bronze unless renter override.
-- roof_permit = "true": Recent roof work. Cap at Bronze.`,
-    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (phone.name_match + address.name_match preferred)
+- roof_permit = "true": Recent roof work. Bronze cap.
+- bd_age 75+: Downgrade one tier.`,
+    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - roof_permit is NOT "true"
 - owner_occupied is NOT "confirmed_renter"
-- When property data is MISSING: Gold is still achievable on contactability + identity alone. Do NOT require property confirmation.
-- BONUS signals (boost score within Gold): cash_buyer=true, estimated_value $500K+, year_built pre-1990, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- At least one of phone.name_match or address.name_match is "true"
-- roof_permit is NOT "true"
-- May have ONE strong negative if other signals are solid`,
+- Demographic positives (age <55, female) strengthen Gold case
+- Demographic negatives (age 75+, income dead zone) weaken Gold — consider Silver
+- When property data is MISSING: Gold is still achievable on contactability + identity alone.
+- BONUS signals: estimated_value $500K+, year_built pre-1990, length_of_residence 25+, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- At least one name match is "true"
+- May have ONE strong negative if other signals are solid
+- Strong contactability but demographic negatives = Silver`,
     BRONZE_ADDITIONS: `- roof_permit = "true" = capped here
 - phone.name_match=false AND address.name_match=false = Bronze cap
-- Property data raises red flags: confirmed_renter`,
+- confirmed_renter = Bronze cap`,
     CONFIDENCE_NOTE: '',
   },
 
-  // ── WINDOWS (v5.1 — migrated from standalone v4.2, validated on 198 leads, 100% appt retention) ──
+  // ── WINDOWS (v5.2 — validated 198 leads + demographic updates) ──
   windows: {
     VERTICAL_LABEL: 'residential window replacement companies',
     IDENTITY_WEIGHT: ` (critical tier separator — weight heavily)`,
-    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters cannot authorize window replacement. Bronze unless equity override applies.
-   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = possibly data error. Silver at best.
-   - property_type: Residential/SFR = ideal. "Condominium" = moderate negative (HOA approval needed, but individual unit owners CAN replace windows). "Mobile/Manufactured" = INSTANT REJECT (non-standard sizes). "Commercial" = strong negative (4.2% appt vs 8.3% base — cap at Silver unless identity very strong).
-   - free_and_clear: "true" = moderate positive (can finance windows).
-   - high_equity: "true" = moderate positive (can finance windows).
-   - cash_buyer: "true" = slight positive. null = neutral.
-   - tax_lien: "true" = strong negative — financial distress, unlikely to invest in windows.
+    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters cannot authorize window replacement. Bronze unless equity override.
+   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = Silver at best.
+   - property_type: SFR = ideal. "Condominium" = moderate negative (HOA approval needed). "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = strong negative.
+   - free_and_clear: NEUTRAL — validated flat. Do NOT weight.
+   - high_equity: NEUTRAL — validated flat. Do NOT weight.
+   - cash_buyer: "true" = slight negative (v5.2 validated). null = neutral.
+   - tax_lien: "true" = strong negative — financial distress.
    - pre_foreclosure: "true" = strong negative.
-   - year_built: 1970-1989 = moderate positive (peak window replacement era — 31% of appointments). 1990-2009 = slight positive. Pre-1970 = NEUTRAL (lower rates than expected). 2010+ = slight negative. null = NEUTRAL.
-   - estimated_value: IMPORTANT signal. Under $150,000 = Bronze cap — zero appointments at this value. $150-200K = slight negative. $200-300K = neutral. $300K+ = moderate positive. $500K+ = strong positive (46% of appts). null = NEUTRAL.
-   - sale_propensity: 60-80 = moderate positive. 80+ = STRONG positive (30% appt rate — window buyers in transition convert very high). Under 40 = slight negative. null = NEUTRAL. [OPPOSITE to solar/roofing]
-   - bd_age: 55-69 = slight negative (0% appt in validated data). 70+ = neutral to slight positive. null = NEUTRAL.
-   - length_of_residence_years: Under 2 years = moderate positive (new homeowners upgrading, 29% appt rate). 5-15 = moderate positive. 15+ = slight negative (6% appt rate). null = NEUTRAL.`,
+   - year_built: 1970-1989 = moderate positive (peak window replacement era). 1990-2009 = slight positive. 2010+ = slight negative. null = NEUTRAL.
+   - estimated_value: Under $150,000 = Bronze cap — zero appointments. $300K+ = moderate positive. $500K+ = strong positive. null = NEUTRAL.
+   - sale_propensity: 80+ = STRONG positive (window buyers in transition convert high). Under 40 = slight negative. null = NEUTRAL.
+   - length_of_residence_years: Under 2 = moderate positive (new homeowner upgrading). 25+ = moderate positive. 7-15 = slight negative. null = NEUTRAL.`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Commercial": Cap at Silver unless identity + confirmed_owner present.
-- owner_occupied = "confirmed_renter": Cannot authorize window replacement. Bronze unless renter override.
+    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Commercial": Cap at Silver.
+- owner_occupied = "confirmed_renter": Bronze unless renter override.
 - tax_lien = "true": Financial distress. Strong negative.
-- estimated_value under $150,000: Zero appointments. Bronze cap when value is known.`,
-    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (phone.name_match + address.name_match preferred)
+- estimated_value under $150,000: Zero appointments. Bronze cap.
+- bd_age 75+: Downgrade one tier.`,
+    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- estimated_value >= $200,000 when available (if null or missing, allow Gold on contactability + identity)
-- When property data is MISSING: Gold is still achievable. Do NOT require property confirmation.
-- BONUS signals: year_built 1970-1989, high_equity=true, free_and_clear=true, cash_buyer=true, sale_propensity 80+, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- At least one of phone.name_match or address.name_match is "true"
-- estimated_value $150K-$200K with strong identity = Silver ceiling`,
+- estimated_value >= $200,000 when available
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable.
+- BONUS signals: year_built 1970-1989, sale_propensity 80+, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- At least one name match is "true"
+- estimated_value $150K-$200K = Silver ceiling
+- Strong contactability but demographic negatives = Silver`,
     BRONZE_ADDITIONS: `- phone.name_match=false AND address.name_match=false = Bronze cap
-- Property data raises red flags: confirmed_renter, tax_lien
+- confirmed_renter, tax_lien = Bronze cap
 - estimated_value under $150,000 = Bronze cap`,
     CONFIDENCE_NOTE: '',
   },
 
-  // ── HVAC (research-based, derived from roofing/windows) ──────────
+  // ── HVAC (v5.2 — research-based + demographic layer) ──
   hvac: {
     VERTICAL_LABEL: 'residential HVAC companies',
     IDENTITY_WEIGHT: '',
-    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize HVAC replacement ($5-15K decision). Score Bronze cap. [UNVALIDATED]
-   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = possibly data error. Silver at best, NEVER Gold.
-   - property_type: SFR = ideal. "Condominium" = moderate negative (individual HVAC units exist but HOA restrictions on exterior condensers are common — score as a downgrade signal that can prevent Gold). "Commercial" = strong negative (different market entirely). "Mobile/Manufactured" = moderate negative, NOT instant reject (mobile homes have HVAC but smaller units, lower ticket). [UNVALIDATED]
-   - free_and_clear: "true" = moderate positive — no mortgage means homeowner has more disposable income for a $5-15K system. [UNVALIDATED]
-   - high_equity: "true" = moderate positive — HELOC access for financing.
-   - year_built: 1990-2004 = STRONG POSITIVE — R-22 refrigerant was BANNED in 2020. Homes built in this era have R-22 systems that MUST be replaced. There is no option to repair with original refrigerant. Score this as a tier-upgrading signal that can move Silver to Gold when combined with good contactability. Pre-1990 = moderate positive (systems almost certainly already replaced once, but may be due again). 2005-2014 = slight positive (R-410A systems aging). 2015+ = moderate negative (system likely under warranty). null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $100,000 = moderate negative (financing a $10K+ system on a low-value home is unlikely). $200,000-$400,000 = slight positive (sweet spot for residential HVAC). $400,000+ = moderate positive (higher-end systems, better margins). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: 80+ = moderate negative (homeowner moving soon won't invest $10K+ in HVAC). Under 40 = slight positive (staying put, more likely to invest). null = NEUTRAL. [UNVALIDATED]
-   - length_of_residence_years: 10-20 years = STRONG POSITIVE — HVAC systems last 15-20 years. A homeowner who has lived in the home 10-20 years likely has the ORIGINAL system approaching or past end-of-life. Score this as a tier-upgrading signal. Under 2 years = moderate negative (likely inherited a working system or already replaced). null = NEUTRAL. [UNVALIDATED]
-   - age_seconds: HVAC can be EMERGENCY-DRIVEN (system dies in summer heat or winter cold). age_seconds under 300 (5 min) = STRONG POSITIVE — this lead is actively experiencing an HVAC failure. Under 1800 (30 min) = moderate positive. Over 7200 (2 hours) = slight negative (urgency fading). Over 86400 (1 day) = moderate negative. This signal matters MORE in HVAC than most verticals. [UNVALIDATED]
-   - recently_sold: "true" = slight positive (new homeowner may discover HVAC issues during first season). [UNVALIDATED]
-   - tax_lien: "true" = strong negative — blocks financing for a high-ticket purchase. Bronze cap. [UNVALIDATED]
-   - pre_foreclosure: "true" = strong negative — not investing $10K+ in a home they may lose. Reject. [UNVALIDATED]`,
+    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize HVAC replacement ($5-15K). Bronze cap. [UNVALIDATED]
+   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches = Silver at best, NEVER Gold.
+   - property_type: SFR = ideal. "Condominium" = moderate negative (HOA restrictions on exterior condensers). "Commercial" = strong negative. "Mobile/Manufactured" = moderate negative, NOT instant reject. [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight (validated flat cross-vertical).
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: 1990-2004 = STRONG POSITIVE — R-22 refrigerant BANNED in 2020. These homes MUST replace. Tier-upgrading signal. Pre-1990 = moderate positive. 2005-2014 = slight positive. 2015+ = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - estimated_value: Under $100,000 = moderate negative. $200,000-$400,000 = slight positive. $400,000+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - sale_propensity: 80+ = moderate negative (moving soon, won't invest $10K+). Under 40 = slight positive. null = NEUTRAL. [UNVALIDATED]
+   - length_of_residence_years: 10-20 years = STRONG POSITIVE — original HVAC approaching end-of-life. 25+ = moderate positive. Under 2 = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - age_seconds: CRITICAL for HVAC (emergency-driven). Under 300s = STRONG POSITIVE. 300-1800s = moderate positive. Over 7200s = strong negative. Over 86400s = Bronze cap. [UNVALIDATED]
+   - tax_lien: "true" = strong negative — blocks financing. Bronze cap. [UNVALIDATED]
+   - pre_foreclosure: "true" = Reject. [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Renters CANNOT authorize HVAC replacement. Bronze cap. [UNVALIDATED]
-- pre_foreclosure = "true": Homeowner will not invest $5-15K in a home they may lose. Score Reject. [UNVALIDATED]
-- age_seconds > 86400 AND no other strong positives: Emergency has long passed. Downgrade one tier. [UNVALIDATED]`,
+    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
+- pre_foreclosure = "true": Reject. [UNVALIDATED]
+- age_seconds > 86400 AND no other strong positives: Bronze cap. [UNVALIDATED]
+- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- When property data is MISSING: Gold is still achievable on contactability + identity alone.
-- BONUS signals: year_built 1990-2004 (R-22 era), length_of_residence 10-20 years, age_seconds under 1800, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- year_built 1990-2004 with good contactability but only 1 name match = Silver floor (do NOT drop to Bronze)
-- age_seconds under 300 with decent property signals = Silver floor even if some identity gaps`,
-    BRONZE_ADDITIONS: `- Property data raises red flags: confirmed_renter, tax_lien
-- age_seconds > 86400 with no compensating property signals = Bronze cap
-- estimated_value under $100,000 = Bronze cap (system cost exceeds reasonable % of home value)`,
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable.
+- BONUS signals: year_built 1990-2004, length_of_residence 10-20 years, age_seconds under 1800, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- year_built 1990-2004 with good contactability but 1 name match = Silver floor
+- age_seconds under 300 with decent signals = Silver floor
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
+- age_seconds > 86400 = Bronze cap
+- estimated_value under $100,000 = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── SIDING (research-based, derived from roofing) ────────────────
+  // ── SIDING (v5.2 — research-based + demographic layer) ──
   siding: {
     VERTICAL_LABEL: 'residential siding companies',
     IDENTITY_WEIGHT: '',
-    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize siding replacement (exterior structural work, $8-15K). Bronze cap. [UNVALIDATED]
-   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = Silver at best, NEVER Gold.
-   - property_type: SFR = ideal. "Condominium" = STRONG NEGATIVE — HOA manages ALL exterior surfaces including siding. Condo owners have ZERO authority to replace siding. Score Bronze cap for Condominium. This is NOT a soft signal. [UNVALIDATED]
-   - "Commercial" = strong negative (different market). [UNVALIDATED]
-   - free_and_clear: "true" = moderate positive — no mortgage payment means more budget for $8-15K siding project. [UNVALIDATED]
-   - high_equity: "true" = moderate positive — HELOC access for financing.
-   - year_built: 1960-1979 = STRONG POSITIVE — aluminum siding from this era is 45-65 years old, well past its 40-year lifespan, often dented/oxidized/paint-failing. Score as a tier-upgrading signal. 1980-2000 = moderate positive (first-generation vinyl siding is 25-45 years old, warping/fading/cracking). 2001-2010 = slight positive. 2015+ = moderate negative (siding under warranty or near-new). null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $125,000 = moderate negative ($10K+ siding job overcapitalizes a low-value home). $250,000-$500,000 = slight positive (sweet spot). $500,000+ = moderate positive (James Hardie fiber cement territory, higher margins). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: THIS IS A CRITICAL SIGNAL FOR SIDING. 80+ = STRONG POSITIVE — siding replacement is the #1 curb appeal project that realtors recommend before listing. Siding has 68-75% cost recovery at resale. Score 80+ sale_propensity as a tier-upgrading signal that CAN move a Silver to Gold when combined with good contactability. 60-79 = moderate positive. Under 40 = neutral. null = NEUTRAL. [UNVALIDATED — OPPOSITE to solar/roofing where high sale_propensity is negative]
-   - length_of_residence_years: 20-40 years = moderate positive (vinyl siding installed when they moved in is now at end-of-life). 10-19 = slight positive. null = NEUTRAL. [UNVALIDATED]`,
+    PROPERTY_CONTEXT: `   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize siding ($8-15K). Bronze cap. [UNVALIDATED]
+   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches = Silver at best.
+   - property_type: SFR = ideal. "Condominium" = STRONG NEGATIVE — HOA manages ALL exterior. Bronze cap. [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight.
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: 1960-1979 = STRONG POSITIVE — aluminum siding past 40-year lifespan. 1980-2000 = moderate positive (first-gen vinyl aging). 2015+ = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - estimated_value: Under $125,000 = moderate negative. $250,000-$500,000 = slight positive. $500,000+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - sale_propensity: 80+ = STRONG POSITIVE for siding (#1 curb appeal project, 68-75% cost recovery). 60-79 = moderate positive. null = NEUTRAL. [OPPOSITE to solar/roofing] [UNVALIDATED]
+   - length_of_residence_years: 20-40 = moderate positive. 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Renters CANNOT authorize exterior structural work. Bronze cap. [UNVALIDATED]
-- property_type = "Condominium": HOA manages ALL exterior surfaces. Condo owners have zero authority over siding. Bronze cap. This is a HARD signal, not soft. [UNVALIDATED]`,
+    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
+- property_type = "Condominium": Bronze cap. [UNVALIDATED]
+- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- When property data is MISSING: Gold is still achievable on contactability + identity alone.
-- BONUS signals: sale_propensity 80+, year_built 1960-1979 (aluminum era), confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- sale_propensity 60-79 with good contactability = Silver floor (do NOT drop to Bronze)
-- year_built 1980-2000 with owner/SFR = Silver floor even with only 1 name match`,
-    BRONZE_ADDITIONS: `- Property data raises red flags: confirmed_renter, condominium
-- property_type = "Condominium" = Bronze cap regardless of other signals [UNVALIDATED]`,
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable.
+- BONUS signals: sale_propensity 80+, year_built 1960-1979, length_of_residence 25+, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- sale_propensity 60-79 with good contactability = Silver floor
+- year_built 1980-2000 with owner/SFR = Silver floor
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- confirmed_renter = Bronze cap
+- property_type = "Condominium" = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── GUTTERS (research-based, lower ticket) ───────────────────────
+  // ── GUTTERS (v5.2 — research-based, lower ticket + demographic layer) ──
   gutters: {
     VERTICAL_LABEL: 'residential gutter companies',
-    IDENTITY_WEIGHT: ' (REDUCED — this is a $1.5-3K project. Identity verification matters LESS than contactability. A single name match is acceptable for Gold if contactability is strong.)',
-    PROPERTY_CONTEXT: `   IMPORTANT: Gutters are a LOW TICKET vertical ($1,500-$3,000). The decision is FASTER and LESS financially gated than roofing, solar, or remodeling. Weight contactability and reachability OVER property/financial signals. A lead you can reach on the phone who owns a home is a good gutter lead — do not overthink property data.
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY, NOT a reject or Bronze cap. Renters CAN and DO get landlord approval for gutter work — it protects the landlord's property from water damage. Score as a downgrade signal (prevents Gold) but do NOT Bronze-cap renters. [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = strong negative (HOA manages exterior including gutters — Bronze cap). "Commercial" = slight negative (commercial gutter work is a real market). [UNVALIDATED]
-   - free_and_clear: NEUTRAL for gutters — at $1.5-3K, financing is not a factor. Do NOT score this signal. [UNVALIDATED]
-   - high_equity: NEUTRAL for gutters — same reason. Do NOT score this signal. [UNVALIDATED]
-   - year_built: WEAK signal for gutters — gutters fail from weather damage and clogs, not home age. All homes 10+ years old are candidates. Score as NEUTRAL unless combined with other property signals. [UNVALIDATED]
-   - bd_age: 55-74 = slight positive (established homeowners, more maintenance-aware). Under 30 = NEUTRAL (not negative — young homeowners get gutters too). [UNVALIDATED]
-   - sale_propensity: Moderate positive — damaged/missing gutters are flagged in EVERY home inspection. 60+ = moderate positive (preparing to sell, inspector will flag gutters). Score this as a supporting signal for Silver-to-Gold upgrade. [UNVALIDATED]
-   - length_of_residence_years: 15-25 years = moderate positive (aluminum gutter lifespan 20-30yr, approaching replacement). 5-14 = slight positive. null = NEUTRAL. [UNVALIDATED]
-   - CONTACTABILITY IS KING: For this low-ticket vertical, phone grade A/B with quick answer matters MORE than any property signal. A lead with phone grade A and confirmed_owner is Gold territory even with limited property data.`,
+    IDENTITY_WEIGHT: ' (REDUCED — $1.5-3K project. Single name match acceptable for Gold if contactability is strong.)',
+    PROPERTY_CONTEXT: `   IMPORTANT: Gutters are LOW TICKET ($1,500-$3,000). Weight contactability OVER property/financial signals.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY, NOT Bronze cap (renters CAN get landlord approval for gutter work). [UNVALIDATED]
+   - property_type: SFR = ideal. "Condominium" = strong negative (HOA manages gutters — Bronze cap). "Commercial" = slight negative. [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight.
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: WEAK signal for gutters. NEUTRAL unless combined with other signals. [UNVALIDATED]
+   - sale_propensity: 60+ = moderate positive (inspector will flag gutters). [UNVALIDATED]
+   - length_of_residence_years: 15-25 = moderate positive. 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - CONTACTABILITY IS KING for this low-ticket vertical.`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Condominium": HOA manages gutters. Bronze cap. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- Phone grade A or B with at least 1 name match = Gold-eligible (lower identity bar than high-ticket verticals)
-- For this vertical, CONTACTABILITY is the primary Gold driver — strong phone signals can compensate for missing property data
-- When property data is MISSING: Gold is achievable on contactability alone. Do NOT require property signals.
-- confirmed_renter does NOT prevent Gold if all other signals are strong (landlord-approved gutter work is common)`,
-    SILVER_ADDITIONS: `- Good contactability (phone grade A-C) with owner/SFR = Silver floor even with no name matches
-- confirmed_renter with good contactability = Silver (NOT Bronze)`,
-    BRONZE_ADDITIONS: `- property_type = "Condominium" = Bronze cap [UNVALIDATED]
-- Phone grade D or F with no name matches = Bronze regardless of property signals`,
+    STRONG_NEGATIVE_ADDITIONS: `- property_type = "Condominium": Bronze cap. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- Phone grade A or B with at least 1 name match = Gold-eligible (lower identity bar)
+- CONTACTABILITY is the primary Gold driver for gutters
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is achievable on contactability alone.
+- confirmed_renter does NOT prevent Gold for gutters`,
+    SILVER_ADDITIONS: `- Good contactability with owner/SFR = Silver floor even with no name matches
+- confirmed_renter with good contactability = Silver`,
+    BRONZE_ADDITIONS: `- property_type = "Condominium" = Bronze cap
+- Phone grade D or F with no name matches = Bronze`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── PAINTING (research-based, lower-mid ticket) ─────────────────
+  // ── PAINTING (v5.2 — research-based, lower-mid ticket + demographic layer) ──
   painting: {
     VERTICAL_LABEL: 'residential painting companies',
-    IDENTITY_WEIGHT: ' (REDUCED — painting is a $3-8K project. Identity matters less than contactability. A single name match is sufficient for Gold when contactability is strong.)',
-    PROPERTY_CONTEXT: `   IMPORTANT: Painting is a LOWER-MID TICKET vertical ($3,000-$8,000 for exterior, $2,000-$5,000 for interior). Decisions are faster than structural work. Weight contactability over property/financial signals.
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY, NOT Bronze cap. Renters DO paint interiors — this is one of the LEAST restrictive home improvements for renters. Many landlords approve or even pay for interior painting. Score as a downgrade (prevents Gold for exterior painting leads) but NOT a tier cap. [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL for interior painting (condo owners fully control interiors). For exterior, condo = moderate negative (HOA manages exterior). Since we can't distinguish interior vs exterior at scoring time, score Condominium as slight negative only. "Commercial" = slight negative (commercial painting is a large, legitimate market). [UNVALIDATED]
-   - sale_propensity: THIS IS THE #1 SIGNAL FOR PAINTING. Painting is the #1 realtor recommendation before listing — 73% of realtors recommend fresh paint. 80+ sale_propensity = STRONG POSITIVE — this homeowner is preparing to sell and WILL need painting. Score as a tier-upgrading signal that can move Silver to Gold. 60-79 = moderate positive. Even 40-59 = slight positive. null = NEUTRAL. [UNVALIDATED — OPPOSITE to solar/roofing]
-   - length_of_residence_years: 5-10 years = moderate positive (exterior paint lasts 5-10 years, due for repaint). 10-15 years = moderate positive (definitely overdue for exterior). Under 2 years = slight positive (new owners refresh interiors). null = NEUTRAL. [UNVALIDATED]
-   - year_built: WEAK signal for painting — all homes need repainting periodically. Pre-1978 = slight negative ONLY because of lead paint abatement requirements (higher cost, specialist needed). Otherwise NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $80,000 = slight negative. $300,000+ = slight positive (larger homes = larger painting contracts). null = NEUTRAL. [UNVALIDATED]
-   - recently_sold: "true" = moderate positive — new homeowners frequently repaint interiors as their FIRST home improvement project. Score as a supporting signal for Silver-to-Gold upgrade. [UNVALIDATED]`,
+    IDENTITY_WEIGHT: ' (REDUCED — $3-8K project. Single name match sufficient for Gold when contactability is strong.)',
+    PROPERTY_CONTEXT: `   IMPORTANT: Painting is LOWER-MID TICKET ($3,000-$8,000). Decisions are faster than structural work.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY, NOT Bronze cap (renters DO paint interiors). [UNVALIDATED]
+   - property_type: SFR = ideal. "Condominium" = slight negative only (interior painting is valid). [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight.
+   - high_equity: NEUTRAL — do not weight.
+   - sale_propensity: #1 SIGNAL FOR PAINTING. 80+ = STRONG POSITIVE (73% of realtors recommend fresh paint before listing). Tier-upgrading signal. 60-79 = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - length_of_residence_years: 5-10 = moderate positive (exterior due for repaint). 25+ = moderate positive. Under 2 = slight positive (new owners refresh). null = NEUTRAL. [UNVALIDATED]
+   - recently_sold: "true" = moderate positive (first project for new homeowners). [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
     STRONG_NEGATIVE_ADDITIONS: '',
-    GOLD_ADDITIONS: `- At least 1 name match with strong contactability (phone grade A or B) = Gold-eligible
-- When property data is MISSING: Gold is still achievable on contactability + identity alone.
-- BONUS signals: sale_propensity 80+, recently_sold=true, confirmed_owner=verified`,
+    GOLD_ADDITIONS: `- At least 1 name match with strong contactability = Gold-eligible
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable.
+- BONUS signals: sale_propensity 80+, recently_sold=true, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- sale_propensity 60-79 with good contactability = Silver floor
-- confirmed_renter with strong contactability = Silver (NOT Bronze — renters DO paint)
-- recently_sold with decent contactability = Silver floor`,
-    BRONZE_ADDITIONS: `- Phone grade F with no name matches = Bronze regardless of property signals
-- Do NOT Bronze-cap renters — this is painting, not structural work`,
+- confirmed_renter with strong contactability = Silver (renters DO paint)
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- Phone grade F with no name matches = Bronze
+- Do NOT Bronze-cap renters for painting`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── PLUMBING (research-based, emergency-driven) ──────────────────
+  // ── PLUMBING (v5.2 — research-based, emergency-driven + demographic layer) ──
   plumbing: {
     VERTICAL_LABEL: 'residential plumbing companies',
-    IDENTITY_WEIGHT: ' (REDUCED for emergency plumbing — when a pipe bursts, identity verification is secondary to speed-to-contact. A single name match is acceptable for Gold if the lead is fresh.)',
-    PROPERTY_CONTEXT: `   CRITICAL: Plumbing leads are often EMERGENCY-DRIVEN. A burst pipe, backed-up sewer, or water heater failure creates URGENCY. age_seconds is the MOST IMPORTANT signal in this vertical — it matters MORE than property data, more than identity, more than financial signals. A 5-minute-old plumbing lead with mediocre property data is BETTER than a 2-hour-old lead with perfect property data.
-   - age_seconds: THIS IS THE #1 SIGNAL FOR PLUMBING.
-     * Under 300 seconds (5 min) = STRONG POSITIVE — active emergency, homeowner is desperately searching. Score as a tier-upgrading signal that can move Silver to Gold.
-     * 300-1800 seconds (5-30 min) = moderate positive — still urgent.
-     * 1800-3600 seconds (30 min - 1 hr) = NEUTRAL — urgency fading but still viable.
-     * 3600-7200 seconds (1-2 hr) = moderate negative — the emergency has likely been addressed or another plumber called. Downgrade one tier from where other signals would place this lead.
-     * Over 7200 seconds (2 hr) = STRONG NEGATIVE — for emergency plumbing, this lead is likely dead. Score as a tier-downgrade signal. Bronze cap unless property signals suggest this is a planned plumbing project (year_built in polybutylene era).
-     * Over 86400 seconds (1 day) = Bronze cap regardless. [UNVALIDATED]
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY — renters absolutely DO call plumbers for emergencies (burst pipe, clogged drain). Renters are less likely for planned repiping work. Do NOT Bronze-cap renters for plumbing. [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL (condo owners handle ALL unit plumbing — kitchen, bathroom, water heater are the owner's responsibility). "Commercial" = slight negative (many plumbers serve both markets, but different sales process). [UNVALIDATED]
-   - year_built: 1975-1996 = STRONG POSITIVE — this is the polybutylene pipe era. 6-10 MILLION American homes were built with polybutylene pipes that have a KNOWN failure rate. Class action lawsuits have been settled over these pipes. If year_built is 1975-1996, score this as a tier-upgrading signal equivalent to R-22 era for HVAC. Pre-1970 = moderate positive (galvanized pipes corrode internally, cast iron drains crack — these homes need repiping). 1997-2010 = slight positive (PEX transition era, some mixed piping). 2010+ = slight negative (modern PEX/copper, unlikely to need major work). null = NEUTRAL. [UNVALIDATED]
-   - length_of_residence_years: 20+ years = moderate positive (pipes aging beyond design life, sewer lines 25-30yr lifespan). 10-19 = slight positive. null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $75,000 = slight negative. Otherwise NEUTRAL — plumbing emergencies happen at all price points. [UNVALIDATED]
-   - recently_sold: "true" = moderate positive — home inspections frequently reveal plumbing issues that new owners must address. [UNVALIDATED]`,
+    IDENTITY_WEIGHT: ' (REDUCED for emergency plumbing — speed-to-contact > identity. Single name match acceptable for Gold if lead is fresh.)',
+    PROPERTY_CONTEXT: `   CRITICAL: Plumbing leads are often EMERGENCY-DRIVEN. age_seconds is the MOST IMPORTANT signal.
+   - age_seconds: #1 SIGNAL. Under 300s = STRONG POSITIVE (active emergency). 300-1800s = moderate positive. 3600-7200s = moderate negative. Over 7200s = STRONG NEGATIVE (Bronze cap unless polybutylene-era property). Over 86400s = Bronze cap. [UNVALIDATED]
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative ONLY — renters DO call plumbers for emergencies. Do NOT Bronze-cap. [UNVALIDATED]
+   - property_type: SFR = ideal. "Condominium" = NEUTRAL (unit plumbing is owner's responsibility). [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight.
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: 1975-1996 = STRONG POSITIVE (polybutylene pipe era — known failure rate, class action lawsuits). Pre-1970 = moderate positive (galvanized pipes corrode). 2010+ = slight negative. null = NEUTRAL. [UNVALIDATED]
+   - length_of_residence_years: 20+ = moderate positive (pipes aging). 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - recently_sold: "true" = moderate positive (inspections reveal plumbing issues). [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- age_seconds > 86400 (1 day): For emergency plumbing, this lead is dead. Bronze cap. [UNVALIDATED]
-- age_seconds > 7200 (2 hr) AND year_built is NOT 1975-1996: Emergency passed, no planned-work signal. Downgrade one full tier. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- age_seconds under 300 (5 min) = STRONG Gold signal — active emergency. Can compensate for missing property data.
-- At least 1 name match with fresh lead (under 1800 seconds) = Gold-eligible
-- When property data is MISSING: Gold is still achievable on contactability + freshness + identity.
-- BONUS signals: year_built 1975-1996 (polybutylene era), confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- age_seconds under 1800 with decent contactability = Silver floor even with gaps in property data
-- year_built 1975-1996 with good contactability = Silver floor regardless of lead age
-- confirmed_renter with fresh lead (under 600 seconds) = Silver (emergency plumbing crosses rental boundaries)`,
-    BRONZE_ADDITIONS: `- age_seconds > 7200 with no polybutylene-era or planned-work signals = Bronze cap
-- Phone grade F with age_seconds > 3600 = Bronze (can't reach them AND the emergency is old)`,
+    STRONG_NEGATIVE_ADDITIONS: `- age_seconds > 86400: Emergency has passed. Bronze cap. [UNVALIDATED]
+- age_seconds > 7200 AND year_built NOT 1975-1996: Emergency passed, no planned-work signal. Downgrade one tier. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- age_seconds under 300 = STRONG Gold signal (active emergency, compensates for missing data)
+- At least 1 name match with fresh lead (under 1800s) = Gold-eligible
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable on contactability + freshness.
+- BONUS signals: year_built 1975-1996, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- age_seconds under 1800 with decent contactability = Silver floor
+- year_built 1975-1996 with good contactability = Silver floor
+- confirmed_renter with fresh lead = Silver (emergency plumbing crosses rental boundaries)
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- age_seconds > 7200 with no polybutylene-era signals = Bronze cap
+- Phone grade F with age_seconds > 3600 = Bronze`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── BATHROOM REMODEL (research-based, high ticket) ───────────────
+  // ── BATHROOM REMODEL (v5.2 — research-based, high ticket + demographic layer) ──
   bathroom_remodel: {
     VERTICAL_LABEL: 'residential bathroom remodeling companies',
-    IDENTITY_WEIGHT: ' (ELEVATED — bathroom remodels cost $15,000-$30,000. This is a high-ticket decision requiring verified decision-maker identity. Both phone.name_match and address.name_match should be true for Gold.)',
-    PROPERTY_CONTEXT: `   IMPORTANT: Bathroom remodels are HIGH TICKET ($15,000-$30,000). Financial qualification matters significantly. This is NOT an impulse purchase — homeowners plan and finance bathroom remodels. Weight property/financial signals more heavily than lower-ticket verticals.
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize a $15-30K bathroom remodel. Bronze cap. [UNVALIDATED]
-   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = Silver at best, NEVER Gold.
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL — bathroom is INTERIOR work. Condo owners fully control their bathroom space with zero HOA restrictions. Do NOT penalize Condominium for bathroom remodel. Score identically to SFR. [UNVALIDATED]
-   - "Commercial" = moderate negative. [UNVALIDATED]
-   - free_and_clear: moderate positive — HELOC is a primary financing vehicle for bathroom remodels. Free-and-clear homeowners have maximum HELOC access. [UNVALIDATED]
-   - high_equity: moderate positive — same HELOC reasoning. High equity = can finance the project.
-   - year_built: 1975-1999 = STRONG POSITIVE — bathrooms from this era have brass fixtures, cultured marble vanities, almond/mauve/seafoam tile, and builder-grade everything. These bathrooms are 25-50 years dated and are PRIME remodel targets. Score as a tier-upgrading signal. 1960-1974 = moderate positive (may have been remodeled once already, but often still dated). 2000-2010 = slight positive (granite/travertine starting to date). 2015+ = moderate negative (bathroom is relatively new). null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $150,000 = moderate negative — a $20K bathroom remodel overcapitalizes a $150K home. $200,000-$400,000 = moderate positive (sweet spot — remodel adds real value). $400,000-$750,000 = moderate positive. $750,000+ = STRONG positive (luxury bathroom remodels $40-75K, best margins). null = NEUTRAL. [UNVALIDATED]
-   - bd_age: 55-64 = moderate positive (aging-in-place bathroom modifications, accessibility remodels). 45-54 = slight positive. Under 30 = slight negative (less likely to own, less likely to invest $20K). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: Moderate positive — bathroom refresh is the #2 pre-sale project after painting. 60+ = moderate positive. 80+ = STRONG positive (actively preparing to sell, bathroom ROI is 60-70% at resale). null = NEUTRAL. [UNVALIDATED]
-   - length_of_residence_years: 8-15 years = moderate positive (fixture/style cycling, appliance end-of-life). 15-25 years = moderate positive (definitely overdue). null = NEUTRAL. [UNVALIDATED]
-   - recently_sold: "true" = STRONG POSITIVE — new homeowners remodel bathrooms as their FIRST or SECOND major project. Bathroom is the most-remodeled room in the first 2 years of ownership. Score as a tier-upgrading signal that can move Silver to Gold. [UNVALIDATED]`,
-    INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Renters CANNOT authorize $15-30K remodels. Bronze cap. [UNVALIDATED]
-- estimated_value under $150,000: Remodel overcapitalizes home. Bronze cap when value is known. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (phone.name_match + address.name_match preferred for this high-ticket vertical)
+    IDENTITY_WEIGHT: ' (ELEVATED — $15,000-$30,000. Both phone.name_match and address.name_match should be true for Gold.)',
+    PROPERTY_CONTEXT: `   IMPORTANT: Bathroom remodels are HIGH TICKET ($15,000-$30,000). Financial qualification matters significantly.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — Bronze cap. [UNVALIDATED]
+   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches = Silver at best, NEVER Gold.
+   - property_type: SFR = ideal. "Condominium" = NEUTRAL (interior work — condo owners control bathroom). [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight (validated flat).
+   - high_equity: NEUTRAL — do not weight (validated flat).
+   - year_built: 1975-1999 = STRONG POSITIVE (dated bathrooms prime for remodel). 2000-2010 = slight positive. 2015+ = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - estimated_value: Under $150,000 = moderate negative (overcapitalizes home). $200,000-$400,000 = moderate positive. $750,000+ = STRONG positive. null = NEUTRAL. [UNVALIDATED]
+   - sale_propensity: 60+ = moderate positive. 80+ = STRONG positive (pre-sale project). null = NEUTRAL. [UNVALIDATED]
+   - length_of_residence_years: 8-15 = moderate positive (fixtures aging). 15-25 = moderate positive. 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - recently_sold: "true" = STRONG POSITIVE (first/second major project for new homeowners). [UNVALIDATED]
+   - tax_lien: "true" = STRONG NEGATIVE — Bronze cap. [UNVALIDATED]
+   - pre_foreclosure: "true" = Reject. [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
+    INSTANT_REJECT_ADDITIONS: `- pre_foreclosure = "true": No one invests $15-30K in a home they may lose. Reject. [UNVALIDATED]`,
+    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
+- tax_lien = "true": Bronze cap. [UNVALIDATED]
+- estimated_value under $150,000: Bronze cap. [UNVALIDATED]
+- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (high-ticket requires verified identity)
 - owner_occupied is NOT "confirmed_renter"
-- When property data is MISSING: Gold is still achievable with strong contactability + 2+ name matches + clean form behavior.
-- BONUS signals: recently_sold=true, year_built 1975-1999, estimated_value $200K+, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- Only 1 name match = Silver cap for this high-ticket vertical (need 2+ for Gold)
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable with strong contactability + 2+ name matches.
+- BONUS signals: recently_sold=true, year_built 1975-1999, estimated_value $200K+, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- Only 1 name match = Silver cap for this high-ticket vertical
 - recently_sold with good contactability but only 1 name match = Silver floor
-- Condominium with both name matches = Silver floor (interior work is valid)`,
-    BRONZE_ADDITIONS: `- Property data raises red flags: confirmed_renter
-- estimated_value under $150,000 = Bronze cap (overcapitalizes home) [UNVALIDATED]
-- Both name matches false = Bronze cap (cannot verify $15-30K decision-maker)`,
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
+- estimated_value under $150,000 = Bronze cap
+- Both name matches false = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── KITCHEN REMODEL (research-based, highest ticket home improvement) ─
+  // ── KITCHEN REMODEL (v5.2 — research-based, highest ticket + demographic layer) ──
   kitchen_remodel: {
     VERTICAL_LABEL: 'residential kitchen remodeling companies',
-    IDENTITY_WEIGHT: ' (STRICTEST OF ALL HOME SERVICE VERTICALS — kitchen remodels average $35,000-$75,000. This is the HIGHEST ticket home improvement project. Both phone.name_match AND address.name_match MUST be true for Gold. No exceptions.)',
-    PROPERTY_CONTEXT: `   CRITICAL: Kitchen remodels average $35,000-$75,000. This is the HIGHEST TICKET home improvement vertical. Financial qualification matters MORE here than any other home service vertical. A beautiful kitchen remodel on a $120K home makes zero financial sense — the model MUST account for this.
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = REJECT — 95%+ of kitchen remodels are owner-occupants. A renter will NOT spend $35-75K on someone else's kitchen. Score Reject unless identity signals suggest a data error (high_equity + both name matches = possible misclassification, Silver at absolute best). [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL to slight positive — kitchen is interior work, condo owners fully control kitchen space. Condo owners actually spend 20-30% MORE per square foot on kitchen remodels (smaller space, higher finishes). Do NOT penalize. "Commercial" = strong negative. [UNVALIDATED]
-   - free_and_clear: moderate positive — HELOC is the PRIMARY financing vehicle for kitchen remodels. Free-and-clear = maximum borrowing capacity. [UNVALIDATED]
-   - high_equity: STRONG POSITIVE — HELOC is how 60%+ of kitchen remodels are financed. High equity = can actually afford this project. Score as a tier-upgrading signal.
-   - year_built: 1980-1999 = STRONG POSITIVE — oak cabinets, laminate countertops, almond appliances, linoleum floors. These kitchens are 25-45 years DATED and are the #1 target demographic for kitchen remodelers. Score as a tier-upgrading signal that can move Silver to Gold. 1970-1979 = moderate positive (avocado/harvest gold era, but may have been remodeled once). 2000-2010 = moderate positive (granite/cherry era starting to date — "builder grade" from this era looks tired). Pre-1970 = slight positive (likely remodeled at least once). 2015+ = moderate negative (kitchen is relatively new). null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: THIS IS A CRITICAL SIGNAL. Under $150,000 = STRONG NEGATIVE — a $50K kitchen remodel on a $150K home is financial insanity. Score as Bronze cap when value is known AND under $150K. $150,000-$249,000 = slight negative (tight budget for a full remodel). $250,000-$400,000 = moderate positive (remodel adds real value). $400,000-$750,000 = STRONG positive (sweet spot — homeowner can afford it and it adds value). $750,000+ = STRONG positive (luxury kitchen, best margins). null = NEUTRAL (do not penalize missing data). [UNVALIDATED]
-   - bd_age: 45-64 = moderate positive (peak kitchen remodel demographic — established career, equity built, kids leaving/gone). Under 30 = moderate negative (unlikely to own a home worth remodeling, unlikely to have $35-75K). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: Moderate positive — kitchen remodels have 54-72% cost recovery. 60+ = moderate positive. null = NEUTRAL. Do NOT penalize low sale propensity — most kitchen remodels (70%+) are for personal enjoyment, not resale. [UNVALIDATED]
-   - length_of_residence_years: 10-20 years = STRONG POSITIVE — appliances are at end-of-life (15-20yr), design is obsolete, homeowner has been "living with it" long enough to finally pull the trigger. Score as a tier-upgrading signal. 7-9 years = moderate positive. 20-30 years = moderate positive (definitely overdue, but may have done a partial update). null = NEUTRAL. [UNVALIDATED]
-   - recently_sold: "true" = moderate positive — new homeowners remodel kitchens, but kitchen is usually the SECOND project (after bathroom/painting). Less strong than for bathroom_remodel. [UNVALIDATED]
-   - tax_lien: "true" = STRONG NEGATIVE — tax liens BLOCK HELOC lending, which is the primary financing mechanism. Bronze cap. [UNVALIDATED]
-   - pre_foreclosure: "true" = REJECT — no one invests $35-75K in a home they're about to lose. [UNVALIDATED]`,
-    INSTANT_REJECT_ADDITIONS: `- pre_foreclosure = "true": No one invests $35-75K in a home they may lose. Reject. [UNVALIDATED]`,
-    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Near-absolute kill for kitchen remodel. Score Reject unless exceptional identity signals suggest data error. [UNVALIDATED]
-- tax_lien = "true": Blocks HELOC — the primary financing mechanism for $35-75K projects. Bronze cap. [UNVALIDATED]
-- estimated_value under $150,000: Kitchen remodel would overcapitalize the home by 30-50%. Bronze cap. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (phone.name_match + address.name_match preferred — this is the highest-ticket vertical)
+    IDENTITY_WEIGHT: ' (STRICTEST — kitchen remodels average $35,000-$75,000. Both phone.name_match AND address.name_match MUST be true for Gold. No exceptions.)',
+    PROPERTY_CONTEXT: `   CRITICAL: Kitchen remodels average $35,000-$75,000. HIGHEST TICKET home improvement vertical.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = REJECT — renters will NOT spend $35-75K on someone else's kitchen. [UNVALIDATED]
+   - property_type: SFR = ideal. "Condominium" = NEUTRAL to slight positive (interior work, condo owners spend more per sqft). "Commercial" = strong negative. [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight (validated flat).
+   - high_equity: NEUTRAL — do not weight (validated flat). Note: for kitchen specifically, equity still matters for HELOC financing but is not a tier differentiator.
+   - year_built: 1980-1999 = STRONG POSITIVE (oak cabinets, laminate, dated everything — prime remodel targets). 2000-2010 = moderate positive. 2015+ = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - estimated_value: CRITICAL SIGNAL. Under $150,000 = STRONG NEGATIVE (Bronze cap). $250,000-$400,000 = moderate positive. $400,000-$750,000 = STRONG positive. $750,000+ = STRONG positive (luxury kitchen). null = NEUTRAL. [UNVALIDATED]
+   - sale_propensity: 60+ = moderate positive. 80+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - length_of_residence_years: 10-20 = STRONG POSITIVE (appliances end-of-life, design obsolete). 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - recently_sold: "true" = moderate positive. [UNVALIDATED]
+   - tax_lien: "true" = STRONG NEGATIVE — blocks HELOC. Bronze cap. [UNVALIDATED]
+   - pre_foreclosure: "true" = REJECT. [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
+    INSTANT_REJECT_ADDITIONS: `- pre_foreclosure = "true": Reject. [UNVALIDATED]`,
+    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Near-absolute kill. Score Reject. [UNVALIDATED]
+- tax_lien = "true": Blocks HELOC. Bronze cap. [UNVALIDATED]
+- estimated_value under $150,000: Bronze cap. [UNVALIDATED]
+- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (STRICTEST identity — highest ticket)
 - owner_occupied is NOT "confirmed_renter"
-- estimated_value >= $250,000 when available (if null or missing, allow Gold on contactability + identity)
+- estimated_value >= $250,000 when available
+- Demographic positives (age <55, female) strengthen Gold
 - When property data is MISSING: Gold is still achievable with strong contactability + 2+ name matches.
-- BONUS signals: year_built 1980-1999, length_of_residence 10-20 years, high_equity=true, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- Only 1 name match = Silver cap for this highest-ticket vertical (need 2+ for Gold)
-- estimated_value $150K-$250K with 2+ name matches = Silver cap (budget-constrained)
-- year_built 1980-1999 with good contactability but only 1 name match = Silver floor`,
-    BRONZE_ADDITIONS: `- Property data raises red flags: confirmed_renter, tax_lien
-- estimated_value under $150,000 = Bronze cap — remodel overcapitalizes home [UNVALIDATED]
-- Both name matches false = Bronze cap (CANNOT verify $35-75K decision-maker)
-- bd_age under 30 with estimated_value under $250K = Bronze cap [UNVALIDATED]`,
+- BONUS signals: year_built 1980-1999, length_of_residence 10-20 years, estimated_value $400K+, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- Only 1 name match = Silver cap for highest-ticket vertical
+- estimated_value $150K-$250K with 2+ name matches = Silver cap
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
+- estimated_value under $150,000 = Bronze cap
+- Both name matches false = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── FLOORING (research-based, mid ticket) ───────────────────────
+  // ── FLOORING (v5.2 — research-based, mid ticket + demographic layer) ──
   flooring: {
     VERTICAL_LABEL: 'residential flooring companies',
     IDENTITY_WEIGHT: '',
-    PROPERTY_CONTEXT: `   IMPORTANT: Flooring is a MID TICKET vertical ($5,000-$15,000 for full-home, $2,000-$5,000 for single room). sale_propensity is the STRONGEST signal in this vertical — flooring replacement has the HIGHEST ROI of any interior project (typically 70-80% cost recovery).
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize flooring replacement (it's a permanent change to the property). Bronze cap. [UNVALIDATED]
-   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches true = Silver at best, NEVER Gold.
-   - property_type: SFR = ideal. "Condominium" = slight negative ONLY — condo owners absolutely DO replace flooring, but HOA may have soundproofing/underlayment requirements (STC rating mandates). This adds cost but does NOT prevent the project. Score as slight downgrade, not a cap. "Commercial" = moderate negative (separate market). [UNVALIDATED]
-   - free_and_clear: slight positive — not a major factor for mid-ticket flooring. [UNVALIDATED]
-   - high_equity: moderate positive — HELOC access for whole-home flooring projects.
-   - year_built: 1980-1999 = STRONG POSITIVE — this is the "carpet era." Homes built in this period have wall-to-wall carpet that is now 25-45 years old, or cheap sheet vinyl that is cracking/peeling. These homeowners are the #1 target for LVP/hardwood upgrades. Score as a tier-upgrading signal. Pre-1970 = moderate positive (original hardwood may need refinishing, or has been covered with carpet). 2000-2010 = slight positive (builder-grade laminate aging). 2015+ = moderate negative (flooring is near-new). null = NEUTRAL. [UNVALIDATED]
-   - estimated_value: Under $125,000 = moderate negative ($10K flooring on a $125K home is marginal). $200,000-$500,000 = slight positive. $500,000+ = moderate positive (larger homes = larger flooring contracts, premium materials). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: THIS IS THE #1 SIGNAL FOR FLOORING. Flooring replacement has the HIGHEST ROI of any interior home improvement project. Realtors recommend flooring replacement more than any other interior project.
-     * 80+ = STRONG POSITIVE — this homeowner is preparing to sell and flooring is the single best ROI investment they can make. Score as a tier-upgrading signal that CAN upgrade Silver to Gold when combined with good contactability.
-     * 60-79 = moderate positive — likely preparing to sell, flooring is on the list.
-     * 40-59 = slight positive.
-     * Under 40 = NEUTRAL (not negative — most flooring is for personal enjoyment).
-     * null = NEUTRAL. [UNVALIDATED — OPPOSITE to solar/roofing]
-   - length_of_residence_years: BIMODAL PATTERN — score BOTH ends as positive:
-     * 0-2 years = moderate positive — new homeowners replace flooring as one of their FIRST projects (it's the most visible change and affects every room).
-     * 3-7 years = slight positive.
-     * 8-14 years = NEUTRAL.
-     * 15-25 years = moderate positive — carpet replacement cycle (carpet lasts 10-15 years, they're on their second or third set of worn carpet).
-     * null = NEUTRAL. [UNVALIDATED]
-   - recently_sold: "true" = STRONG POSITIVE — directly correlates with the 0-2 year residence pattern. New buyers replace flooring. Score as a supporting signal for Silver-to-Gold upgrade. [UNVALIDATED]`,
+    PROPERTY_CONTEXT: `   IMPORTANT: Flooring is MID TICKET ($5,000-$15,000). sale_propensity is the STRONGEST signal (highest ROI interior project, 70-80% cost recovery).
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = STRONG NEGATIVE — renters CANNOT authorize flooring replacement. Bronze cap. [UNVALIDATED]
+   - RENTER OVERRIDE: confirmed_renter + high_equity + both name matches = Silver at best, NEVER Gold.
+   - property_type: SFR = ideal. "Condominium" = slight negative only (condo owners DO replace flooring). [UNVALIDATED]
+   - free_and_clear: NEUTRAL — do not weight.
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: 1980-1999 = STRONG POSITIVE (carpet era — prime for LVP/hardwood upgrades). Pre-1970 = moderate positive. 2000-2010 = slight positive. 2015+ = moderate negative. null = NEUTRAL. [UNVALIDATED]
+   - estimated_value: Under $125,000 = moderate negative. $500,000+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - sale_propensity: #1 SIGNAL FOR FLOORING. 80+ = STRONG POSITIVE (tier-upgrading). 60-79 = moderate positive. null = NEUTRAL. [OPPOSITE to solar/roofing] [UNVALIDATED]
+   - length_of_residence_years: BIMODAL — 0-2 = moderate positive (new owners replace flooring first). 15-25 = moderate positive (carpet worn out). 25+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
+   - recently_sold: "true" = STRONG POSITIVE (new buyers replace flooring). [UNVALIDATED]`,
+    INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Renters CANNOT authorize flooring replacement. Bronze cap. [UNVALIDATED]`,
+    STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
+- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- When property data is MISSING: Gold is still achievable on contactability + identity alone.
-- BONUS signals: sale_propensity 60+, recently_sold=true, year_built 1980-1999, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- sale_propensity 60+ with good contactability but only 1 name match = Silver floor (do NOT drop to Bronze)
+- Demographic positives (age <55, female) strengthen Gold
+- When property data is MISSING: Gold is still achievable.
+- BONUS signals: sale_propensity 60+, recently_sold=true, year_built 1980-1999, bd_age <55, bd_gender Female`,
+    SILVER_ADDITIONS: `- sale_propensity 60+ with good contactability but only 1 name match = Silver floor
 - recently_sold with good contactability = Silver floor
-- year_built 1980-1999 with owner/SFR = Silver floor even with limited identity data`,
-    BRONZE_ADDITIONS: `- Property data raises red flags: confirmed_renter
-- estimated_value under $125,000 = Bronze cap (overcapitalizes home) [UNVALIDATED]`,
+- Strong contactability but demographic negatives = Silver`,
+    BRONZE_ADDITIONS: `- confirmed_renter = Bronze cap
+- estimated_value under $125,000 = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── INSURANCE (research-based, financial product) ────────────────
+  // ── INSURANCE (v5.2 — research-based, financial product + demographic layer) ──
   insurance: {
     VERTICAL_LABEL: 'residential insurance agencies',
-    IDENTITY_WEIGHT: ' (ELEVATED — insurance fraud is an $80B+ ANNUAL industry problem. Identity verification is MORE important for insurance than for ANY home service vertical. Both phone.name_match and address.name_match MUST be true for Gold. phone.name_match = false ALONE = Silver cap, regardless of all other signals.)',
-    PROPERTY_CONTEXT: `   CRITICAL: Insurance leads are NOT home improvement leads. The scoring priorities are FUNDAMENTALLY DIFFERENT. Do NOT apply home-service scoring logic. Several signals that are positive for home services are NEGATIVE for insurance, and vice versa. Read each signal carefully — many are INVERTED.
+    IDENTITY_WEIGHT: ' (ELEVATED — insurance fraud is $80B+ annually. Both phone.name_match and address.name_match MUST be true for Gold. phone.name_match = false ALONE = Silver cap.)',
+    PROPERTY_CONTEXT: `   CRITICAL: Insurance is NOT home improvement. Several signals are INVERTED.
 
-   SIGNAL INVERSIONS — READ CAREFULLY:
-   - free_and_clear = NEGATIVE for insurance. When a homeowner has no mortgage, there is no LENDER MANDATE requiring insurance coverage. These homeowners can and DO drop their homeowners insurance. Score free_and_clear as a moderate negative — it means the homeowner has LESS motivation to maintain coverage. This is the OPPOSITE of home service verticals. [UNVALIDATED]
-   - roof_permit = POSITIVE for insurance. A new roof resolves the #1 underwriting concern in homeowners insurance. Insurance companies routinely deny coverage or charge surcharges for old roofs. A recent roof permit means EASY underwriting and competitive rates. Score as a moderate-to-strong positive. This is the OPPOSITE of roofing vertical where roof_permit means they already got the work done. [UNVALIDATED]
-   - recently_sold = STRONG POSITIVE for insurance. A new homeowner MUST get a new insurance policy — the seller's policy does NOT transfer. This is a MANDATORY purchase, not optional. Score as a tier-upgrading signal that can move Silver to Gold. [UNVALIDATED]
-   - properties_count 2+ = STRONG POSITIVE. Each property needs its OWN insurance policy. A homeowner with 3 properties = 3 potential policies. Score 2 properties as moderate positive, 3+ as STRONG positive. Multi-property owners are the highest-value insurance leads. [UNVALIDATED]
+   SIGNAL INVERSIONS:
+   - free_and_clear = NEGATIVE for insurance (no lender mandate for coverage).
+   - roof_permit = POSITIVE (resolves #1 underwriting concern — OPPOSITE of roofing vertical).
+   - recently_sold = STRONG POSITIVE (new homeowner MUST get new policy).
+   - properties_count 2+ = STRONG POSITIVE (each property needs its own policy).
 
    STANDARD SIGNALS:
-   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative only — renters buy HO-4 renters insurance (~40% market penetration). This is a REAL market. NOT a hard kill, NOT a Bronze cap. Score as a downgrade (prevents Gold unless other signals are exceptional) but NOT a tier cap. [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL — condo owners NEED HO-6 policies (covers interior, personal property, liability). Valid lead. Do NOT penalize. "Commercial" = moderate negative (personal vs commercial lines). "Mobile/Manufactured" = moderate negative (specialty insurance, harder to place, lower premiums — NOT instant reject). [UNVALIDATED]
-   - year_built: 2000-2020 = moderate positive (newer home = easier underwriting, better rates, fewer exclusions). 1980-1999 = NEUTRAL. Pre-1960 = moderate negative (knob-and-tube wiring, galvanized plumbing, asbestos — harder to insure, many carriers decline). null = NEUTRAL. [UNVALIDATED — INVERTED from home services where old = needs work = positive]
-   - estimated_value: Directly correlates to premium and commission. Under $50,000 = strong negative (minimal premium). $100,000-$300,000 = moderate positive. $300,000-$750,000 = strong positive (substantial premium). $750,000+ = STRONG positive (high-net-worth policies, best commissions). null = NEUTRAL. [UNVALIDATED]
-   - sale_propensity: Moderate positive — selling means the buyer needs a new policy. 80+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
-   - bd_age: 30-45 = moderate positive (first-time homebuyers, growing families, actively shopping). 55+ = slight positive (may be shopping for better rates). Under 25 = slight negative (less likely to own). null = NEUTRAL. [UNVALIDATED]
-   - inherited: STRONG POSITIVE — deceased owner's policy is VOID. New owner MUST get coverage immediately. Score as tier-upgrading. [UNVALIDATED]
-   - absentee_owner: Moderate positive — needs landlord/rental property policy. [UNVALIDATED]
-   - sq_ft: Slight positive for larger homes — higher replacement cost = higher premium = higher commission. [UNVALIDATED]`,
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = moderate negative only (renters buy HO-4 renters insurance). NOT a hard kill.
+   - property_type: SFR = ideal. "Condominium" = NEUTRAL (HO-6 policies needed). "Mobile/Manufactured" = moderate negative (specialty insurance).
+   - high_equity: NEUTRAL — do not weight.
+   - year_built: 2000-2020 = moderate positive (easier underwriting). Pre-1960 = moderate negative (knob-and-tube wiring, harder to insure). null = NEUTRAL. [INVERTED from home services]
+   - estimated_value: Under $50,000 = strong negative. $300,000-$750,000 = strong positive. $750,000+ = STRONG positive. null = NEUTRAL.
+   - inherited: STRONG POSITIVE — deceased owner's policy is VOID. New owner MUST get coverage.
+   - absentee_owner: moderate positive — needs rental property policy.`,
+    INCOME_OVERRIDE: `   NOTE: For insurance, income is LINEAR (higher = better). Do NOT apply the bimodal pattern. $100,000+ = moderate positive. $150,000+ = strong positive. $75,000-$100,000 = slight positive (NOT negative like home services).`,
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- Both name matches false: Insurance fraud risk is too high. Bronze cap. Identity is NON-NEGOTIABLE for insurance. [UNVALIDATED]
-- phone.name_match = "false" alone: Silver cap maximum — cannot verify policyholder identity with phone alone. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- phone.name_match = "true" AND address.name_match = "true" — BOTH REQUIRED for insurance (fraud prevention demands verified identity)
-- phone.name_match = "false" alone = Silver cap MAXIMUM, even if every other signal is perfect
-- When property data is MISSING: Gold is still achievable IF both name matches are true + strong contactability.
-- BONUS signals: recently_sold=true, properties_count 2+, inherited=true, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- phone.name_match false = Silver cap regardless of other signals
-- confirmed_renter with both name matches true = Silver (renters insurance is a real market)
+    STRONG_NEGATIVE_ADDITIONS: `- Both name matches false: Insurance fraud risk too high. Bronze cap. [UNVALIDATED]
+- phone.name_match = "false" alone: Silver cap maximum. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- phone.name_match = "true" AND address.name_match = "true" — BOTH REQUIRED for insurance
+- phone.name_match = "false" = Silver cap MAXIMUM
+- Demographic positives: bd_age 30-45 = moderate positive (first-time homebuyers). Female = slight positive.
+- When property data is MISSING: Gold is still achievable IF both name matches are true.
+- BONUS signals: recently_sold=true, properties_count 2+, inherited=true, bd_age 30-45, bd_gender Female`,
+    SILVER_ADDITIONS: `- phone.name_match false = Silver cap
+- confirmed_renter with both name matches = Silver (renters insurance is real)
 - recently_sold with only 1 name match = Silver floor`,
-    BRONZE_ADDITIONS: `- Both name matches false = Bronze cap — identity is paramount for insurance fraud prevention
-- estimated_value under $50,000 = Bronze cap (minimal premium, not worth pursuing)
-- free_and_clear with no other positive signals = supporting Bronze signal (no lender mandate for coverage)`,
+    BRONZE_ADDITIONS: `- Both name matches false = Bronze cap
+- estimated_value under $50,000 = Bronze cap
+- free_and_clear with no other positives = supporting Bronze signal`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 
-  // ── MORTGAGE (research-based, financial product, strictest identity) ──
+  // ── MORTGAGE (v5.2 — research-based, financial product, strictest identity + demographic layer) ──
   mortgage: {
     VERTICAL_LABEL: 'residential mortgage companies',
-    IDENTITY_WEIGHT: ' (STRICTEST OF ALL VERTICALS — mortgage fraud is a FEDERAL CRIME (18 U.S.C. 1014). Identity verification requirements are HIGHER than any other vertical including insurance. Both phone.name_match AND address.name_match MUST be true for Gold. phone.name_match = false ALONE = Silver cap maximum. This is NON-NEGOTIABLE.)',
-    PROPERTY_CONTEXT: `   CRITICAL: Mortgage leads are NOT home improvement leads. This is a FINANCIAL PRODUCT vertical with fundamentally different scoring priorities. Identity verification is the #1 priority — above contactability, above property data, above everything. Several signals are INVERTED from home services AND from insurance. Read each signal carefully.
+    IDENTITY_WEIGHT: ' (STRICTEST — mortgage fraud is a FEDERAL CRIME. Both phone.name_match AND address.name_match MUST be true for Gold. phone.name_match = false = Silver cap maximum. NON-NEGOTIABLE.)',
+    PROPERTY_CONTEXT: `   CRITICAL: Mortgage is a FINANCIAL PRODUCT with fundamentally different scoring. Several signals are INVERTED.
 
-   SIGNAL INVERSIONS — READ CAREFULLY:
-   - free_and_clear = STRONG POSITIVE for mortgage. This is the OPPOSITE of insurance. A homeowner with 100% equity and no mortgage has MAXIMUM opportunity for HELOC, cash-out refinance, or reverse mortgage. This is the ideal mortgage lead — they have equity to leverage. Score as a tier-upgrading signal that can move Silver to Gold. [UNVALIDATED]
-   - recently_sold = NEGATIVE for mortgage. A homeowner who just bought ALREADY HAS a new mortgage. They just went through the entire mortgage process and closed. They are NOT a refinance candidate for years. Score as a moderate negative. This is the OPPOSITE of insurance where recently_sold is strongly positive. [UNVALIDATED]
-   - confirmed_renter = NEUTRAL for mortgage. Do NOT penalize renters. Renters are FIRST-TIME HOMEBUYER candidates — they need a PURCHASE mortgage. The entire FHA/VA first-time buyer market is renters becoming owners. Score as NEUTRAL. This is the OPPOSITE of home service verticals where renter = negative. [UNVALIDATED]
-   - tax_lien = moderate negative ONLY, NOT reject and NOT Bronze cap. This is counterintuitive but industry-correct: distressed homeowners with tax liens are actually REFINANCE candidates. Debt consolidation refi, HELOC to pay off liens, or hardship refi programs exist specifically for these borrowers. Score as a moderate negative (complicates underwriting) but do NOT reject or Bronze-cap. [UNVALIDATED]
-   - pre_foreclosure = moderate negative ONLY, NOT reject. Foreclosure prevention refinance is a REAL, active product category. Loss mitigation departments at lenders specifically target pre-foreclosure homeowners. Score as moderate negative but do NOT reject. [UNVALIDATED]
+   SIGNAL INVERSIONS:
+   - free_and_clear = STRONG POSITIVE (maximum equity for HELOC/cash-out refi/reverse mortgage). OPPOSITE of insurance.
+   - recently_sold = NEGATIVE (just got a new mortgage, NOT a refi candidate). OPPOSITE of insurance.
+   - confirmed_renter = NEUTRAL (first-time homebuyer candidates — they need a PURCHASE mortgage). OPPOSITE of home services.
+   - tax_lien = moderate negative ONLY, NOT reject (distressed homeowners are refinance candidates).
+   - pre_foreclosure = moderate negative ONLY, NOT reject (foreclosure prevention refi is a real product).
 
    STANDARD SIGNALS:
-   - owner_occupied: "confirmed_owner" = good (refinance candidate). "confirmed_renter" = NEUTRAL — see signal inversions above. Renters are purchase mortgage candidates. [UNVALIDATED]
-   - property_type: SFR = ideal. "Condominium" = NEUTRAL (condos need mortgages — FHA/VA condo approval lists exist). "Commercial" = moderate negative (residential vs commercial mortgage, different lenders). [UNVALIDATED]
-   - estimated_value: Directly correlates to loan size and commission. Under $100,000 = moderate negative (small loan, minimal commission). $200,000-$400,000 = moderate positive (bread-and-butter residential mortgage). $400,000-$750,000 = strong positive (larger commission). $750,000+ = STRONG positive (jumbo loan territory — premium rates, larger commission, specialist product). null = NEUTRAL. [UNVALIDATED]
-   - high_equity: STRONG POSITIVE — high equity = cash-out refinance opportunity, HELOC opportunity, or reverse mortgage (if 62+). Score as a tier-upgrading signal. [UNVALIDATED]
-   - sale_propensity: Moderate positive — selling homeowner's BUYER needs a purchase mortgage. 80+ = moderate positive. null = NEUTRAL. [UNVALIDATED]
-   - bd_age: 25-35 = STRONG positive (first-time homebuyer demographic, largest mortgage market segment). 35-50 = moderate positive (move-up buyer, refinance candidate). 62+ with high_equity = moderate positive (reverse mortgage candidate). Under 22 = moderate negative. null = NEUTRAL. [UNVALIDATED]
-   - length_of_residence_years: 5-15 years = moderate positive (equity built up, original rate may be above market, prime refinance window). 15+ years = moderate positive (significant equity for cash-out refi or HELOC). Under 2 years = moderate negative (just got a mortgage). null = NEUTRAL. [UNVALIDATED]
-   - properties_count: Moderate positive — each property may need financing. 2+ = moderate positive (investment property loans, portfolio lending). 4+ = strong positive (real estate investor — commercial portfolio loans). [UNVALIDATED]
-   - inherited: Moderate positive — may need to refinance inherited property, buyout other heirs, or convert to investment property loan. [UNVALIDATED]
-   - absentee_owner: Moderate positive — investment property loans, DSCR loans, portfolio lending. [UNVALIDATED]
-   - active_listing: Moderate positive — the BUYER of this home needs a purchase mortgage. [UNVALIDATED]`,
+   - owner_occupied: "confirmed_owner" = good (refi candidate). "confirmed_renter" = NEUTRAL — renters are purchase mortgage candidates.
+   - high_equity: STRONG POSITIVE — cash-out refi, HELOC opportunity.
+   - estimated_value: Under $100,000 = moderate negative (small loan). $400,000-$750,000 = strong positive. $750,000+ = STRONG positive (jumbo loan). null = NEUTRAL.
+   - sale_propensity: 80+ = moderate positive (buyer needs purchase mortgage). null = NEUTRAL.
+   - properties_count 2+ = moderate positive (investment property loans). 4+ = strong positive.
+   - inherited: moderate positive (may need to refinance).
+   - absentee_owner: moderate positive (investment property loans).`,
+    INCOME_OVERRIDE: `   NOTE: For mortgage, income is LINEAR (higher = better). Do NOT apply the bimodal pattern. Income directly determines borrowing capacity. $100,000+ = moderate positive. $150,000+ = strong positive.`,
     INSTANT_REJECT_ADDITIONS: '',
-    STRONG_NEGATIVE_ADDITIONS: `- Both name matches false: Mortgage fraud is a federal crime. Cannot verify borrower identity. Bronze cap. [UNVALIDATED]
-- phone.name_match = "false" alone: Silver cap maximum — cannot verify borrower identity by phone. This is the strictest identity requirement of ALL verticals. [UNVALIDATED]`,
-    GOLD_ADDITIONS: `- phone.name_match = "true" AND address.name_match = "true" — BOTH REQUIRED, NO EXCEPTIONS. Mortgage fraud is a federal crime.
-- phone.name_match = "false" alone = Silver cap MAXIMUM, even if every other signal is perfect. This is STRICTER than insurance.
-- When property data is MISSING: Gold is still achievable IF both name matches are true + strong contactability.
-- BONUS signals: free_and_clear=true, high_equity=true, properties_count 2+, confirmed_owner=verified`,
-    SILVER_ADDITIONS: `- phone.name_match false = Silver cap regardless of all other signals (STRICTEST vertical for identity)
-- confirmed_renter with both name matches = Silver (first-time homebuyer candidate — do NOT Bronze-cap)
-- recently_sold = moderate negative but does NOT prevent Silver if other signals strong
+    STRONG_NEGATIVE_ADDITIONS: `- Both name matches false: Mortgage fraud is federal crime. Bronze cap. [UNVALIDATED]
+- phone.name_match = "false" alone: Silver cap maximum. [UNVALIDATED]`,
+    GOLD_ADDITIONS: `- phone.name_match = "true" AND address.name_match = "true" — BOTH REQUIRED, NO EXCEPTIONS
+- phone.name_match = "false" = Silver cap MAXIMUM (strictest identity of all verticals)
+- Demographic positives: bd_age 25-35 = STRONG positive (first-time buyer demographic). Female = slight positive.
+- When property data is MISSING: Gold is still achievable IF both name matches are true.
+- BONUS signals: free_and_clear=true, high_equity=true, properties_count 2+, bd_age 25-35, bd_gender Female`,
+    SILVER_ADDITIONS: `- phone.name_match false = Silver cap (strictest vertical for identity)
+- confirmed_renter with both name matches = Silver (first-time homebuyer — do NOT Bronze-cap)
+- recently_sold = moderate negative but does NOT prevent Silver
 - tax_lien = does NOT prevent Silver (distressed homeowner = refi candidate)`,
-    BRONZE_ADDITIONS: `- Both name matches false = Bronze cap — identity is paramount for mortgage, federal crime risk
-- estimated_value under $100,000 = Bronze cap (minimal loan size, not economically viable)
-- recently_sold with no other positive signals = supporting Bronze signal (just got a mortgage)`,
+    BRONZE_ADDITIONS: `- Both name matches false = Bronze cap
+- estimated_value under $100,000 = Bronze cap
+- recently_sold with no other positives = supporting Bronze signal`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
   },
 };
@@ -961,6 +988,7 @@ function buildPrompt(vertical) {
   prompt = prompt.replace('{{GOLD_ADDITIONS}}', ctx.GOLD_ADDITIONS);
   prompt = prompt.replace('{{SILVER_ADDITIONS}}', ctx.SILVER_ADDITIONS);
   prompt = prompt.replace('{{BRONZE_ADDITIONS}}', ctx.BRONZE_ADDITIONS);
+  prompt = prompt.replace('{{INCOME_OVERRIDE}}', ctx.INCOME_OVERRIDE || '');
   prompt = prompt.replace('{{CONFIDENCE_NOTE}}', ctx.CONFIDENCE_NOTE);
 
   return prompt;
@@ -988,20 +1016,22 @@ const HOME_SERVICES_VERTICALS = [
 ];
 
 // Vertical-specific field config — which extra fields each vertical gets
+// v5.2: Added bd_gender and bd_income to ALL verticals (demographic signals).
+// Added roof_permit and length_of_residence_years to solar.
 const VERTICAL_FIELDS = {
-  solar:             ['email.is_deliverable', 'solar_permit', 'estimated_value', 'bd_age', 'sale_propensity', 'mortgage_total_payment'],
-  roofing:           ['roof_permit', 'estimated_value', 'bd_age', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
-  windows:           ['email.is_deliverable', 'estimated_value', 'sale_propensity', 'bd_age', 'length_of_residence_years'],
-  hvac:              ['estimated_value', 'length_of_residence_years', 'sale_propensity', 'recently_sold'],
-  siding:            ['estimated_value', 'sale_propensity', 'length_of_residence_years'],
-  gutters:           ['bd_age', 'sale_propensity', 'length_of_residence_years'],
-  painting:          ['sale_propensity', 'length_of_residence_years'],
-  plumbing:          ['length_of_residence_years'],
-  bathroom_remodel:  ['estimated_value', 'sale_propensity', 'bd_age', 'length_of_residence_years', 'recently_sold'],
-  kitchen_remodel:   ['estimated_value', 'sale_propensity', 'bd_age', 'length_of_residence_years', 'recently_sold'],
-  flooring:          ['estimated_value', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
-  insurance:         ['estimated_value', 'sale_propensity', 'recently_sold', 'bd_age', 'roof_permit', 'properties_count', 'inherited', 'absentee_owner', 'sq_ft'],
-  mortgage:          ['estimated_value', 'sale_propensity', 'recently_sold', 'bd_age', 'length_of_residence_years', 'properties_count', 'inherited', 'absentee_owner', 'active_listing'],
+  solar:             ['email.is_deliverable', 'solar_permit', 'roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years'],
+  roofing:           ['roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
+  windows:           ['email.is_deliverable', 'estimated_value', 'sale_propensity', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years'],
+  hvac:              ['estimated_value', 'length_of_residence_years', 'sale_propensity', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
+  siding:            ['estimated_value', 'sale_propensity', 'length_of_residence_years', 'bd_age', 'bd_gender', 'bd_income'],
+  gutters:           ['bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years'],
+  painting:          ['sale_propensity', 'length_of_residence_years', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
+  plumbing:          ['length_of_residence_years', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
+  bathroom_remodel:  ['estimated_value', 'sale_propensity', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years', 'recently_sold'],
+  kitchen_remodel:   ['estimated_value', 'sale_propensity', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years', 'recently_sold'],
+  flooring:          ['estimated_value', 'sale_propensity', 'length_of_residence_years', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
+  insurance:         ['estimated_value', 'sale_propensity', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income', 'roof_permit', 'properties_count', 'inherited', 'absentee_owner', 'sq_ft'],
+  mortgage:          ['estimated_value', 'sale_propensity', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years', 'properties_count', 'inherited', 'absentee_owner', 'active_listing'],
 };
 
 // Maps clean field names to their API data source paths
@@ -1014,6 +1044,9 @@ const FIELD_SOURCES = {
   'tax_lien':                  'batchdata.tax_lien',
   'pre_foreclosure':           'batchdata.pre_foreclosure',
   'bd_age':                    'batchdata.bd_age',
+  'bd_gender':                 'batchdata.bd_gender',
+  'bd_income':                 'batchdata.bd_income',
+  'bd_net_worth':              'batchdata.bd_net_worth',
   'sale_propensity':           'batchdata.sale_propensity',
   'mortgage_total_payment':    'batchdata.mortgage_total_payment',
   'length_of_residence_years': 'batchdata.length_of_residence_years',
@@ -1097,9 +1130,13 @@ export function prepareFieldsForLLM(apiData, vertical) {
     }
   }
 
-  // D. Financial (will be null after FullContact dropped — LLM treats null as neutral)
-  fields['household_income'] = apiData['fullcontact.household_income'] ?? null;
-  fields['living_status'] = apiData['fullcontact.living_status'] ?? null;
+  // D. Demographics — v5.2: BatchData demographics replace dead FullContact fields.
+  // bd_age, bd_gender, bd_income are the key signals from 299-lead backtest.
+  // These are passed as base fields to ALL verticals (also appear in vertical-specific fields
+  // for verticals that reference them in PROPERTY_CONTEXT prompts).
+  fields['bd_age'] = apiData['batchdata.bd_age'] ?? null;
+  fields['bd_gender'] = apiData['batchdata.bd_gender'] ?? null;
+  fields['bd_income'] = apiData['batchdata.bd_income'] ?? null;
 
   // E. Form behavior (all verticals)
   fields['form_input_method'] = apiData['trustedform.form_input_method'] ?? null;

@@ -71,6 +71,15 @@ export function applyPostScoreTierCaps(apiData, tier, score, leadVertical) {
     capsTriggered.push('GRADE_C_LANDLINE_VOIP');
   }
 
+  // RULE 5 (v5.2): Email name mismatch → Bronze cap (backup for hard kill)
+  // 96% accuracy on 25 leads — 24 losses caught, 1 false positive.
+  const emailNameMatch = apiData['trestle.email.name_match'] ?? null;
+  if (emailNameMatch === 'false') {
+    outTier = 'Bronze';
+    outScore = Math.min(outScore, 44);
+    capsTriggered.push('EMAIL_NAME_MISMATCH');
+  }
+
   return { tier: outTier, score: outScore, capsTriggered };
 }
 

@@ -1,6 +1,6 @@
 {
   "vertical": "solar",
-  "version": "5.1",
+  "version": "5.2",
   "updated_at": "2026-04-01T00:00:00Z",
   "shadow_mode": false,
   "direct_buyers_gold_only": true,
@@ -10,7 +10,8 @@
     "vertical_specific": {
       "batchdata_renter_confirmed": true,
       "batchdata_mobile_manufactured": true,
-      "batchdata_condominium": true
+      "batchdata_condominium": true,
+      "batchdata_solar_permit": true
     }
   },
   "pillar_weights": {

@@ -121,6 +121,7 @@ function extractFields(data) {
     'batchdata.listed_below_market': quickLists.listedBelowMarketPrice ?? null,
     'batchdata.involuntary_lien': quickLists.involuntaryLien ?? null,
     'batchdata.mailing_vacant': quickLists.mailingAddressVacant ?? null,
+    'batchdata.recently_sold': quickLists.recentlySold ?? null,
 
     // ════════════════════════════════════════════════════
     // LISTING — Property characteristics
@@ -223,9 +224,10 @@ function extractFields(data) {
     'batchdata.has_foreclosure': Object.keys(foreclosure).length > 0 ? true : null,
 
     // ════════════════════════════════════════════════════
-    // OWNER NAME — Used by LLM for identity cross-reference
+    // OWNER — Name + residence length
     // ════════════════════════════════════════════════════
     '_batchdata.owner_name': extractOwnerName(owner),
+    'batchdata.length_of_residence_years': owner.lengthOfResidenceYears ?? null,
   };
 }
 
@@ -302,7 +304,7 @@ function createNullResponse() {
     'batchdata.failed_listing': null, 'batchdata.pending_listing': null,
     'batchdata.on_market': null, 'batchdata.for_sale_by_owner': null,
     'batchdata.listed_below_market': null, 'batchdata.involuntary_lien': null,
-    'batchdata.mailing_vacant': null,
+    'batchdata.mailing_vacant': null, 'batchdata.recently_sold': null,
     'batchdata.year_built': null, 'batchdata.bedrooms': null,
     'batchdata.bathrooms': null, 'batchdata.sq_ft': null,
     'batchdata.lot_size_sqft': null, 'batchdata.listing_status': null,
@@ -338,5 +340,6 @@ function createNullResponse() {
     'batchdata.latitude': null, 'batchdata.longitude': null,
     'batchdata.has_foreclosure': null,
     '_batchdata.owner_name': null,
+    'batchdata.length_of_residence_years': null,
   };
 }

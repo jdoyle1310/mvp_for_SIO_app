@@ -48,16 +48,36 @@ export function evaluateHardKills(apiData, config) {
 /**
  * Check universal hard-kill rules.
  *
- * Only property-based kills remain here. Phone/email/bot checks are handled
- * upstream by eHawk and scored as steep negative penalties (not hard kills).
+ * v5.2: Added data-validated hard kills based on 299-lead backtest (April 2026).
+ * Each rule validated at 92-100% accuracy across 5 buyers.
  *
  * NOTE: Commercial property type was downgraded from hard kill to -80 penalty
  * in all configs (2026-03-11). BatchData's corporateOwned flag is unreliable —
  * it misclassifies mixed-use, multi-parcel, and some single-family properties.
  */
 function checkUniversalRules(apiData, rules) {
-  // No universal hard kills remaining after Commercial downgrade.
-  // Keeping structure for future universal rules.
+  // v5.2: FixedVOIP — 0% win rate on 5 leads, 100% accuracy.
+  // These are call center / auto-dialer numbers that never connect.
+  const phoneLineType = apiData['trestle.phone.line_type'];
+  if (phoneLineType === 'FixedVOIP') {
+    return 'FIXED_VOIP';
+  }
+
+  // v5.2: Email name mismatch — 4% win rate on 25 leads, 96% accuracy.
+  // When the email doesn't match the lead's name, it's almost always
+  // bad data, a fake submission, or a different person entirely.
+  const emailNameMatch = apiData['trestle.email.name_match'];
+  if (emailNameMatch === 'false') {
+    return 'EMAIL_NAME_MISMATCH';
+  }
+
+  // v5.2: Empty form input — 0% win rate on 5 leads, 100% accuracy.
+  // No typing, no autofill, no paste — bot or accidental submission.
+  const formInput = apiData['trustedform.form_input_method'];
+  if (formInput === 'empty') {
+    return 'EMPTY_FORM_INPUT';
+  }
+
   return null;
 }
 
@@ -87,6 +107,15 @@ function checkVerticalSpecificRules(apiData, rules) {
     const propType = apiData['batchdata.property_type'];
     if (propType === 'Mobile/Manufactured') {
       return 'MOBILE_MANUFACTURED_HOME';
+    }
+  }
+
+  // v5.2: Solar permit = already has solar (solar vertical only)
+  // 0% win rate on 3 leads, 100% accuracy. Configured per-vertical in config JSON.
+  if (rules.batchdata_solar_permit) {
+    const solarPermit = apiData['batchdata.solar_permit'];
+    if (solarPermit === true) {
+      return 'HAS_SOLAR_PERMIT';
     }
   }
 
