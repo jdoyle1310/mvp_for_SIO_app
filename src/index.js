@@ -185,12 +185,33 @@ export async function handler(event) {
     } catch (err) {
       if (err.name === 'AbortError') {
         timeoutFastPath = true;
+
+        // v5.3: Rules-based fallback instead of flat Silver/0.
+        // Use contactability signals to assign a meaningful score when LLM times out.
+        const fallbackGrade = apiData['trestle.phone.contact_grade'];
+        const fallbackLine = apiData['trestle.phone.line_type'];
+        const fallbackActivity = apiData['trestle.phone.activity_score'];
+        let fallbackScore = 30; // default Bronze
+        let fallbackTier = 'Bronze';
+
+        if (
+          (fallbackGrade === 'A' || fallbackGrade === 'B') &&
+          fallbackLine === 'Mobile' &&
+          fallbackActivity != null && fallbackActivity >= 80
+        ) {
+          fallbackScore = 50;
+          fallbackTier = 'Silver';
+        } else if (fallbackGrade === 'F' || fallbackLine === 'NonFixedVOIP') {
+          fallbackScore = 15;
+          fallbackTier = 'Reject';
+        }
+
         llmResult = {
-          tier: 'Silver',
-          score: 0,
+          tier: fallbackTier,
+          score: fallbackScore,
           confidence: 'low',
-          reasons: ['Scored on enrichment data only — no LLM analysis'],
-          concerns: ['TIMEOUT: Anthropic did not respond within 5.8s'],
+          reasons: [`Timeout fallback — scored on enrichment: ${fallbackGrade || '?'} grade, ${fallbackLine || '?'} line`],
+          concerns: ['TIMEOUT: Anthropic did not respond within 5.8s — rules-based fallback applied'],
           llm_usage: {
             input_tokens: 0,
             output_tokens: 0,
@@ -295,21 +316,18 @@ export async function handler(event) {
       capBronze();
     }
 
-    // Age 65+ cap (Bronze) — moved here from 8d since Bronze is the outcome.
-    // Dispo data: 0% appt rate at 65-69, near-zero at 70+. Insurance/mortgage exempt.
-    const NON_AGE_CAPPED_VERTICALS = ['insurance', 'mortgage'];
-    if (bdAge && bdAge >= 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
-      capBronze();
-    }
+    // v5.3: Age 70+ Bronze cap MOVED to pre-LLM checkPermitBronzeCap() — saves LLM cost.
+    // Age 60-69 handled as additive modifiers in LLM prompt (not hard caps).
+    // Old rule (age 65+ → Bronze cap) REMOVED — was killing volume on leads with strong
+    // financial/contactability signals. Data supports -4 to -8 modifier, not a tier override.
 
     // ── 8b. SILVER CAPS (run only if not already Bronze) ────────────────────────
 
-    // Rule 8: Corporate owned — real person can't authorize work on corporate property.
-    // Affects: DAVE PARKER, Stephen Marshall, Erlinda Stone, JOSEPH CASCONE, Keith Batker,
-    //          Sharon St Clair, Harsha Patel (also Bronze via rule 4).
-    if (corporateOwned === true) {
-      capSilver();
-    }
+    // v5.3: Corporate owned Silver cap REMOVED — unvalidated signal (not in 299-lead analysis).
+    // Many "corporate owned" are family trusts/LLCs for estate planning. Leads with Grade A
+    // phones and good identity were being killed without data backing. Now passed to LLM as
+    // -5 modifier instead of a hard cap. If phone.name_match is also false, Rule 4 (phone
+    // name mismatch + corporate owned → Bronze) still fires as a safety net.
 
     // Rule 9: Confirmed renter with clean name-match signals — contactable but can't convert
     //         on home services (doesn't own the property being serviced).
@@ -367,11 +385,9 @@ export async function handler(event) {
       capSilver();
     }
 
-    // Existing 8d: Age 60-64 Silver cap (65+ already handled above in Bronze section).
-    // Dispo: 0% appt rate in 9 leads at 60-64, sharp drop from 20%+.
-    if (bdAge && bdAge >= 60 && bdAge < 65 && !NON_AGE_CAPPED_VERTICALS.includes(lead.vertical)) {
-      capSilver();
-    }
+    // v5.3: Age 60-64 Silver cap REMOVED — was based on only 9 leads (too small to
+    // validate a hard cap). Age 60-64 now handled as -4 additive modifier in LLM prompt.
+    // Age 65-69 is -8 modifier. Age 70+ is pre-LLM Bronze cap (business rule).
 
     // ── 8b2. Four post-score tier caps (validated dispo — runs after legacy enforcement, before Silver floor)
     const tierBeforeFourCaps = tier;
@@ -523,12 +539,18 @@ function checkQuickHardKills(apiData, vertical) {
 
 /**
  * Deterministic Bronze cap for leads that already have the service installed
- * (permit on file) or own corporate property. Runs after hard kills, before
- * the LLM call, saving ~$0.003/lead on outcomes that are definitively Bronze.
+ * (permit on file) or are age 70+. Runs after hard kills, before the LLM call,
+ * saving ~$0.003/lead on outcomes that are definitively Bronze.
  *
  * Permit map covers the four verticals with reliable BatchData permit fields.
- * Corporate-owned applies universally — corporate entities don't buy residential
- * home services.
+ * Age 70+ cap applies to home services only (insurance/mortgage exempt — seniors
+ * ARE the target customer). Business rule: buyers won't work leads 70+.
+ *
+ * v5.3 CHANGES:
+ * - REMOVED corporate_owned Bronze cap (unvalidated — not in 299-lead signal analysis.
+ *   Many "corporate owned" are family trusts/LLCs. Passed to LLM as -5 modifier instead.)
+ * - ADDED age 70+ Bronze cap for home services (business rule — buyers reject 70+ leads.
+ *   Insurance/mortgage exempt.)
  *
  * @returns {{ reason: string, concern: string } | null}
  */
@@ -548,9 +570,12 @@ function checkPermitBronzeCap(apiData, vertical) {
     }
   }
 
-  const corporateOwned = apiData['batchdata.corporate_owned'];
-  if (corporateOwned === true || corporateOwned === 'true') {
-    return { reason: 'CORPORATE_OWNED_PROPERTY', concern: 'Corporate-owned property — not a residential homeowner' };
+  // Age 70+ Bronze cap — business rule: buyers won't work leads 70+.
+  // Insurance/mortgage exempt (seniors ARE the target customer for these verticals).
+  const AGE_CAP_EXEMPT_VERTICALS = ['insurance', 'mortgage'];
+  const bdAge = apiData['batchdata.bd_age'];
+  if (bdAge != null && bdAge >= 70 && !AGE_CAP_EXEMPT_VERTICALS.includes(vertical)) {
+    return { reason: 'AGE_70_PLUS', concern: `Lead age ${bdAge} — buyers will not work leads 70+` };
   }
 
   return null;

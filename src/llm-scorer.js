@@ -410,11 +410,14 @@ C. PROPERTY QUALIFICATION
 {{PROPERTY_CONTEXT}}
    - address.is_valid: "true" = confirmed real address.
 
-D. DEMOGRAPHIC SIGNALS (v5.2 — validated on 299 leads across 5 buyers)
-   These signals come from BatchData demographics. When present, they significantly improve tier accuracy. When null, treat as NEUTRAL — do not penalize missing demographics.
-   - bd_age: STRONGEST demographic signal. Under 35 = STRONG POSITIVE (57% win rate, +37 lift). 35-54 = moderate positive (+5 lift). 55-64 = neutral. 65-74 = slight negative (-7 lift). 75+ = STRONG NEGATIVE (8% win rate, -11 lift). null = NEUTRAL.
-   - bd_gender: Second strongest demographic. "Female" = moderate positive (28% win rate, +8 lift — likely indicates the decision-maker filled out the form). "Male" = slight negative (12.5% win rate). null = NEUTRAL. NOTE: Weight this conservatively — it's a supporting signal, not a primary driver.
-   - bd_income: BIMODAL pattern — NOT linear. $150,000+ = moderate positive (26% win rate). $100,000-$149,999 = slight negative (10% win rate — dead zone). $75,000-$99,999 = slight negative (11% win rate — dead zone). $50,000-$74,999 = neutral. $35,000-$49,999 = slight positive (29% win rate — motivated by savings). Under $35,000 = slight negative. null = NEUTRAL.
+D. BUYING POWER COMPOSITE (v5.3 — pre-computed from income + age + gender)
+   This is a PRE-COMPUTED score that combines income, age, and gender into one signal.
+   Individual demographic fields are weak alone (income zigzags, net worth is flat).
+   Combined: 25.5% spread validated on 191 resolved leads — strongest financial proxy available.
+   - buying_power: "TOP" = +8 points (34% win rate — young/mid-age, female, strong income). "MIDDLE" = +0 (baseline — most leads). "BOTTOM" = -8 points (8.5% win rate — older male, low income). null = +0 (insufficient data — do NOT penalize).
+   IMPORTANT: Use the buying_power value DIRECTLY. Do NOT re-interpret bd_age, bd_gender, or bd_income independently — the composite already accounts for their interaction.
+   - bd_age: Provided for context only. 60-64 = -4 modifier (in addition to buying_power). 65-69 = -8 modifier. 70+ leads are filtered before reaching you.
+   - corporate_owned: "true" = -5 modifier. Many "corporate owned" properties are family trusts/LLCs. Not a tier override — just a slight negative.
 {{INCOME_OVERRIDE}}
 
 E. FORM BEHAVIOR (quality signal)
@@ -440,51 +443,85 @@ STRONG NEGATIVES (NOT instant rejects — weigh against other signals):
 - phone.line_type = "NonFixedVOIP": Zero appointments in historical data. Cap at Bronze. Combined with Grade F or low activity, score Reject.
 - email.name_match = "false": 4% win rate on 25 leads. Near hard-kill territory. Cap at Bronze unless address.name_match + phone.name_match are both true (possible spouse email).
 - address.name_match = "false": 10% win rate. Significant concern. Cap at Silver unless other identity signals are strong.
-- age_seconds > 86400: Lead is over 24 hours old — likely stale or recycled. Downgrade but don't auto-reject if other signals are strong.
-- bd_age 75+: 8% win rate. Strong negative for conversion likelihood. Downgrade one tier from where other signals would place.
+- age_seconds > 86400: Lead is over 24 hours old — likely stale or recycled. Apply -8 penalty.
+- corporate_owned true: -5 modifier. Many corporate-owned properties are family trusts/LLCs. NOT a tier override — just apply the point deduction.
 {{STRONG_NEGATIVE_ADDITIONS}}
 
-MISSING DATA: null fields and "UNKNOWN" values are NEUTRAL. Do NOT penalize missing data. Most leads will NOT have complete property, financial, or demographic data — that is NORMAL and expected. Only score what IS present. A lead with strong contactability and identity but sparse property/demographic data is still a GOOD lead.
+MISSING DATA: null fields and "UNKNOWN" values are NEUTRAL (+0). Do NOT penalize missing data. Most leads will NOT have complete property, financial, or demographic data — that is NORMAL and expected. Only score what IS present. A lead with strong contactability and identity but sparse property/demographic data is still a GOOD lead.
 
-TIER DEFINITIONS — based on signal convergence:
+SCORING METHOD — ADDITIVE POINT SYSTEM (v5.3):
+Start at 50 (baseline). Add or subtract points for each signal present. Output the SUM as the score.
+Do NOT bucket leads. Do NOT round to multiples of 5. Use the EXACT math below.
 
-GOLD (score 70-100) — Strong contactability + verified identity + positive demographic/property signals when available:
-- Phone valid AND grade A or B (contactable)
+POINT VALUES (add/subtract from 50 baseline):
+  Contactability:
+    phone.contact_grade A: +5. B: +3. C: 0. D: -3. F: -8.
+    phone.line_type Mobile: +2. Landline: 0. NonFixedVOIP: Bronze cap (handled upstream).
+    phone.activity_score < 60: -5. 60-79: 0. 80+: +1.
+  Identity:
+    phone.name_match true: +3. false: -4.
+    address.name_match true: +4. false: -6.
+    email.name_match true: +2. false: -8.
+  Buying Power (pre-computed composite — use directly):
+    buying_power "TOP": +8. "MIDDLE": +0. "BOTTOM": -8. null: +0.
+  Age modifiers (in addition to buying_power):
+    bd_age 60-64: -4. bd_age 65-69: -8. (70+ filtered upstream. Under 60: +0.)
+  Corporate owned:
+    corporate_owned true: -5. false/null: +0.
+  Form behavior:
+    form_input_method typing_autofill: +4. typing_only: +1. autofill_only: -5. typing_paste: -3. paste_only: -8.
+    confirmed_owner verified: +3. no_verified_account: 0.
+    age_seconds > 60: -3. > 86400: -8. 0-60: +0.
+  Property (vertical-specific — see below):
+    Apply per-vertical property context modifiers.
+
+EXAMPLE CALCULATION:
+  Baseline: 50
+  + phone grade A: +5 = 55
+  + Mobile: +2 = 57
+  + phone.name_match true: +3 = 60
+  + address.name_match true: +4 = 64
+  + buying_power TOP: +8 = 72
+  + typing_autofill: +4 = 76
+  + confirmed_owner verified: +3 = 79
+  = Score: 79 → Gold
+
+TIER THRESHOLDS (apply to final additive score):
+  Gold: score >= 65
+  Silver: score 45-64
+  Bronze: score 25-44
+  Reject: score < 25
+
+TIER REQUIREMENTS — in addition to score thresholds:
+GOLD (score 65-100):
+- Phone valid AND grade A or B
 - line_type is NOT NonFixedVOIP or FixedVOIP
-- At least 2 of 3 name matches are "true" (identity verified)
+- At least 2 of 3 name matches are "true"
 - No instant reject triggers
 - No strong negatives firing
-- When demographic data IS present: younger (<55), female, income $150K+ or $35-50K = Gold-supporting signals that STRENGTHEN the case
-- When demographic data shows NEGATIVES (75+, male, income $75-150K dead zone) = these should WEAKEN Gold eligibility, potentially pushing to Silver
-- Property data, when present, is not disqualifying (but MISSING property/demographic data does NOT prevent Gold)
 {{GOLD_ADDITIONS}}
-- Gold means: "We're confident this is a real, verified lead we can reach, and the data we have supports qualification. Call first."
-- IMPORTANT: A lead with Grade A/B phone, 2+ name matches, clean form behavior, and no red flags IS Gold — even if demographic/property data is sparse. But when demographic data IS present and shows concerning signals (elderly, dead-zone income), it CAN prevent Gold.
+- Gold means: "Verified, reachable lead with positive signals. Call first."
 
-SILVER (score 45-69) — Decent contactability with some gaps, OR strong contactability with demographic concerns:
-- Phone valid with grade A/B/C (contactable)
-- Some identity verification passes but maybe only 1 name match
-- OR strong contactability + identity but demographic signals are negative (75+, income dead zone)
-- OR strong contactability but missing demographic data (can't confirm qualification)
-- Property data may be sparse but nothing disqualifying
-- Grade F phones can reach Silver ONLY if activity_score >= 40 AND identity signals are strong
+SILVER (score 45-64):
+- Phone valid with grade A/B/C
+- At least 1 name match
+- Property data not disqualifying
+- Grade F phones can reach Silver ONLY if activity_score >= 40 AND identity is strong
 {{SILVER_ADDITIONS}}
-- Silver means: "Looks like a real lead, some gaps or a concern. Worth calling."
+- Silver means: "Real lead, some gaps. Worth calling."
 
-BRONZE (score 20-44) — Notable concerns present:
-- Phone grade D or F with limited supporting signals
-- Grade F + activity_score < 40 = capped here regardless of other signals
-- NonFixedVOIP line type = capped here regardless of other signals
-- Multiple identity fields missing or mismatching
-- email.name_match = "false" = capped here
-- OR very sparse data with the few signals present being weak
+BRONZE (score 25-44):
+- Grade F + activity < 40 = capped here
+- NonFixedVOIP = capped here
+- Multiple identity mismatches
+- email.name_match false = capped here
 {{BRONZE_ADDITIONS}}
 - Bronze means: "Concerns present — call if you have capacity."
 
-REJECT (score 0-19) — Junk:
+REJECT (score < 25):
 - Any instant reject trigger fires
-- OR severe identity fraud indicators (all name matches false + different owner name)
-- OR completely uncontactable (invalid phone + invalid email)
+- OR all name matches false + different owner name
+- OR completely uncontactable
 - Reject means: "Don't waste time."
 {{CONFIDENCE_NOTE}}
 
@@ -527,7 +564,7 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- form_input_method = "paste_only": 0% appt. Bronze cap.
 - year_built 1990-2004 with weak contactability: Downgrade.
 - bedrooms 1-2: Small home, poor solar candidate. Downgrade.
-- bd_age 75+ with no compensating signals: Downgrade one tier.`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override).`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (verified identity)
 - solar_permit is NOT "true"
 - When demographic data IS present and positive (age <55, female, income $150K+ or $35-50K), it STRENGTHENS Gold case
@@ -566,17 +603,17 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- property_type = "Commercial": Residential focus. Strong negative, not auto-reject.
 - owner_occupied = "confirmed_renter": Renters almost never convert. Bronze unless renter override.
 - roof_permit = "true": Recent roof work. Bronze cap.
-- bd_age 75+: Downgrade one tier.`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override).`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - roof_permit is NOT "true"
 - owner_occupied is NOT "confirmed_renter"
-- Demographic positives (age <55, female) strengthen Gold case
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - Demographic negatives (age 75+, income dead zone) weaken Gold — consider Silver
 - When property data is MISSING: Gold is still achievable on contactability + identity alone.
 - BONUS signals: estimated_value $500K+, year_built pre-1990, length_of_residence 25+, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- At least one name match is "true"
 - May have ONE strong negative if other signals are solid
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- roof_permit = "true" = capped here
 - phone.name_match=false AND address.name_match=false = Bronze cap
 - confirmed_renter = Bronze cap`,
@@ -605,16 +642,16 @@ const VERTICAL_CONTEXTS = {
 - owner_occupied = "confirmed_renter": Bronze unless renter override.
 - tax_lien = "true": Financial distress. Strong negative.
 - estimated_value under $150,000: Zero appointments. Bronze cap.
-- bd_age 75+: Downgrade one tier.`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override).`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
 - estimated_value >= $200,000 when available
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable.
 - BONUS signals: year_built 1970-1989, sale_propensity 80+, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- At least one name match is "true"
 - estimated_value $150K-$200K = Silver ceiling
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- phone.name_match=false AND address.name_match=false = Bronze cap
 - confirmed_renter, tax_lien = Bronze cap
 - estimated_value under $150,000 = Bronze cap`,
@@ -642,15 +679,15 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
 - pre_foreclosure = "true": Reject. [UNVALIDATED]
 - age_seconds > 86400 AND no other strong positives: Bronze cap. [UNVALIDATED]
-- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override). [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable.
 - BONUS signals: year_built 1990-2004, length_of_residence 10-20 years, age_seconds under 1800, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- year_built 1990-2004 with good contactability but 1 name match = Silver floor
 - age_seconds under 300 with decent signals = Silver floor
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
 - age_seconds > 86400 = Bronze cap
 - estimated_value under $100,000 = Bronze cap`,
@@ -674,15 +711,15 @@ const VERTICAL_CONTEXTS = {
     INSTANT_REJECT_ADDITIONS: '',
     STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
 - property_type = "Condominium": Bronze cap. [UNVALIDATED]
-- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override). [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable.
 - BONUS signals: sale_propensity 80+, year_built 1960-1979, length_of_residence 25+, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- sale_propensity 60-79 with good contactability = Silver floor
 - year_built 1980-2000 with owner/SFR = Silver floor
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- confirmed_renter = Bronze cap
 - property_type = "Condominium" = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
@@ -706,7 +743,7 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- property_type = "Condominium": Bronze cap. [UNVALIDATED]`,
     GOLD_ADDITIONS: `- Phone grade A or B with at least 1 name match = Gold-eligible (lower identity bar)
 - CONTACTABILITY is the primary Gold driver for gutters
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is achievable on contactability alone.
 - confirmed_renter does NOT prevent Gold for gutters`,
     SILVER_ADDITIONS: `- Good contactability with owner/SFR = Silver floor even with no name matches
@@ -732,12 +769,12 @@ const VERTICAL_CONTEXTS = {
     INSTANT_REJECT_ADDITIONS: '',
     STRONG_NEGATIVE_ADDITIONS: '',
     GOLD_ADDITIONS: `- At least 1 name match with strong contactability = Gold-eligible
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable.
 - BONUS signals: sale_propensity 80+, recently_sold=true, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- sale_propensity 60-79 with good contactability = Silver floor
 - confirmed_renter with strong contactability = Silver (renters DO paint)
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- Phone grade F with no name matches = Bronze
 - Do NOT Bronze-cap renters for painting`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
@@ -762,13 +799,13 @@ const VERTICAL_CONTEXTS = {
 - age_seconds > 7200 AND year_built NOT 1975-1996: Emergency passed, no planned-work signal. Downgrade one tier. [UNVALIDATED]`,
     GOLD_ADDITIONS: `- age_seconds under 300 = STRONG Gold signal (active emergency, compensates for missing data)
 - At least 1 name match with fresh lead (under 1800s) = Gold-eligible
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable on contactability + freshness.
 - BONUS signals: year_built 1975-1996, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- age_seconds under 1800 with decent contactability = Silver floor
 - year_built 1975-1996 with good contactability = Silver floor
 - confirmed_renter with fresh lead = Silver (emergency plumbing crosses rental boundaries)
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- age_seconds > 7200 with no polybutylene-era signals = Bronze cap
 - Phone grade F with age_seconds > 3600 = Bronze`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
@@ -796,15 +833,15 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
 - tax_lien = "true": Bronze cap. [UNVALIDATED]
 - estimated_value under $150,000: Bronze cap. [UNVALIDATED]
-- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override). [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (high-ticket requires verified identity)
 - owner_occupied is NOT "confirmed_renter"
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable with strong contactability + 2+ name matches.
 - BONUS signals: recently_sold=true, year_built 1975-1999, estimated_value $200K+, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- Only 1 name match = Silver cap for this high-ticket vertical
 - recently_sold with good contactability but only 1 name match = Silver floor
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
 - estimated_value under $150,000 = Bronze cap
 - Both name matches false = Bronze cap`,
@@ -832,16 +869,16 @@ const VERTICAL_CONTEXTS = {
     STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Near-absolute kill. Score Reject. [UNVALIDATED]
 - tax_lien = "true": Blocks HELOC. Bronze cap. [UNVALIDATED]
 - estimated_value under $150,000: Bronze cap. [UNVALIDATED]
-- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override). [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true" (STRICTEST identity — highest ticket)
 - owner_occupied is NOT "confirmed_renter"
 - estimated_value >= $250,000 when available
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable with strong contactability + 2+ name matches.
 - BONUS signals: year_built 1980-1999, length_of_residence 10-20 years, estimated_value $400K+, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- Only 1 name match = Silver cap for highest-ticket vertical
 - estimated_value $150K-$250K with 2+ name matches = Silver cap
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- confirmed_renter, tax_lien = Bronze cap
 - estimated_value under $150,000 = Bronze cap
 - Both name matches false = Bronze cap`,
@@ -866,15 +903,15 @@ const VERTICAL_CONTEXTS = {
     INCOME_OVERRIDE: '',
     INSTANT_REJECT_ADDITIONS: '',
     STRONG_NEGATIVE_ADDITIONS: `- owner_occupied = "confirmed_renter": Bronze cap. [UNVALIDATED]
-- bd_age 75+: Downgrade one tier. [UNVALIDATED]`,
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override). [UNVALIDATED]`,
     GOLD_ADDITIONS: `- At least 2 of 3 name matches are "true"
 - owner_occupied is NOT "confirmed_renter"
-- Demographic positives (age <55, female) strengthen Gold
+- buying_power TOP adds +8 to score (use the pre-computed composite)
 - When property data is MISSING: Gold is still achievable.
 - BONUS signals: sale_propensity 60+, recently_sold=true, year_built 1980-1999, bd_age <55, bd_gender Female`,
     SILVER_ADDITIONS: `- sale_propensity 60+ with good contactability but only 1 name match = Silver floor
 - recently_sold with good contactability = Silver floor
-- Strong contactability but demographic negatives = Silver`,
+- buying_power BOTTOM applies -8 to score — may pull otherwise strong leads into Silver range`,
     BRONZE_ADDITIONS: `- confirmed_renter = Bronze cap
 - estimated_value under $125,000 = Bronze cap`,
     CONFIDENCE_NOTE: '\n\nNOTE: This vertical has not been validated with disposition data. Confidence should default to "medium" unless signals are very clear.',
@@ -1062,6 +1099,71 @@ const FIELD_SOURCES = {
 };
 
 /**
+ * Compute buying power composite from income + age + gender.
+ *
+ * v5.3: Validated on 191 resolved leads with dispositions.
+ * Combined: 25.5% monotonic spread (Q1=34%, Q2~22%, Q3~14%, Q4=8.5%).
+ * Individual signals are weak alone (income 7% non-monotonic, net_worth 0.9% flat).
+ * Loosened: 3 bins (Top/Middle/Bottom) at +8/0/-8 to reduce overfitting.
+ * Net worth dropped from composite (0.9% spread = likely noise).
+ *
+ * Scoring logic:
+ *   - Income score: $150K+ = 3, $35-50K = 2, $50-75K = 1, <$35K = -1, $75-150K = -1 (dead zone)
+ *   - Age score: <35 = 3, 35-54 = 2, 55-64 = 0, 65-69 = -1
+ *   - Gender score: Female = 1, Male = -1
+ *   - Total range: -3 to +7. Top 25% ≈ total >= 4. Bottom 25% ≈ total <= 0.
+ *
+ * @param {number|string|null} income - bd_income (annual household income)
+ * @param {number|string|null} age - bd_age (estimated age)
+ * @param {string|null} gender - bd_gender ("Male" or "Female")
+ * @returns {string|null} "TOP" | "MIDDLE" | "BOTTOM" | null (insufficient data)
+ */
+function computeBuyingPower(income, age, gender) {
+  let fieldsPresent = 0;
+  let total = 0;
+
+  // Income score (bimodal — NOT linear)
+  if (income != null) {
+    fieldsPresent++;
+    const inc = typeof income === 'string' ? parseInt(income, 10) : income;
+    if (!isNaN(inc)) {
+      if (inc >= 150000) total += 3;
+      else if (inc >= 35000 && inc < 50000) total += 2;
+      else if (inc >= 50000 && inc < 75000) total += 1;
+      else if (inc < 35000) total -= 1;
+      else total -= 1; // $75K-$150K dead zone
+    }
+  }
+
+  // Age score
+  if (age != null) {
+    fieldsPresent++;
+    const a = typeof age === 'string' ? parseInt(age, 10) : age;
+    if (!isNaN(a)) {
+      if (a < 35) total += 3;
+      else if (a < 55) total += 2;
+      else if (a < 65) total += 0;
+      else total -= 1; // 65-69 (70+ already caught by pre-LLM cap)
+    }
+  }
+
+  // Gender score
+  if (gender != null && gender !== '') {
+    fieldsPresent++;
+    if (gender === 'Female') total += 1;
+    else if (gender === 'Male') total -= 1;
+  }
+
+  // Need at least 2 of 3 fields to compute a meaningful composite
+  if (fieldsPresent < 2) return null;
+
+  // Bin into 3 tiers (loosened from 4 quartiles to reduce overfitting)
+  if (total >= 4) return 'TOP';       // ~top 25%: 34% win rate
+  if (total <= 0) return 'BOTTOM';    // ~bottom 25%: 8.5% win rate
+  return 'MIDDLE';                     // ~middle 50%: neutral
+}
+
+/**
  * Prepare the stripped field set for the LLM based on vertical.
  * Maps from the flat API data namespace to clean field names.
  *
@@ -1137,6 +1239,22 @@ export function prepareFieldsForLLM(apiData, vertical) {
   fields['bd_age'] = apiData['batchdata.bd_age'] ?? null;
   fields['bd_gender'] = apiData['batchdata.bd_gender'] ?? null;
   fields['bd_income'] = apiData['batchdata.bd_income'] ?? null;
+
+  // v5.3: Buying power composite — pre-computed from income + age + gender.
+  // Individual signals are weak (income 7% spread, net_worth 0.9% flat).
+  // Combined: 25.5% monotonic spread on 191 resolved leads (strongest proxy we have).
+  // Bottom 25%: 8.5% win rate. Top 25%: 34.0% win rate.
+  // Loosened to 3 bins (+8/0/-8) to reduce overfitting risk. Net worth dropped (0.9% alone).
+  // Only computed when at least 2 of 3 demographic fields are present.
+  fields['buying_power'] = computeBuyingPower(
+    apiData['batchdata.bd_income'],
+    apiData['batchdata.bd_age'],
+    apiData['batchdata.bd_gender'],
+  );
+
+  // v5.3: Pass corporate_owned as a field for the LLM to use as a -5 modifier
+  // (previously was a hard Bronze cap pre-LLM — removed because unvalidated).
+  fields['corporate_owned'] = apiData['batchdata.corporate_owned'] ?? null;
 
   // E. Form behavior (all verticals)
   fields['form_input_method'] = apiData['trustedform.form_input_method'] ?? null;
