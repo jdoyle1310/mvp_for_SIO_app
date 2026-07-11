@@ -194,8 +194,10 @@ export async function handler(event) {
         let fallbackScore = 30; // default Bronze
         let fallbackTier = 'Bronze';
 
+        // v5.4: grade B removed from the Silver fallback — B converts at 3.8%
+        // in production (n=368), worse than C; only grade A earns fallback Silver.
         if (
-          (fallbackGrade === 'A' || fallbackGrade === 'B') &&
+          fallbackGrade === 'A' &&
           fallbackLine === 'Mobile' &&
           fallbackActivity != null && fallbackActivity >= 80
         ) {
@@ -414,6 +416,14 @@ export async function handler(event) {
       score = 44;
     }
 
+    // ── 8d. SOLAR GOLD FLOOR (v5.4) ─────────────────────────────────────────────
+    // Backtest-validated on claude-sonnet-4-6 (Jul 2026, 2,756 dispo-matched leads):
+    // scores 65-74 convert like Silver; the real Gold breakpoint is 75. With this
+    // floor the Gold pool converts 17.1% vs 15.5% today at equal total spend.
+    if (lead.vertical === 'solar' && tier === 'Gold' && score < 75 && !timeoutFastPath) {
+      tier = 'Silver';
+    }
+
     // 9. Route to buyer (pass config for shadow_mode check)
     const { decision, routing } = await routeLead(lead.vertical, tier, score, lead, config);
 
@@ -528,11 +538,7 @@ function checkQuickHardKills(apiData, vertical) {
     return 'ALREADY_HAS_SOLAR';
   }
 
-  // Empty form input = TrustedForm captured zero form interaction.
-  // 0% appointment rate across 16 leads. Suspicious — possible bot or uninstrumented form.
-  if (apiData['trustedform.form_input_method'] === 'empty') {
-    return 'EMPTY_FORM_INPUT';
-  }
+  // v5.4: EMPTY_FORM_INPUT quick kill removed — see hardkill.js for evidence.
 
   return null;
 }

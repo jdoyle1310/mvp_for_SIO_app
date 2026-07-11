@@ -32,6 +32,20 @@ const mortgageConfig = {
 };
 
 describe('Hard Kill Evaluator', () => {
+  // v5.4 regression: the EMPTY_FORM_INPUT kill is REMOVED. It fired on 4,426
+  // production leads in 90 days (14% of volume, priced $0) that convert at base
+  // rate — TrustedForm returns no input events for ~23% of legitimate leads.
+  test('v5.4: empty form_input_method does NOT hard-kill', () => {
+    const apiData = {
+      'trestle.phone.contact_grade': 'A',
+      'trustedform.form_input_method': 'empty',
+      'batchdata.property_type': 'Single Family Residential',
+    };
+    const result = evaluateHardKills(apiData, solarConfig);
+    expect(result.hardKill).toBe(false);
+    expect(result.reason).toBeNull();
+  });
+
   test('passes clean lead', () => {
     const apiData = {
       'trestle.phone.contact_grade': 'A',

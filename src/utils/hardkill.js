@@ -71,12 +71,12 @@ function checkUniversalRules(apiData, rules) {
     return 'EMAIL_NAME_MISMATCH';
   }
 
-  // v5.2: Empty form input — 0% win rate on 5 leads, 100% accuracy.
-  // No typing, no autofill, no paste — bot or accidental submission.
-  const formInput = apiData['trustedform.form_input_method'];
-  if (formInput === 'empty') {
-    return 'EMPTY_FORM_INPUT';
-  }
+  // v5.4 (Jul 2026): EMPTY_FORM_INPUT hard kill REMOVED. The v5.2 rule was
+  // validated on 5 leads; in production it fired on 4,426 leads in 90 days
+  // (14% of all volume, priced $0) that convert at base rate — TrustedForm
+  // simply returns no input events for ~23% of legitimate leads. "empty" is
+  // now neutral in the prompt; TF returning NOTHING at all is handled as the
+  // trustedform_data:"MISSING" moderate negative in prepareFieldsForLLM.
 
   return null;
 }

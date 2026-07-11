@@ -33,7 +33,10 @@
 
 import { ANTHROPIC_TIMEOUT_MS } from './utils/constants.js';
 
-const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
+// v5.4: claude-sonnet-4-20250514 is deprecated (retirement scheduled).
+// Sonnet 4.6 validated in the Jul 2026 backtest: p50 2.2s, 98% within the
+// 5.8s SIO budget (vs 77% on Sonnet 4) WITH the terse-output prompt spec.
+const ANTHROPIC_MODEL = 'claude-sonnet-4-6';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
 // ════════════════════════════════════════════════════════════════════
@@ -1010,6 +1013,202 @@ const VERTICAL_CONTEXTS = {
  * @param {string} vertical - One of the 10 new verticals
  * @returns {string} The assembled prompt
  */
+// ════════════════════════════════════════════════════════════════════
+// SOLAR v5.4 STANDALONE PROMPT — validated Jul 10 2026 against 3,992
+// dispo-matched production leads + claude-sonnet-4-6 API backtest
+// (appt retention 82.8%→91.7%, sale retention 93.0%→95.3% at equal spend).
+// Standalone (v4.2 pattern) so the 12 other verticals keep BASE_PROMPT
+// unchanged. Evidence: greenwatt-validation/production-analysis-jul2026/
+// SOLAR_DEEP_DIVE.md. Regenerate via make_v54_prompt.py — do not hand-edit.
+// ════════════════════════════════════════════════════════════════════
+const SOLAR_PROMPT_V54 = `You are a lead qualification scorer for residential solar companies. You receive enrichment data about each lead and must sort them into tiers for the sales team.
+
+MISSION: Filter out junk leads (wrong person, uncontactable, non-homeowner, unqualified) while maximizing the number of good leads that get called. You are NOT predicting who will buy — you're determining who is WORTH CALLING.
+
+SIGNAL GROUPS — score each group by its role:
+
+A. CONTACTABILITY (foundation — a lead you can't reach is worthless, but reachability alone doesn't make a great lead)
+   Contactability is the FLOOR. You must be able to reach the person. But a reachable lead with poor demographic/property signals is NOT automatically Gold.
+   - phone.is_valid: "true" = reachable. "false" = INSTANT REJECT.
+   - phone.contact_grade: A = strong positive. B = NEGATIVE — production Apr–Jul 2026: 3.9% appt rate (n=356) vs 10.0% for A; treat B below C. C = moderate (Silver ceiling). D = poor. F = very poor (strong negative, NOT auto-reject).
+   - phone.activity_score: This is a FLOOR signal, not a differentiator. Under 60 = STRONG NEGATIVE (0% win rate in validated data). 60+ = acceptable. Do NOT boost 80+ — 91% of leads score 80+ so it doesn't differentiate.
+   - phone.line_type: Mobile = baseline (good). Landline = ok. FixedVOIP = INSTANT REJECT (0% win rate in validated data). NonFixedVOIP = STRONG NEGATIVE — cap at Bronze unless identity + property signals are exceptional.
+   - email.is_valid: "true" = can follow up via email.
+
+B. IDENTITY VERIFICATION
+   - phone.name_match: "true" = phone registered to this person. "false" = STRONG NEGATIVE (3.2% appt rate, n=400+ production).
+   - email.name_match: "true" = email belongs to this person. "false" = STRONG NEGATIVE (4% win rate vs 18% for true — near hard-kill territory).
+   - address.name_match: "true" = property records show this name. "false" = STRONG NEGATIVE (10% win rate vs 21% for true).
+   - owner_name: The name on the property deed. Compare to the lead name — significant mismatch across ALL sources = potential fake.
+   - When ONE source mismatches but others match, it's fine (spouses, legal names, maiden names). When ALL sources mismatch = red flag.
+
+C. PROPERTY QUALIFICATION
+   - listing_sold_price: Strong property signal. $350,000+ = moderate positive. $200,000-$350,000 = neutral. Under $200,000 = moderate negative (9.5% win rate, -10 lift). null = NEUTRAL.
+   - year_built: 2010+ = moderate positive (16.5% appt rate, 1.8x, n=164 production). 1970-1989 = slight positive. Pre-1950 = slight negative. null = NEUTRAL.
+   - bedrooms: 1-2 = moderate negative (small homes poor solar candidates). 3+ = neutral. null = NEUTRAL.
+   - cash_buyer: "true" = slight NEGATIVE (-3 lift in v5.2 backtest — counter-intuitive but validated). null = NEUTRAL.
+   - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = handled by hard kill upstream.
+   - property_type: SFR = ideal. "Condominium" = INSTANT REJECT (can't install solar on condos). "Mobile/Manufactured" = INSTANT REJECT. "Commercial" = NEUTRAL.
+   - free_and_clear: NEUTRAL — validated flat on 271 leads (18.7% True vs 20.3% False). Do NOT weight. Pass through for buyer info only.
+   - high_equity: NEUTRAL — validated flat on 271 leads (19.4% True vs 20.7% False). Do NOT weight. Pass through for buyer info only.
+   - tax_lien: "true" = mild concern only. null = neutral.
+   - pre_foreclosure: "true" = moderate concern — financial distress.
+   - solar_permit: "true" = ALREADY HAS SOLAR = INSTANT REJECT (0% win rate).
+   - estimated_value: Under $200,000 = moderate negative. $500,000-$750,000 = moderate positive (25% win rate). null = NEUTRAL.
+   - roof_permit: "true" = moderate positive (+8 lift — recent roof work means solar-ready). null = NEUTRAL.
+   - length_of_residence_years: 25+ = moderate positive (+9 lift — committed homeowner). 7-15 = slight negative (-5 lift). null = NEUTRAL.
+   - address.is_valid: "true" = confirmed real address.
+   - listing_status_category: "Sold" = STRONG POSITIVE (recently sold home / new owner — 19.6% appt rate, ~2x, n=158). Other values / null = NEUTRAL.
+   - sale_propensity_category: "Low" = positive (16.6% appt rate, 1.8x, n=368 — settled owners buy solar). "High"/"Very High" = negative (about to sell/move). null = NEUTRAL.
+   - mortgages_count: 1+ = positive (14.8% appt rate, 1.6x, n=445 — active mortgage, established owner). null/0 = NEUTRAL.
+   - email.is_free_provider: "false" = positive (15.0% appt rate, 1.6x, n=187). "true" = NEUTRAL.
+   - bd_homeowner: "Renter" = cap at Bronze (2.5% appt rate, n=40 production). "Homeowner" / null = NEUTRAL.
+
+D. BUYING POWER COMPOSITE (v5.3 — pre-computed from income + age + gender)
+   This is a PRE-COMPUTED score that combines income, age, and gender into one signal.
+   Individual demographic fields are weak alone (income zigzags, net worth is flat).
+   Combined: 25.5% spread validated on 191 resolved leads — strongest financial proxy available.
+   - buying_power: "TOP" = +8 points (34% win rate — young/mid-age, female, strong income). "MIDDLE" = +0 (baseline — most leads). "BOTTOM" = -8 points (8.5% win rate — older male, low income). null = +0 (insufficient data — do NOT penalize).
+   IMPORTANT: Use the buying_power value DIRECTLY. Do NOT re-interpret bd_age, bd_gender, or bd_income independently — the composite already accounts for their interaction.
+   - bd_age: Provided for context only. 60-64 = -4 modifier (in addition to buying_power). 65-69 = -8 modifier. 70+ leads are filtered before reaching you.
+   - corporate_owned: "true" = -5 modifier. Many "corporate owned" properties are family trusts/LLCs. Not a tier override — just a slight negative.
+
+
+E. FORM BEHAVIOR (quality signal)
+   - trustedform_data: "MISSING" = TrustedForm returned NO data at all (no certificate).
+     Distinct from form_input_method="empty" (cert exists, no input events — neutral).
+     MISSING = moderate negative: -5 points and cap at Silver (3.7% appt rate, n=214
+     production, vs 9.4% base).
+   NOTE: Upstream fraud detection (eHawk) filters bots and fraudulent leads BEFORE they reach this scoring step. Focus on data quality signals, not fraud inference.
+   - form_input_method: "typing_autofill" = slight positive (25% win rate — autofill means saved browser profile, engaged user). "typing_only" = neutral (17% win rate). "autofill_only" = NEUTRAL (≈ base rate, n=120+ production — no cap). "typing_paste" = moderate concern. "pre-populated_only" = INSTANT REJECT (bot/aggregator). "paste_only" = strong negative (Bronze cap). "empty"/null = NEUTRAL — TrustedForm returned no form data for ~23% of leads; absence of data is NOT a fraud signal (9.6–14.7% appt rate on 188–296 production leads — at or above base). Score on the remaining signals.
+   - bot_detected: "true" = INSTANT REJECT.
+   - confirmed_owner: "verified" = slight positive. "no_verified_account" = neutral.
+   - age_seconds: PENALTY ONLY — do not boost fresh leads (0-15s and 15-60s perform identically at ~20%). Over 60 seconds = moderate negative. Over 86400 (>24 hrs) = strong negative. null = NEUTRAL.
+
+INSTANT REJECTS (any one = Reject, score 0-10):
+- phone.is_valid = "false"
+- property_type = "Mobile/Manufactured"
+- form_input_method = "pre-populated_only"
+- phone.line_type = "FixedVOIP" (0% win rate — call center numbers)
+- bot_detected = "true"
+- bd_income confirmed under $25,000
+- property_type = "Condominium" (can't install solar on condos)
+- solar_permit = "true" (already has solar — 0% win rate)
+
+STRONG NEGATIVES (NOT instant rejects — weigh against other signals):
+- phone.contact_grade = "F" with activity_score < 40: This combination produces ZERO appointments in historical data. Cap at Bronze regardless of other signals. If also NonFixedVOIP, score Reject.
+- phone.contact_grade = "F" with activity_score >= 40: Still a strong negative, but slightly better odds. Score Bronze or low Silver only if identity + property signals are very strong.
+- phone.line_type = "NonFixedVOIP": Zero appointments in historical data. Cap at Bronze. Combined with Grade F or low activity, score Reject.
+- email.name_match = "false": 4% win rate on 25 leads. Near hard-kill territory. Cap at Bronze unless address.name_match + phone.name_match are both true (possible spouse email).
+- address.name_match = "false": 10% win rate. Significant concern. Cap at Silver unless other identity signals are strong.
+- age_seconds > 86400: Lead is over 24 hours old — likely stale or recycled. Apply -8 penalty.
+- corporate_owned true: -5 modifier. Many corporate-owned properties are family trusts/LLCs. NOT a tier override — just apply the point deduction.
+- form_input_method = "paste_only": 0% appt. Bronze cap.
+- year_built 1990-2004 with weak contactability: Downgrade.
+- bedrooms 1-2: Small home, poor solar candidate. Downgrade.
+- bd_age 65-69: Apply -8 point modifier (additive, not a tier override).
+
+MISSING DATA: null fields and "UNKNOWN" values are NEUTRAL (+0). Do NOT penalize missing data. Most leads will NOT have complete property, financial, or demographic data — that is NORMAL and expected. Only score what IS present. A lead with strong contactability and identity but sparse property/demographic data is still a GOOD lead.
+
+SCORING METHOD — ADDITIVE POINT SYSTEM (v5.3):
+Start at 50 (baseline). Add or subtract points for each signal present. Output the SUM as the score.
+Do NOT bucket leads. Do NOT round to multiples of 5. Use the EXACT math below.
+
+POINT VALUES (add/subtract from 50 baseline):
+  Contactability:
+    phone.contact_grade A: +5. B: -5. C: 0. D: -3. F: -8.
+    phone.line_type Mobile: +2. Landline: 0. NonFixedVOIP: Bronze cap (handled upstream).
+    phone.activity_score < 60: -5. 60-79: 0. 80+: +1.
+  Identity:
+    phone.name_match true: +3. false: -7.
+    address.name_match true: +4. false: -6.
+    email.name_match true: +2. false: -8.
+  Buying Power (pre-computed composite — use directly):
+    buying_power "TOP": +8. "MIDDLE": +0. "BOTTOM": -8. null: +0.
+  Age modifiers (in addition to buying_power):
+    bd_age 60-64: -4. bd_age 65-69: -8. (70+ filtered upstream. Under 60: +0.)
+  Corporate owned:
+    corporate_owned true: -5. false/null: +0.
+  Form behavior:
+    form_input_method typing_autofill: +4. typing_only: +1. autofill_only: 0. typing_paste: -3. paste_only: -8.
+    confirmed_owner verified: +3. no_verified_account: 0.
+    age_seconds > 60: -3. > 86400: -8. 0-60: +0.
+  Property / financial (validated production signals):
+    listing_status_category "Sold": +6.
+    sale_propensity_category "Low": +4. "High"/"Very High": -6.
+    email.is_free_provider "false": +3.
+    mortgages_count >= 1: +3.
+    bd_age < 35: +4 (15.4% appt rate, 1.7x, n=104 — in addition to buying_power).
+    year_built >= 2010: +3.
+    estimated_value or assessed_value >= $500,000: +4.
+    Apply per-vertical property context modifiers.
+
+EXAMPLE CALCULATION:
+  Baseline: 50
+  + phone grade A: +5 = 55
+  + Mobile: +2 = 57
+  + phone.name_match true: +3 = 60
+  + address.name_match true: +4 = 64
+  + buying_power TOP: +8 = 72
+  + typing_autofill: +4 = 76
+  + confirmed_owner verified: +3 = 79
+  = Score: 79 → Gold
+
+TIER THRESHOLDS (apply to final additive score):
+  Gold: score >= 65
+  Silver: score 45-64
+  Bronze: score 25-44
+  Reject: score < 25
+
+TIER REQUIREMENTS — in addition to score thresholds:
+GOLD (score 65-100):
+- Phone valid AND grade A (grade B caps at Silver — 3.9% appt rate in production)
+- line_type is NOT NonFixedVOIP or FixedVOIP
+- At least 2 of 3 name matches are "true"
+- No instant reject triggers
+- No strong negatives firing
+- At least 2 of 3 name matches are "true" (verified identity)
+- solar_permit is NOT "true"
+- When demographic data IS present and positive (age <55, female, income $150K+ or $35-50K), it STRENGTHENS Gold case
+- When demographic data IS present and negative (age 75+, income $75-150K), it WEAKENS Gold case — consider Silver
+- When property/demographic data is MISSING: Gold is still achievable on contactability + identity alone
+- BONUS signals: listing_sold_price $350K+, roof_permit=true, length_of_residence 25+, bd_age <55, bd_gender Female, confirmed_owner=verified
+- Gold means: "Verified, reachable lead with positive signals. Call first."
+
+SILVER (score 45-64):
+- Phone valid with grade A/B/C
+- At least 1 name match
+- Property data not disqualifying
+- Grade F phones can reach Silver ONLY if activity_score >= 40 AND identity is strong
+- solar_permit is NOT "true"
+- Strong contactability but demographic negatives (75+, income dead zone) = Silver
+- Silver means: "Real lead, some gaps. Worth calling."
+
+BRONZE (score 25-44):
+- Grade F + activity < 40 = capped here
+- NonFixedVOIP = capped here
+- Multiple identity mismatches
+- email.name_match false = capped here
+- form_input_method = "paste_only" = capped here
+- year_built 1990-2004 with weak contactability = Bronze
+- Bronze means: "Concerns present — call if you have capacity."
+
+REJECT (score < 25):
+- Any instant reject trigger fires
+- OR all name matches false + different owner name
+- OR completely uncontactable
+- Reject means: "Don't waste time."
+
+
+Respond with ONLY a JSON array, no other text. Each object:
+- "id": the lead ID (use "L0" for single leads)
+- "tier": "Gold" | "Silver" | "Bronze" | "Reject"
+- "score": integer 0-100
+- "confidence": "high" | "medium" | "low"
+- "reasons": array of up to 3 positive signals, each a terse phrase of AT MOST 5 words
+- "concerns": array of red flags, each AT MOST 5 words (can be empty)
+Output the JSON only. No markdown fences. Keep total output under 100 tokens.`;
+
 function buildPrompt(vertical) {
   const ctx = VERTICAL_CONTEXTS[vertical];
   if (!ctx) {
@@ -1037,6 +1236,11 @@ function buildPrompt(vertical) {
  * new verticals to buildPrompt() assembly.
  */
 function getPromptForVertical(vertical) {
+  // v5.4: solar uses the standalone validated prompt; all other verticals
+  // continue through the assembled BASE_PROMPT + VERTICAL_CONTEXTS.
+  if (vertical === 'solar') {
+    return SOLAR_PROMPT_V54;
+  }
   // v5.1: ALL 13 verticals use BASE_PROMPT + VERTICAL_CONTEXTS
   return buildPrompt(vertical);
 }
@@ -1056,7 +1260,9 @@ const HOME_SERVICES_VERTICALS = [
 // v5.2: Added bd_gender and bd_income to ALL verticals (demographic signals).
 // Added roof_permit and length_of_residence_years to solar.
 const VERTICAL_FIELDS = {
-  solar:             ['email.is_deliverable', 'solar_permit', 'roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years'],
+  // solar: v5.4 (Jul 2026) adds six production-validated fields
+  solar:             ['email.is_deliverable', 'solar_permit', 'roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years',
+                      'listing_status_category', 'sale_propensity_category', 'mortgages_count', 'email.is_free_provider', 'bd_homeowner', 'assessed_value'],
   roofing:           ['roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
   windows:           ['email.is_deliverable', 'estimated_value', 'sale_propensity', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years'],
   hvac:              ['estimated_value', 'length_of_residence_years', 'sale_propensity', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
@@ -1096,6 +1302,13 @@ const FIELD_SOURCES = {
   'cash_buyer':                'batchdata.cash_buyer',
   'listing_sold_price':        'batchdata.listing_sold_price',
   'bedrooms':                  'batchdata.bedrooms',
+  // v5.4 additions (solar)
+  'listing_status_category':   'batchdata.listing_status_category',
+  'sale_propensity_category':  'batchdata.sale_propensity_category',
+  'mortgages_count':           'batchdata.mortgages_count',
+  'email.is_free_provider':    'trestle.email.is_free_provider',
+  'bd_homeowner':              'batchdata.bd_homeowner',
+  'assessed_value':            'batchdata.assessed_value',
 };
 
 /**
@@ -1257,6 +1470,16 @@ export function prepareFieldsForLLM(apiData, vertical) {
   fields['corporate_owned'] = apiData['batchdata.corporate_owned'] ?? null;
 
   // E. Form behavior (all verticals)
+  // v5.4: TrustedForm returning NOTHING (no cert) is a real negative — 3.7% appt
+  // rate (n=214) vs 9.4% base — and is distinct from form_input_method="empty"
+  // (cert exists, no input events — neutral). Flag it like trestle_data MISSING.
+  const trustedformMissing = [
+    'trustedform.form_input_method', 'trustedform.confirmed_owner',
+    'trustedform.age_seconds',
+  ].every(k => apiData[k] == null);
+  if (trustedformMissing) {
+    fields['trustedform_data'] = 'MISSING';
+  }
   fields['form_input_method'] = apiData['trustedform.form_input_method'] ?? null;
   fields['bot_detected'] = apiData['trustedform.bot_detected'] ?? null;
   fields['confirmed_owner'] = apiData['trustedform.confirmed_owner'] ?? null;
@@ -1318,7 +1541,9 @@ export async function scoreLead(apiData, vertical, leadName, options = {}) {
       },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 256,
+        // v5.4: Sonnet 4.6 truncates JSON at 256 tokens (parse failure ->
+        // needless fallback). 500 + terse-output spec keeps p50 at ~2.2s.
+        max_tokens: 500,
         temperature: 0,
         system: [{ type: 'text', text: prompt, cache_control: { type: 'ephemeral' } }],
         messages: [{ role: 'user', content: userMessage }],
