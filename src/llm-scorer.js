@@ -149,8 +149,9 @@ Respond with ONLY a JSON array, no other text. Each object:
 - "tier": "Gold" | "Silver" | "Bronze" | "Reject"
 - "score": integer 0-100
 - "confidence": "high" | "medium" | "low"
-- "reasons": array of top 3 positive signals (short strings)
-- "concerns": array of red flags (short strings, can be empty)`;
+- "reasons": array of up to 3 positive signals, each a terse phrase of AT MOST 5 words
+- "concerns": array of red flags, each AT MOST 5 words (can be empty)
+Output the JSON only. No markdown fences. Keep total output under 100 tokens.`;
 
 // ════════════════════════════════════════════════════════════════════
 // DEPRECATED v4.2 ROOFING PROMPT — Replaced by VERTICAL_CONTEXTS.roofing in v5.1
@@ -263,8 +264,9 @@ Respond with ONLY a JSON array, no other text. Each object:
 - "tier": "Gold" | "Silver" | "Bronze" | "Reject"
 - "score": integer 0-100
 - "confidence": "high" | "medium" | "low"
-- "reasons": array of top 3 positive signals (short strings)
-- "concerns": array of red flags (short strings, can be empty)`;
+- "reasons": array of up to 3 positive signals, each a terse phrase of AT MOST 5 words
+- "concerns": array of red flags, each AT MOST 5 words (can be empty)
+Output the JSON only. No markdown fences. Keep total output under 100 tokens.`;
 
 // ════════════════════════════════════════════════════════════════════
 // DEPRECATED v4.2 WINDOWS PROMPT — Replaced by VERTICAL_CONTEXTS.windows in v5.1
@@ -376,8 +378,9 @@ Respond with ONLY a JSON array, no other text. Each object:
 - "tier": "Gold" | "Silver" | "Bronze" | "Reject"
 - "score": integer 0-100
 - "confidence": "high" | "medium" | "low"
-- "reasons": array of top 3 positive signals (short strings)
-- "concerns": array of red flags (short strings, can be empty)`;
+- "reasons": array of up to 3 positive signals, each a terse phrase of AT MOST 5 words
+- "concerns": array of red flags, each AT MOST 5 words (can be empty)
+Output the JSON only. No markdown fences. Keep total output under 100 tokens.`;
 
 // ════════════════════════════════════════════════════════════════════
 // BASE_PROMPT — Cross-vertical scoring logic for NEW verticals only
@@ -533,8 +536,9 @@ Respond with ONLY a JSON array, no other text. Each object:
 - "tier": "Gold" | "Silver" | "Bronze" | "Reject"
 - "score": integer 0-100
 - "confidence": "high" | "medium" | "low"
-- "reasons": array of top 3 positive signals (short strings)
-- "concerns": array of red flags (short strings, can be empty)`;
+- "reasons": array of up to 3 positive signals, each a terse phrase of AT MOST 5 words
+- "concerns": array of red flags, each AT MOST 5 words (can be empty)
+Output the JSON only. No markdown fences. Keep total output under 100 tokens.`;
 
 // ════════════════════════════════════════════════════════════════════
 // VERTICAL_CONTEXTS — Per-vertical placeholder values
