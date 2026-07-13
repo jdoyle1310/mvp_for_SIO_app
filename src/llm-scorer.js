@@ -1048,7 +1048,7 @@ B. IDENTITY VERIFICATION
 
 C. PROPERTY QUALIFICATION
    - listing_sold_price: Strong property signal. $350,000+ = moderate positive. $200,000-$350,000 = neutral. Under $200,000 = moderate negative (9.5% win rate, -10 lift). null = NEUTRAL.
-   - year_built: 2010+ = moderate positive (16.5% appt rate, 1.8x, n=164 production). 1970-1989 = slight positive. Pre-1950 = slight negative. null = NEUTRAL.
+   - year_built: 2010+ = strong positive (16.5% appt rate, regression-confirmed, n=169). 1970-1989 = slight positive. Pre-1950 = slight negative. null = NEUTRAL.
    - bedrooms: 1-2 = moderate negative (small homes poor solar candidates). 3+ = neutral. null = NEUTRAL.
    - cash_buyer: "true" = slight NEGATIVE (-3 lift in v5.2 backtest — counter-intuitive but validated). null = NEUTRAL.
    - owner_occupied: "confirmed_owner" = good. "confirmed_renter" = handled by hard kill upstream.
@@ -1063,10 +1063,11 @@ C. PROPERTY QUALIFICATION
    - length_of_residence_years: 25+ = moderate positive (+9 lift — committed homeowner). 7-15 = slight negative (-5 lift). null = NEUTRAL.
    - address.is_valid: "true" = confirmed real address.
    - listing_status_category: "Sold" = STRONG POSITIVE (recently sold home / new owner — 19.6% appt rate, ~2x, n=158). Other values / null = NEUTRAL.
-   - sale_propensity_category: "Low" = positive (16.6% appt rate, 1.8x, n=368 — settled owners buy solar). "High"/"Very High" = negative (about to sell/move). null = NEUTRAL.
+   - sale_propensity_category: "Low" = STRONG POSITIVE (16.6% appt rate, regression-confirmed independent effect, n=374). "High"/"Very High" = negative (about to sell/move). null = NEUTRAL.
    - mortgages_count: 1+ = positive (14.8% appt rate, 1.6x, n=445 — active mortgage, established owner). null/0 = NEUTRAL.
    - email.is_free_provider: "false" = positive (15.0% appt rate, 1.6x, n=187). "true" = NEUTRAL.
    - bd_homeowner: "Renter" = cap at Bronze (2.5% appt rate, n=40 production). "Homeowner" / null = NEUTRAL.
+   - bathrooms: 2+ = positive (15-18% appt rate vs 7.0% for 1 bath, n=535). null = NEUTRAL.
 
 D. BUYING POWER COMPOSITE (v5.3 — pre-computed from income + age + gender)
    This is a PRE-COMPUTED score that combines income, age, and gender into one signal.
@@ -1081,8 +1082,8 @@ D. BUYING POWER COMPOSITE (v5.3 — pre-computed from income + age + gender)
 E. FORM BEHAVIOR (quality signal)
    - trustedform_data: "MISSING" = TrustedForm returned NO data at all (no certificate).
      Distinct from form_input_method="empty" (cert exists, no input events — neutral).
-     MISSING = moderate negative: -5 points and cap at Silver (3.7% appt rate, n=214
-     production, vs 9.4% base).
+     MISSING = strong negative: -10 points and cap at Silver (3.7% appt rate, n=214
+     production; regression-implied -13, assigned -10).
    NOTE: Upstream fraud detection (eHawk) filters bots and fraudulent leads BEFORE they reach this scoring step. Focus on data quality signals, not fraud inference.
    - form_input_method: "typing_autofill" = slight positive (25% win rate — autofill means saved browser profile, engaged user). "typing_only" = neutral (17% win rate). "autofill_only" = NEUTRAL (≈ base rate, n=120+ production — no cap). "typing_paste" = moderate concern. "pre-populated_only" = INSTANT REJECT (bot/aggregator). "paste_only" = strong negative (Bronze cap). "empty"/null = NEUTRAL — TrustedForm returned no form data for ~23% of leads; absence of data is NOT a fraud signal (9.6–14.7% appt rate on 188–296 production leads — at or above base). Score on the remaining signals.
    - bot_detected: "true" = INSTANT REJECT.
@@ -1139,12 +1140,13 @@ POINT VALUES (add/subtract from 50 baseline):
     age_seconds > 60: -3. > 86400: -8. 0-60: +0.
   Property / financial (validated production signals):
     listing_status_category "Sold": +6.
-    sale_propensity_category "Low": +4. "High"/"Very High": -6.
-    email.is_free_provider "false": +3.
+    sale_propensity_category "Low": +7. "High"/"Very High": -6.
+    email.is_free_provider "false": +6.
     mortgages_count >= 1: +3.
     bd_age < 35: +4 (15.4% appt rate, 1.7x, n=104 — in addition to buying_power).
-    year_built >= 2010: +3.
+    year_built >= 2010: +6.
     estimated_value or assessed_value >= $500,000: +4.
+    bathrooms >= 2: +5 (15-18% appt rate vs 7% for 1-bath; regression +8, assigned +5).
     Apply per-vertical property context modifiers.
 
 EXAMPLE CALCULATION:
@@ -1266,7 +1268,7 @@ const HOME_SERVICES_VERTICALS = [
 const VERTICAL_FIELDS = {
   // solar: v5.4 (Jul 2026) adds six production-validated fields
   solar:             ['email.is_deliverable', 'solar_permit', 'roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years',
-                      'listing_status_category', 'sale_propensity_category', 'mortgages_count', 'email.is_free_provider', 'bd_homeowner', 'assessed_value'],
+                      'listing_status_category', 'sale_propensity_category', 'mortgages_count', 'email.is_free_provider', 'bd_homeowner', 'assessed_value', 'bathrooms'],
   roofing:           ['roof_permit', 'estimated_value', 'bd_age', 'bd_gender', 'bd_income', 'sale_propensity', 'length_of_residence_years', 'recently_sold'],
   windows:           ['email.is_deliverable', 'estimated_value', 'sale_propensity', 'bd_age', 'bd_gender', 'bd_income', 'length_of_residence_years'],
   hvac:              ['estimated_value', 'length_of_residence_years', 'sale_propensity', 'recently_sold', 'bd_age', 'bd_gender', 'bd_income'],
@@ -1313,6 +1315,7 @@ const FIELD_SOURCES = {
   'email.is_free_provider':    'trestle.email.is_free_provider',
   'bd_homeowner':              'batchdata.bd_homeowner',
   'assessed_value':            'batchdata.assessed_value',
+  'bathrooms':                 'batchdata.bathrooms',
 };
 
 /**
