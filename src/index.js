@@ -36,6 +36,7 @@ import { logScoredLead, emitMetrics, buildEnrichmentData } from './utils/logger.
 // API clients (3 enrichment APIs — FullContact dropped, Twilio dropped)
 import { callTrestle } from './api/trestle.js';
 import { callBatchData } from './api/batchdata.js';
+import { callGoogleSolar } from './api/googlesolar.js';
 import { callTrustedForm } from './api/trustedform.js';
 
 // LLM scorer (replaces rules engine — scorer.js + normalizer.js)
@@ -170,6 +171,13 @@ export async function handler(event) {
     } else {
       sioAbort.abort();
     }
+
+    // v5.4.1: Google Solar existing-panel detection — fired in PARALLEL with the
+    // Anthropic call (needs only BatchData lat/lng, already in apiData). 1.5s
+    // internal timeout + fail-open, so it can never extend the SIO wall clock.
+    const googleSolarPromise = lead.vertical === 'solar'
+      ? callGoogleSolar(apiData).catch(() => null)
+      : Promise.resolve(null);
 
     const llmStart = Date.now();
     let llmResult;
@@ -424,6 +432,20 @@ export async function handler(event) {
       tier = 'Silver';
     }
 
+    // ── 8e. GOOGLE SOLAR EXISTING-ARRAYS CAP (v5.4.1) ──────────────────────────
+    // Panels already visible on the roof → Bronze cap + routable flag.
+    // Validated: 68%+ of buyer "already has solar" DQs caught; 7.4% appt rate
+    // (Bronze-level, not zero — cap, never reject). Fail-open: null = no change.
+    const googleSolar = await googleSolarPromise;
+    if (googleSolar?.arrays_detected) {
+      if (tier === 'Gold' || tier === 'Silver') {
+        tier = 'Bronze';
+        score = Math.min(score, 44);
+      }
+      llmResult.concerns = [...(llmResult.concerns || []),
+        'GOOGLE_SOLAR_ARRAYS_DETECTED: existing installation visible on roof imagery'];
+    }
+
     // 9. Route to buyer (pass config for shadow_mode check)
     const { decision, routing } = await routeLead(lead.vertical, tier, score, lead, config);
 
@@ -433,6 +455,13 @@ export async function handler(event) {
       reasons: llmResult.reasons,
       concerns: llmResult.concerns,
     };
+
+    // v5.4.1: buyer-routable existing-solar flag (battery/expansion campaigns
+    // may WANT these leads — flag, don't just suppress).
+    if (googleSolar) {
+      apiData['googlesolar.arrays_detected'] = googleSolar.arrays_detected;
+      apiData['googlesolar.detection_status'] = googleSolar.detection_status;
+    }
 
     const result = formatResponse(lead, {
       decision,
